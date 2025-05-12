@@ -2,7 +2,7 @@
 @use 'sass:map';
 
 body {
-  font-family: 'Roboto Light', 'sans-serif';
+  font-family: 'Roboto Light', sans-serif;
   font-weight: 400;
   font-size: map.get($font-size, 'body');
   line-height: 1.25;
@@ -16,6 +16,13 @@ body {
   grid-auto-rows: auto;
 
   min-height: 100svh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Montserrat Light', sans-serif;
 }
 
 h1 {
