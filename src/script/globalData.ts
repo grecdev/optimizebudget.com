@@ -18,7 +18,7 @@ const adminData = {
 };
 
 const apiEndpoints: Record<ApiEndpoints, string> = {
-  someApi: `${environment.API_URL}/api/someApi`,
+  someApi: `${environment.SOME_VARIABLE}/api/someApi`,
 };
 
 export { allRoutes, adminData, apiEndpoints };
