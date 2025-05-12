@@ -1,0 +1,86 @@
+// Colors
+$color-palette: (
+  'primary': (
+    'default': #fff,
+    'variant-2': red
+  ),
+);
+
+// Layout
+$container-width: (
+  'sm': 1100px,
+  'default': 1200px,
+  'md': 1300px,
+  'lg': 1400px,
+);
+
+// Spacing
+$spacing: (
+  'sm': 0.5rem,
+  'default': 1rem,
+  'md': 1.5rem,
+  'lg': 2rem,
+);
+
+// Shape
+$border-radius: (
+  'sm': 5px,
+  'default': 10px,
+  'md': 15px,
+  'rounded': 50%,
+);
+
+$grid: (
+  'direction': (
+    row,
+    row-reverse,
+    column,
+    column-reverse,
+  ),
+  'justify-content': (
+    space-between,
+    space-around,
+    space-evenly,
+    flex-end,
+    center,
+  ),
+  'align-items': (
+    normal,
+    center,
+    stretch,
+    baseline,
+  ),
+);
+
+// Breakpoints
+$breakpoints: (
+  'sm': 570px,
+  'md': 768px,
+  'lg': 850px,
+  'xl': 1024px,
+  'xxl': 1280px,
+);
+
+// Misc
+$font-size: (
+  'h1': 2rem,
+  'h2': 1.75rem,
+  'h3': 1.5rem,
+  'h4': 1.25rem,
+  'body': 1rem,
+);
+
+$overlap-index-everything: 999;
+
+$box-shadow: (
+  'variant-1': 0px 4px 12px 0px rgba(0, 0, 0, 0.1),
+  'variant-2': 0px 8px 24px 0px rgba(0, 0, 0, 0.15),
+  'variant-3': 0px 1px 4px 0px rgba(0, 0, 0, 0.16),
+);
+
+$buttons-icon-size: (
+  'sm': 28px,
+  'default': 32px,
+  'md': 37px,
+  'lg': 42px,
+);
