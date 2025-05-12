@@ -39,7 +39,8 @@
               }
             ],
             "styles": [
-              "src/styles/index.scss"
+              "src/styles/index.scss",
+              "src/assets/fonts/fonts.css"
             ],
             "scripts": []
           },
@@ -104,7 +105,8 @@
               }
             ],
             "styles": [
-              "src/styles/index.scss"
+              "src/styles/index.scss",
+              "src/assets/fonts/fonts.css"
             ],
             "scripts": []
           }
