@@ -1,0 +1,27 @@
+@use 'sass:string';
+
+/*
+  1. Add gap in parent width
+  2. Divide by total number of columns
+  3. Increment by grid item span
+  4. Subtract from final number
+*/
+@function gridItemWidth($parent-width, $spacing, $columns, $item-span) {
+  @return calc((($parent-width + $spacing) / $columns * $item-span) - $spacing);
+}
+
+/*
+  Format the class name, from `_variables" map.
+
+  justify-content-space-between > justify-content-between.
+*/
+@function getGridClassName($value) {
+  $character-index: string.index($value, '-');
+  $class-name: $value;
+
+  @if ($character-index != null) {
+    $class-name: string.slice($value, $character-index + 1);
+  }
+
+  @return $class-name;
+}

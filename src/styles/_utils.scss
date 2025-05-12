@@ -1,0 +1,325 @@
+@use 'variables' as *;
+@use 'functions' as *;
+@use 'sass:map';
+
+/* Default Theme */
+.overlay {
+  position: relative;
+
+  & > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  &.overlay-1::before {
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  &.overlay-2::before {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &.overlay-3::before {
+    background: rgba(0, 0, 0, 0.75);
+  }
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.hidden-input {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.position-sticky {
+  position: sticky;
+}
+
+.text-align {
+  &-left {
+    text-align: left;
+  }
+
+  &-center {
+    text-align: center;
+  }
+
+  &-right {
+    text-align: right;
+  }
+}
+
+// Spacing
+.m {
+  &-auto {
+    margin: auto !important;
+  }
+
+  &-0 {
+    margin: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin: $value !important;
+    }
+  }
+}
+
+.mx {
+  &-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  &-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-left: $value !important;
+      margin-right: $value !important;
+    }
+  }
+}
+
+.my {
+  &-auto {
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+  }
+
+  &-0 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-top: $value !important;
+      margin-bottom: $value !important;
+    }
+  }
+}
+
+.mt {
+  &-auto {
+    margin-top: auto !important;
+  }
+
+  &-0 {
+    margin-top: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-top: $value !important;
+    }
+  }
+}
+
+.mr {
+  &-auto {
+    margin-right: auto !important;
+  }
+
+  &-0 {
+    margin-right: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-right: $value !important;
+    }
+  }
+}
+
+.mb {
+  &-auto {
+    margin-bottom: auto !important;
+  }
+
+  &-0 {
+    margin-bottom: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-bottom: $value !important;
+    }
+  }
+}
+
+.ml {
+  &-auto {
+    margin-left: auto !important;
+  }
+
+  &-0 {
+    margin-left: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      margin-left: $value !important;
+    }
+  }
+}
+
+.p {
+  &-0 {
+    padding: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding: $value !important;
+    }
+  }
+}
+
+.px {
+  &-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-left: $value !important;
+      padding-right: $value !important;
+    }
+  }
+}
+
+.py {
+  &-0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-top: $value !important;
+      padding-bottom: $value !important;
+    }
+  }
+}
+
+.pt {
+  &-0 {
+    padding-top: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-top: $value !important;
+    }
+  }
+}
+
+.pr {
+  &-0 {
+    padding-right: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-right: $value !important;
+    }
+  }
+}
+
+.pb {
+  &-0 {
+    padding-bottom: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-bottom: $value !important;
+    }
+  }
+}
+
+.pl {
+  &-0 {
+    padding-left: 0 !important;
+  }
+
+  @each $key, $value in $spacing {
+    &-#{$key} {
+      padding-left: $value !important;
+    }
+  }
+}
+
+// Layout
+.d {
+  &-block {
+    display: block;
+  }
+
+  &-inline-block {
+    display: inline-block;
+  }
+
+  &-flex {
+    display: flex;
+
+    &.justify-content {
+      @each $value in map.get($grid, 'justify-content') {
+        $class-name: getGridClassName($value);
+
+        &-#{$class-name} {
+          justify-content: $value;
+        }
+      }
+    }
+
+    &.align-items {
+      @each $value in map.get($grid, 'align-items') {
+        $class-name: getGridClassName($value);
+
+        &-#{$class-name} {
+          align-items: $value;
+        }
+      }
+    }
+
+    &.flex {
+      @each $value in map.get($grid, 'direction') {
+        &-#{$value} {
+          direction: $value;
+        }
+      }
+    }
+  }
+}
+
+.container {
+  padding: map.get($spacing, 'default') 0;
+}

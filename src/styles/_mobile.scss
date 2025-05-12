@@ -1,0 +1,21 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+@media screen and (max-width: map.get($breakpoints, xl)) {
+  /* Prevent adjustments of font size after orientation changes in iOS. @normalize-css  */
+  html {
+    text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    height: auto;
+  }
+
+  body {
+    overflow: auto;
+  }
+
+  .container {
+    padding: map.get($spacing, 'default');
+  }
+}
