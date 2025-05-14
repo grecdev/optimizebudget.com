@@ -1,0 +1,19 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+// Make sure this map matches the type of the error from `InfoType`.
+$infoTextType: (
+  'error': map.get($color-palette, red, variant-2),
+  'success': map.get($color-palette, green, default),
+);
+
+.info-text {
+  font-size: 0.9rem;
+  margin-top: map.get($spacing, 'sm');
+
+  @each $key, $value in $infoTextType {
+    &.infoType-#{$key} {
+      color: $value;
+    }
+  }
+}

@@ -1,0 +1,1 @@
+[Cory Rylan: Creating a Custom Debounce Click Directive in Angular](https://coryrylan.com/blog/creating-a-custom-debounce-click-directive-in-angular)
