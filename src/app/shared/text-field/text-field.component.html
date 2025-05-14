@@ -1,0 +1,13 @@
+<div class="input-container">
+  <label class="{{ classNameLabel() }}">
+    {{ labelOptions().textContent }}
+  </label>
+
+  <ng-content select="input[type='text'], textarea">
+    You need to add the input or textarea element in ng-content!!!
+  </ng-content>
+</div>
+
+@if (error()) {
+  <p appInfoText type="error">{{ error() }}</p>
+}

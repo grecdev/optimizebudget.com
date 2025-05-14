@@ -1,0 +1,179 @@
+@use 'variables' as *;
+@use 'sass:color';
+@use 'sass:map';
+
+@mixin variantContained($variant-color, $test-color, $darkenIntensity: 15%) {
+  background: $variant-color;
+  color: $test-color;
+  transition: all 150ms ease-in-out;
+  border: 1px solid $variant-color;
+
+  &:hover {
+    $hover-color: color.adjust($variant-color, $lightness: $darkenIntensity);
+    background: $hover-color;
+    border-color: $hover-color;
+  }
+}
+
+@mixin variantBasic($color) {
+  color: $color;
+}
+
+@mixin variantOutlined($color) {
+  color: $color;
+  border: 1px solid $color;
+}
+
+@mixin disabledButton($color, $background) {
+  &,
+  &:hover {
+    color: $color;
+    border: 1px solid $color;
+    background: $background;
+    cursor: not-allowed;
+  }
+}
+
+.btn {
+  display: inline-block;
+  padding: map.get($spacing, sm) map.get($spacing, default);
+  border-radius: 4px;
+  // text-transform: uppercase;
+  transition: all 250ms ease-in-out;
+  line-height: 1;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  color: inherit;
+  font-family: 'Roboto Medium', 'sans-serif';
+}
+
+.btnColor {
+  @each $key, $variant in $color-palette {
+    @each $variant-key, $variant-color in $variant {
+      $class-name: #{$key}-#{$variant-key};
+
+      &-#{$class-name} {
+        &.btnVariant-basic {
+          border-radius: 0;
+          @include variantBasic($variant-color);
+        }
+
+        &.btnVariant-contained {
+          $text-color: map.get($color-palette, white, default);
+
+          // Here when you will create your preferred UI, just add the needed classes :)
+          // The thing is that you want to use a dark text color on light background
+
+          @if (
+            $class-name ==
+              'white-default' or
+              $class-name ==
+              'gray-default' or
+              $class-name ==
+              'secondary-variant-2' or
+              $class-name ==
+              'secondary-variant-3'
+          ) {
+            $text-color: map.get($color-palette, primary, default);
+          }
+
+          @include variantContained($variant-color, $text-color);
+        }
+
+        &.btnVariant-outlined {
+          @include variantOutlined($variant-color);
+        }
+      }
+    }
+  }
+}
+
+.btnVariant {
+  &-outlined {
+    &:disabled,
+    &[aria-disabled='true'] {
+      @include disabledButton(
+        map.get($color-palette, secondary, default),
+        map.get($color-palette, gray, default)
+      );
+    }
+  }
+
+  &-contained {
+    &:disabled,
+    &[aria-disabled='true'] {
+      @include disabledButton(
+        map.get($color-palette, gray, default),
+        map.get($color-palette, gray, variant-2)
+      );
+    }
+  }
+
+  &-basic {
+    &.btnIconButton.btnIconSize {
+      &-small,
+      &-default,
+      &-medium,
+      &-large {
+        width: auto;
+        height: auto;
+      }
+    }
+  }
+}
+
+.btnWithIcon {
+  &-leftIcon,
+  &-rightIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: map.get($spacing, sm);
+  }
+
+  &-leftIcon {
+    padding-left: 12px;
+  }
+
+  &-rightIcon {
+    padding-right: 12px;
+  }
+}
+
+.btnIconButton {
+  border-radius: map.get($border-radius, rounded);
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.btnIconSize {
+  &-small {
+    width: map.get($buttons-icon-size, sm);
+    height: map.get($buttons-icon-size, sm);
+    font-size: 0.8rem;
+  }
+
+  &-default {
+    width: map.get($buttons-icon-size, default);
+    height: map.get($buttons-icon-size, default);
+    font-size: 1rem;
+  }
+
+  &-medium {
+    width: map.get($buttons-icon-size, md);
+    height: map.get($buttons-icon-size, md);
+    font-size: 1.25rem;
+  }
+
+  &-large {
+    width: map.get($buttons-icon-size, lg);
+    height: map.get($buttons-icon-size, lg);
+    font-size: 1.5rem;
+  }
+}
