@@ -42,6 +42,11 @@
               "src/styles/index.scss",
               "src/assets/fonts/fonts.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles/"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -108,6 +113,11 @@
               "src/styles/index.scss",
               "src/assets/fonts/fonts.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles/"
+              ]
+            },
             "scripts": []
           }
         }
