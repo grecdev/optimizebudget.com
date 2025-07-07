@@ -2,7 +2,13 @@
 $color-palette: (
   'primary': (
     'default': #fff,
-    'variant-2': red
+    'variant-2': red,
+  ),
+  'gray': (
+    'default': #f5f5f5,
+  ),
+  'body-text-color': (
+    'default': #000,
   ),
 );
 

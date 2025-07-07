@@ -1,7 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-const routes: Routes = [];
+import { allRoutes } from '@script/globalData';
+
+const routes: Routes = [
+  {
+    path: allRoutes.login.path,
+    loadChildren: () =>
+      import('./features/authentication/login/login.module').then((module) => module.LoginModule),
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -7,7 +7,7 @@ body {
   font-size: map.get($font-size, 'body');
   line-height: 1.25;
 
-  color: map.get($color-palette, 'primary', 'variant-2');
+  color: map.get($color-palette, 'body-text-color', 'default');
 
   display: grid;
   justify-content: center;
