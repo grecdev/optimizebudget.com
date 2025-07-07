@@ -1,3 +1,9 @@
-<h1>Some title</h1>
+<form #testForm="ngForm">
+  <input type="text" placeholder="some input" />
+</form>
 
-<p>Hello world!</p>
+<p *ngIf="test; else placeholder">Original</p>
+
+<ng-template #placeholder>
+  <p>Placeholder</p>
+</ng-template>
