@@ -14,8 +14,7 @@ import { fromEvent } from 'rxjs';
 
 import { ThemeVariant, ThemeColor } from '@script/types';
 
-import { TextFieldLabelOptions } from '@shared/text-field/text-field.model';
-import { InfoTextComponent } from '@shared/info-text/info-text.component';
+import { TextFieldLabelOptions } from '@shared/components/text-field/text-field.model';
 
 /**
  * @summary - An input element used inside a form component, can be either controlled or uncontrolled
@@ -45,8 +44,6 @@ import { InfoTextComponent } from '@shared/info-text/info-text.component';
  */
 @Component({
   selector: 'app-text-field',
-  imports: [InfoTextComponent],
-
   templateUrl: './text-field.component.html',
   styleUrl: './text-field.component.scss',
   standalone: false,
