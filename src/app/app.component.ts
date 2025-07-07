@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   standalone: false,
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  title = 'angular-16';
-}
+export class AppComponent {}
