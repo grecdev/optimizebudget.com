@@ -1,0 +1,6 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+.login-container {
+  background: map.get($color-palette, 'gray', 'default');
+}
