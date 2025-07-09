@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
       [allRoutes.login.path]: 'login-page',
     };
 
-    this.pageID = pagesID[currentPath];
+    this.pageID = pagesID[currentPath as keyof typeof pagesID];
   }
 
   ngOnInit() {
