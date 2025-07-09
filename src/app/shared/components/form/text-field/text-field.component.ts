@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  input,
+  Input,
   ViewEncapsulation,
   computed,
   ElementRef,
@@ -14,7 +14,7 @@ import { fromEvent } from 'rxjs';
 
 import { ThemeVariant, ThemeColor } from '@script/types';
 
-import { TextFieldLabelOptions } from '@shared/components/text-field/text-field.model';
+import { TextFieldLabelOptions } from './text-field.model';
 
 /**
  * @summary - An input element used inside a form component, can be either controlled or uncontrolled
@@ -45,36 +45,39 @@ import { TextFieldLabelOptions } from '@shared/components/text-field/text-field.
 @Component({
   selector: 'app-text-field',
   templateUrl: './text-field.component.html',
-  styleUrl: './text-field.component.scss',
+  styleUrls: ['./text-field.component.scss'],
   standalone: false,
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'app-text-field',
-    '[class]': 'classNameHost()',
+    '[class]': 'classNameHost',
   },
 })
 export class TextFieldComponent implements AfterContentInit {
-  readonly variant = input.required<ThemeVariant>();
-  readonly color = input.required<ThemeColor>();
-  readonly labelOptions = input.required<TextFieldLabelOptions>();
-  readonly error = input<string>('');
+  @Input({ required: true }) readonly variant!: ThemeVariant;
+  @Input({ required: true }) readonly color!: ThemeColor;
+  @Input({ required: true }) readonly labelOptions!: TextFieldLabelOptions;
+  @Input({ required: true }) readonly error!: string;
 
   private readonly _hostElement = inject(ElementRef);
   private readonly _destroyRef = inject(DestroyRef);
 
-  classNameHost = computed<string>(() => {
-    const classNameArray = [`inputVariant-${this.variant()}`, `inputColor-${this.color()}`];
+  get classNameHost() {
+    const classNameArray = [
+      `inputVariant-${this.variant}`,
+      `inputColor-${this.color}`,
+    ];
 
-    if (this.error()) {
+    if (this.error) {
       classNameArray.push('withError');
     }
 
     return classNameArray.join(' ');
-  });
+  }
 
   classNameLabel = computed<string>(() => {
-    const { position } = this.labelOptions();
+    const { position } = this.labelOptions;
 
     const classNameArray = ['inputLabel', `labelPosition-${position}`];
 
@@ -99,7 +102,9 @@ export class TextFieldComponent implements AfterContentInit {
     const inputEventSubscription = inputEvent.subscribe((event) => {
       event.stopPropagation();
 
-      const currentTarget = event.currentTarget as HTMLInputElement | HTMLTextAreaElement;
+      const currentTarget = event.currentTarget as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
 
       this._checkTextFieldLength(currentTarget);
     });
@@ -117,7 +122,9 @@ export class TextFieldComponent implements AfterContentInit {
    * @private
    * @return {void}
    */
-  private _checkTextFieldLength(target: HTMLInputElement | HTMLTextAreaElement) {
+  private _checkTextFieldLength(
+    target: HTMLInputElement | HTMLTextAreaElement
+  ) {
     if (!target) {
       return;
     }
