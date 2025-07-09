@@ -1,0 +1,12 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+:host {
+  display: grid;
+  justify-content: center;
+  // minmax(auto, map.get($container-width, 'sm'));
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 0 1fr auto;
+
+  min-height: 100svh;
+}
