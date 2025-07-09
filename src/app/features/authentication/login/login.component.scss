@@ -7,6 +7,11 @@
   justify-items: center;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
 .form-container {
   display: flex;
   flex-direction: column;
@@ -54,6 +59,12 @@
   }
 }
 
-.sign-up-redirect {
+.underline {
   text-decoration: underline;
+}
+
+.agree-info {
+  text-align: center;
+  width: 15rem;
+  font-size: 0.8rem;
 }
