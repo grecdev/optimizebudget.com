@@ -8,14 +8,6 @@ body {
   line-height: 1.25;
 
   color: map.get($color-palette, 'body-text-color', 'default');
-
-  //display: grid;
-  //justify-content: center;
-  //grid-template-columns: minmax(auto, map.get($container-width, 'sm'));
-  // grid-template-rows: 1fr auto; // Most of the time i end up having a fixed header
-  //grid-auto-rows: auto;
-
-  min-height: 100svh;
 }
 
 h1,

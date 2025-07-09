@@ -1,31 +1,51 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
-import {filter, map, mergeMap} from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
+
+import { filter } from 'rxjs';
+
+import { allRoutes } from '@script/globalData';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: false,
   styleUrls: ['./app.component.scss'],
+  host: {
+    '[id]': 'pageID',
+  },
 })
 export class AppComponent implements OnInit {
   private readonly _router: Router;
-  private readonly _activatedRoute: ActivatedRoute;
 
-  constructor(activatedRoute: ActivatedRoute, router: Router) {
+  pageID: string = '';
+
+  constructor(router: Router) {
     this._router = router;
-    this._activatedRoute = activatedRoute;
+  }
+
+  private _setPageID(url: string) {
+    const currentPath = url.substring(1);
+
+    const pagesID = {
+      '': 'home-page',
+      [allRoutes.login.path]: 'login-page',
+    };
+
+    this.pageID = pagesID[currentPath];
   }
 
   ngOnInit() {
     this._router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((data) => {
-        console.log(data);
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        )
+      )
+      .subscribe({
+        next: (data) => {
+          this._setPageID(data.url);
+        },
       });
-  }
-
-  private _setPageID() {
   }
 }
