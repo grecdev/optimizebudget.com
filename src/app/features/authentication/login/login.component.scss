@@ -1,0 +1,59 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+:host {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacing, 'default');
+
+  background: map.get($color-palette, 'common', 'white');
+  box-shadow: 0px 0 3px 0px rgb(0 0 0 / 15%);
+
+  width: 100%;
+  max-width: 24rem;
+
+  padding: map.get($spacing, 'default');
+  border-radius: map.get($border-radius, 'default');
+
+  text-align: center;
+}
+
+.light-text {
+  color: map.get($color-palette, 'gray', 'variant-1');
+}
+
+.delimiter {
+  position: relative;
+
+  text-align: center;
+
+  &::before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    left: 0;
+
+    transform: translateY(-50%);
+
+    width: 100%;
+    border-top: 1px solid map.get($color-palette, 'gray', 'variant-2');
+  }
+
+  & > span {
+    position: relative;
+    z-index: 1;
+    background: map.get($color-palette, 'common', 'white');
+    padding: map.get($spacing, 'sm');
+  }
+}
+
+.sign-up-redirect {
+  text-decoration: underline;
+}
