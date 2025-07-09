@@ -1,5 +1,5 @@
 <div class="logo-container mb-lg">
-  <img src="logo" />
+  <img src="logo" alt="logo" />
 
   <p>Optimize Budget</p>
 </div>
@@ -17,7 +17,16 @@
     <span class="light-text">Or continue with</span>
   </div>
 
-  <form></form>
+  <form #loginForm="ngForm" (ngSubmit)="handleLogin(loginForm)">
+    <button
+      type="submit"
+      appButton
+      variant="contained"
+      color="secondary-default"
+    >
+      Login
+    </button>
+  </form>
 
   <p>
     Don't have an account?

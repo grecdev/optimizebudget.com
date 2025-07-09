@@ -27,6 +27,10 @@
   border-radius: map.get($border-radius, 'default');
 
   text-align: center;
+
+  & form button[type='submit'] {
+    width: 100%;
+  }
 }
 
 .light-text {
