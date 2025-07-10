@@ -21,8 +21,8 @@ import { TextFieldLabelOptions } from './text-field.model';
  *
  * @param {ThemeVariant} variant - "basic" | "contained" | "outlined"
  * @param {TextFieldLabelOptions} labelOptions - Options if you want to add any label
- * @param {TextFieldIconOptions} [iconOptions] - Options if you want to use icons in input fields
  * @param {ThemeColor} color - Input color
+ * @param {TextFieldIconOptions} [iconOptions] - Options if you want to use icons in input fields
  *
  * @example Implementation
  *
@@ -55,10 +55,10 @@ import { TextFieldLabelOptions } from './text-field.model';
   },
 })
 export class TextFieldComponent implements AfterContentInit {
-  @Input({ required: true }) readonly variant!: ThemeVariant;
-  @Input({ required: true }) readonly color!: ThemeColor;
-  @Input({ required: true }) readonly labelOptions!: TextFieldLabelOptions;
-  @Input({ required: true }) readonly error!: string;
+  @Input({ required: true }) variant!: ThemeVariant;
+  @Input({ required: true }) color!: ThemeColor;
+  @Input({ required: true }) labelOptions!: TextFieldLabelOptions;
+  @Input() error!: string;
 
   private readonly _hostElement = inject(ElementRef);
   private readonly _destroyRef = inject(DestroyRef);
@@ -76,13 +76,13 @@ export class TextFieldComponent implements AfterContentInit {
     return classNameArray.join(' ');
   }
 
-  classNameLabel = computed<string>(() => {
+  get classNameLabel() {
     const { position } = this.labelOptions;
 
     const classNameArray = ['inputLabel', `labelPosition-${position}`];
 
     return classNameArray.join(' ');
-  });
+  }
 
   ngAfterContentInit() {
     // Can be input or textarea
