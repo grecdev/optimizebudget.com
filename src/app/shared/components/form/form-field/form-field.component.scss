@@ -1,0 +1,137 @@
+@use 'variables' as *;
+@use 'sass:map';
+@use 'sass:color';
+
+$input-spacing-default: map.get($spacing, 'sm');
+
+.app-form-field {
+  display: block;
+  position: relative;
+  cursor: text;
+
+  &,
+  & .app-input {
+    width: 100%;
+  }
+
+  & .app-label,
+  & .app-input {
+    font-size: map.get($font-size, 'body');
+  }
+
+  & .app-input {
+    padding: $input-spacing-default;
+    border-radius: map.get($spacing, 'sm');
+  }
+
+  & .app-label {
+    display: block;
+    margin-bottom: map.get($spacing, 'sm');
+  }
+
+  &-variant-outline .app-input {
+    background: transparent;
+    border: 1px solid map.get($color-palette, 'gray', 'variant-3');
+  }
+
+  &-focused.app-form-field-variant-outline .app-input {
+    box-shadow: 0px 0px 0px 2px map.get($color-palette, 'gray', 'variant-5');
+    border-color: map.get($color-palette, 'gray', 'variant-4');
+  }
+
+  //@each $key, $variant in $color-palette {
+  //  @each $variant-key, $variant-color in $variant {
+  //    $class-name: #{$key}-#{$variant-key};
+  //
+  //    &.inputColor-#{$class-name} .app-input {
+  //      $text-color: $variant-color;
+  //
+  //      @if ($key == 'secondary') {
+  //        $text-color: map.get($color-palette, 'white', 'default');
+  //      }
+  //
+  //      color: $text-color;
+  //
+  //      &::placeholder {
+  //        $placeholder-color: $variant-color;
+  //
+  //        @if ($key == white) {
+  //          $placeholder-color: color.adjust(
+  //            $placeholder-color,
+  //            $lightness: -40%
+  //          );
+  //        }
+  //
+  //        color: $placeholder-color;
+  //      }
+  //    }
+  //  }
+  //}
+
+  //&.inputVariant {
+  //  &-basic {
+  //    & .app-input {
+  //      padding: 0 0 $input-spacing-default;
+  //      background: transparent;
+  //      border-radius: 0;
+  //    }
+  //
+  //    @each $key, $variant in $color-palette {
+  //      @each $variant-key, $variant-color in $variant {
+  //        $class-name: #{$key}-#{$variant-key};
+  //
+  //        &.inputColor-#{$class-name} .app-input {
+  //          $border-color: $variant-color;
+  //
+  //          @if ($key == white) {
+  //            $border-color: color.adjust($variant-color, $lightness: -40%);
+  //
+  //            &:focus,
+  //            &[data-has-value] {
+  //              border-color: $variant-color;
+  //            }
+  //          }
+  //
+  //          border-bottom: 1px solid $border-color;
+  //        }
+  //      }
+  //    }
+  //  }
+  //
+  //  &-outlined {
+  //    & .app-input {
+  //      background: transparent;
+  //    }
+  //
+  //    @each $key, $variant in $color-palette {
+  //      @each $variant-key, $variant-color in $variant {
+  //        $class-name: #{$key}-#{$variant-key};
+  //
+  //        &.inputColor-#{$class-name} {
+  //          & .app-input {
+  //            border: 1px solid $variant-color;
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
+
+  //&.textarea {
+  //  display: flex;
+  //  flex-direction: column;
+  //
+  //  .app-label.app-labelInside {
+  //    top: $input-spacing-default;
+  //    transform: translate(0, 0);
+  //  }
+  //}
+  //
+  //&.withError {
+  //  color: map.get($color-palette, red, variant-2);
+  //
+  //  &[class*='inputVariant-'][class*='inputColor-'] .app-input {
+  //    border-color: map.get($color-palette, red, variant-2);
+  //  }
+  //}
+}

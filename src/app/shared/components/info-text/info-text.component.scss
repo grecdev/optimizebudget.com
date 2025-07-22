@@ -3,8 +3,8 @@
 
 // Make sure this map matches the type of the error from `InfoType`.
 $infoTextType: (
-  'error': map.get($color-palette, red, variant-2),
-  'success': map.get($color-palette, green, default),
+  'error': map.get($color-palette, 'red', 'default'),
+  'success': map.get($color-palette, 'green', 'default'),
 );
 
 .info-text {

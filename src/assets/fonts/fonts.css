@@ -1,40 +1,40 @@
 @font-face {
-  font-family: 'Roboto Medium';
+  font-family: 'Roboto';
   src: url('./Roboto-Medium.ttf') format('truetype');
   font-weight: 500;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Roboto Regular';
+  font-family: 'Roboto';
   src: url('./Roboto-Regular.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Roboto Light';
+  font-family: 'Roboto';
   src: url('./Roboto-Light.ttf') format('truetype');
   font-weight: 300;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Roboto Thin';
+  font-family: 'Roboto';
   src: url('./Roboto-Thin.ttf') format('truetype');
   font-weight: 100;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Montserrat Regular';
+  font-family: 'Montserrat';
   src: url('./Montserrat-Regular.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Montserrat Light';
+  font-family: 'Montserrat';
   src: url('./Montserrat-Light.ttf') format('truetype');
   font-weight: 300;
   font-display: swap;

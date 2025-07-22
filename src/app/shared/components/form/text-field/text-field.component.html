@@ -1,9 +1,0 @@
-<div class="input-container">
-  <label [class]="classNameLabel">
-    {{ labelOptions.textContent }}
-  </label>
-
-  <ng-content select="input[type='text'], textarea"></ng-content>
-</div>
-
-<p *ngIf="error" appInfoText type="error">{{ error }}</p>

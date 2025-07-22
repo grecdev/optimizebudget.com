@@ -67,7 +67,7 @@
 
           // Here when you will create your preferred UI, just add the needed classes :)
           // The thing is that you want to use a dark text color on light background or vice-versa
-          $dark-backgrounds: 'secondary-default';
+          $dark-backgrounds: 'primary-default', 'secondary-default';
 
           @if (list.index($dark-backgrounds, $class-name)) {
             $text-color: map.get($color-palette, 'common', 'white');

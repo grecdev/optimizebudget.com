@@ -2,7 +2,7 @@
 @use 'sass:map';
 
 body {
-  font-family: 'Roboto Light', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 400;
   font-size: map.get($font-size, 'body');
   line-height: 1.25;

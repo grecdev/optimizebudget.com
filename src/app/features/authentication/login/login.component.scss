@@ -5,6 +5,7 @@
   display: grid;
   align-content: center;
   justify-items: center;
+  background: map.get($color-palette, 'gray', 'default');
 }
 
 .logo-container {
@@ -31,10 +32,20 @@
   & form button[type='submit'] {
     width: 100%;
   }
+
+  & #loginForm {
+    text-align: left;
+  }
+
+  & .label-password-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .light-text {
-  color: map.get($color-palette, 'gray', 'variant-1');
+  color: map.get($color-palette, 'gray', 'variant-2');
 }
 
 .delimiter {
@@ -52,7 +63,7 @@
     transform: translateY(-50%);
 
     width: 100%;
-    border-top: 1px solid map.get($color-palette, 'gray', 'variant-2');
+    border-top: 1px solid map.get($color-palette, 'gray', 'variant-3');
   }
 
   & > span {
@@ -71,4 +82,9 @@
   text-align: center;
   width: 15rem;
   font-size: 0.8rem;
+  color: map.get($color-palette, 'gray', 'variant-2');
+}
+
+.redirect-link {
+  font-weight: 300;
 }
