@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 import { InfoType } from './info-text.model';
 
@@ -16,15 +11,10 @@ import { InfoType } from './info-text.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'info-text',
-    '[class]': 'classNameHost',
+    '[class.info-type-success]': '_type === "success"',
+    '[class.info-type-error]': '_type === "error"',
   },
 })
 export class InfoTextComponent {
-  @Input({ required: true }) type!: InfoType;
-
-  get classNameHost() {
-    const classNameArray = [`infoType-${this.type}`];
-
-    return classNameArray.join(' ');
-  }
+  @Input({ required: true }) _type!: InfoType;
 }
