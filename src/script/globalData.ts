@@ -4,12 +4,11 @@ import { ApiEndpoints, RoutesName } from '@script/types';
 import { environment } from '@environments/environment';
 
 const allRoutes: Record<RoutesName, HeaderLink> = {
-  someRoute: {
+  login: {
     id: 0,
-    path: 'https://www.grecu.dev',
+    path: 'login',
     target: '_blank',
-    icon: 'some-icon',
-    ariaLabel: 'Bla bla bla',
+    ariaLabel: 'Login page path',
   },
 };
 

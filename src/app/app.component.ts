@@ -4,6 +4,8 @@ import { Router, NavigationEnd } from '@angular/router';
 
 import { filter } from 'rxjs';
 
+import { allRoutes } from '@script/globalData';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,6 +29,7 @@ export class AppComponent implements OnInit {
 
     const pagesID = {
       '': 'home-page',
+      [allRoutes.login.path]: 'login-page',
     };
 
     this.pageID = pagesID[currentPath as keyof typeof pagesID];

@@ -4,7 +4,6 @@ interface TextFieldIconOptions {
 }
 
 interface TextFieldLabelOptions {
-  textContent: string;
   position: 'top' | 'right' | 'left';
 }
 

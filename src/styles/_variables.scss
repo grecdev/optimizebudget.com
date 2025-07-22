@@ -1,8 +1,30 @@
 // Colors
 $color-palette: (
   'primary': (
-    'default': #fff,
-    'variant-2': red
+    'default': #171717,
+  ),
+  'secondary': (
+    'default': red,
+  ),
+  'gray': (
+    'default': #f5f5f5,
+    'variant-2': #737373,
+    'variant-3': #e5e5e5,
+    'variant-4': #a1a1a1,
+    'variant-5': #c9c9c9,
+  ),
+  'body-text-color': (
+    'default': #000,
+  ),
+  'common': (
+    'white': #fff,
+  ),
+  'red': (
+    'default': #db2c2c,
+    'variant-2': #ff8b8b,
+  ),
+  'green': (
+    'default': #5ee942,
   ),
 );
 
@@ -67,7 +89,7 @@ $font-size: (
   'h2': 1.75rem,
   'h3': 1.5rem,
   'h4': 1.25rem,
-  'body': 1rem,
+  'body': 0.9rem,
 );
 
 $overlap-index-everything: 999;
