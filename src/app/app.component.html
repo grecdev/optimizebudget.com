@@ -1,5 +1,7 @@
-<header *ngIf="userIsLoggedIn">Header</header>
+<div id="sidebar">i am sidebar!</div>
 
-<router-outlet />
+<main id="main-wrapper">
+  <header *ngIf="userIsLoggedIn">Header</header>
 
-<footer *ngIf="userIsLoggedIn">Footer</footer>
+  <router-outlet />
+</main>

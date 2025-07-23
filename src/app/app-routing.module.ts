@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { allRoutes } from '@script/globalData';
 
+import { HomeModule } from '@features/home/home.module';
+
 const routes: Routes = [
   {
     path: allRoutes.login.path,
@@ -23,6 +25,11 @@ const routes: Routes = [
         module => module.ForgotPasswordModule
       ),
   },
+  // {
+  //   path: '**',
+  //   loadChildren: () =>
+  //     import('./features/not-found/not-found.module').then(module => module.NotFoundModule),
+  // },
 ];
 
 @NgModule({

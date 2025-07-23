@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   private readonly _router: Router;
 
   pageID: string = '';
-  userIsLoggedIn: boolean = false;
+  userIsLoggedIn: boolean = true;
 
   constructor(router: Router) {
     this._router = router;
