@@ -1,9 +1,3 @@
-@use '../authentication-common' as commonStyle;
-
-:host {
-  @include commonStyle.host-style;
-}
-
 .label-password-container {
   display: flex;
   align-items: center;
