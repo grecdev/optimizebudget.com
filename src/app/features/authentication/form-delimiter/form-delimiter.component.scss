@@ -1,0 +1,28 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+.delimiter {
+  position: relative;
+
+  text-align: center;
+
+  &::before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    left: 0;
+
+    transform: translateY(-50%);
+
+    width: 100%;
+    border-top: 1px solid map.get($color-palette, 'gray', 'variant-3');
+  }
+
+  & > span {
+    position: relative;
+    z-index: 1;
+    background: map.get($color-palette, 'common', 'white');
+    padding: map.get($spacing, 'sm');
+  }
+}

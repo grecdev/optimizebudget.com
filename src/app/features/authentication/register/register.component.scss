@@ -1,0 +1,5 @@
+@use '../authentication-common' as commonStyle;
+
+:host {
+  @include commonStyle.host-style;
+}

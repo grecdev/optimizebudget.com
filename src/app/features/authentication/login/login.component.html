@@ -1,8 +1,4 @@
-<div class="logo-container mb-lg">
-  <img src="logo" alt="logo" />
-
-  <p>Optimize Budget</p>
-</div>
+<app-authentication-logo-container />
 
 <div class="form-container">
   <div class="header">
@@ -13,11 +9,14 @@
 
   <div class="buttons-socials">{{ "{{ WIP }}" }}</div>
 
-  <div class="delimiter">
-    <span class="light-text">Or continue with</span>
-  </div>
+  <app-form-delimiter textContent="Or continue with" />
 
-  <form id="loginForm" #loginForm="ngForm" (ngSubmit)="handleLogin(loginForm)">
+  <form
+    id="loginForm"
+    class="text-align-left"
+    #loginForm="ngForm"
+    (ngSubmit)="handleLogin(loginForm)"
+  >
     <app-form-field
       variant="outlined"
       color="primary-default"
@@ -28,7 +27,7 @@
     >
       <app-input-label>Email</app-input-label>
 
-      <input appInput id="email" type="text" placeholder="mail@example.com" />
+      <input appInput id="email" type="email" placeholder="mail@example.com" />
     </app-form-field>
 
     <app-form-field
@@ -47,7 +46,7 @@
         </span>
       </app-input-label>
 
-      <input appInput id="password" type="password" />
+      <input appInput id="password" type="password" placeholder="******" />
     </app-form-field>
 
     <button type="submit" appButton variant="contained" color="primary-default">Login</button>
@@ -55,14 +54,8 @@
 
   <p>
     Don't have an account?
-    <a routerLink="sign-up" class="redirect-link underline">Sign Up</a>
+    <a routerLink="/{{paths.register.path}}" class="redirect-link underline">Sign Up</a>
   </p>
 </div>
 
-<p class="agree-info mt-default">
-  By clicking continue, you agree to our
-  <a class="underline" routerLink="terms-of-service">Terms of Service</a>
-  and
-  <a class="underline" routerLink="privacy-policy">Privacy Policy</a>
-  .
-</p>
+<app-agree-info-component />
