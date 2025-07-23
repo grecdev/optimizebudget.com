@@ -14,6 +14,11 @@ const allRoutes: Record<RoutesName, HeaderLink> = {
     path: 'register',
     ariaLabel: 'Register page path',
   },
+  forgotPassword: {
+    id: 1,
+    path: 'forgot-password',
+    ariaLabel: 'Forgot password page path',
+  },
 };
 
 const adminData = {

@@ -4,6 +4,7 @@ import { allRoutes } from '@script/globalData';
 import { NgForm } from '@angular/forms';
 
 @Component({
+  selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['../authentication-common.scss', './register.component.scss'],
 })

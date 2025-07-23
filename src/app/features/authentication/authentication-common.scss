@@ -1,11 +1,15 @@
 @use 'variables' as *;
 @use 'sass:map';
 
-@mixin host-style {
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  background: map.get($color-palette, 'gray', 'default');
+app-login,
+app-register,
+app-forgot-password {
+  &:host {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    background: map.get($color-palette, 'gray', 'default');
+  }
 }
 
 .form-container {

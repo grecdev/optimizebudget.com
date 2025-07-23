@@ -16,6 +16,13 @@ const routes: Routes = [
         module => module.RegisterModule
       ),
   },
+  {
+    path: allRoutes.forgotPassword.path,
+    loadChildren: () =>
+      import('./features/authentication/forgot-password/forgot-password.module').then(
+        module => module.ForgotPasswordModule
+      ),
+  },
 ];
 
 @NgModule({

@@ -42,7 +42,9 @@
         <span class="label-password-container">
           Password
 
-          <a routerLink="forgot-password" class="redirect-link">Forgot your password?</a>
+          <a routerLink="/{{paths.forgotPassword.path}}" class="redirect-link">
+            Forgot your password?
+          </a>
         </span>
       </app-input-label>
 
@@ -58,4 +60,4 @@
   </p>
 </div>
 
-<app-agree-info-component />
+<app-agree-info-component textContent="login" />
