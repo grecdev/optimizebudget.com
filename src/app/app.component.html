@@ -1,5 +1,5 @@
-<header>Header</header>
+<header *ngIf="userIsLoggedIn">Header</header>
 
 <router-outlet />
 
-<footer>Footer</footer>
+<footer *ngIf="userIsLoggedIn">Footer</footer>
