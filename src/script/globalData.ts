@@ -7,8 +7,12 @@ const allRoutes: Record<RoutesName, HeaderLink> = {
   login: {
     id: 0,
     path: 'login',
-    target: '_blank',
     ariaLabel: 'Login page path',
+  },
+  register: {
+    id: 1,
+    path: 'register',
+    ariaLabel: 'Register page path',
   },
 };
 

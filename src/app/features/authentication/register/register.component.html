@@ -1,0 +1,76 @@
+<app-authentication-logo-container />
+
+<div class="form-container">
+  <div class="header">
+    <h4 class="mb-sm">Create an account</h4>
+
+    <p class="light-text">Let's get started. Fill in the details below to create your account.</p>
+  </div>
+
+  <form id="registerForm" class="text-align-left">
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Full Name</app-input-label>
+
+      <input appInput id="full-name" type="text" placeholder="John Doe" />
+    </app-form-field>
+
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Email</app-input-label>
+
+      <input appInput id="email" type="email" placeholder="mail@example.com" />
+    </app-form-field>
+
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Password</app-input-label>
+
+      <input appInput id="password" type="password" placeholder="******" />
+    </app-form-field>
+
+    <app-form-field
+      class="mb-default"
+      variant="outlined"
+      color="primary-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Confirm Password</app-input-label>
+
+      <input appInput id="confirm-password" type="password" placeholder="******" />
+    </app-form-field>
+
+    <button type="submit" appButton variant="contained" color="primary-default">Register</button>
+  </form>
+
+  <app-form-delimiter textContent="Or sign in with" />
+
+  <div class="buttons-socials">{{ "{{ WIP }}" }}</div>
+
+  <p>
+    Already have an account?
+    <a routerLink="/{{paths.login.path}}" class="redirect-link underline">Login</a>
+  </p>
+</div>
+
+<app-agree-info-component />

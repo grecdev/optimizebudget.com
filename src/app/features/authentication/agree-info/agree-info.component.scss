@@ -1,0 +1,9 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+.agree-info {
+  text-align: center;
+  width: 15rem;
+  font-size: 0.8rem;
+  color: map.get($color-palette, 'gray', 'variant-2');
+}

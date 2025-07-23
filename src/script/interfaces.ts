@@ -1,7 +1,7 @@
 interface HeaderLink {
   id: number;
   path: string;
-  target: '_self' | '_blank';
+  target?: '_self' | '_blank';
   textContent?: string;
   icon?: any;
   ariaLabel: string;

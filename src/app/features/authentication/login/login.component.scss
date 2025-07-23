@@ -1,90 +1,11 @@
-@use 'variables' as *;
-@use 'sass:map';
+@use '../authentication-common' as commonStyle;
 
 :host {
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  background: map.get($color-palette, 'gray', 'default');
+  @include commonStyle.host-style;
 }
 
-.logo-container {
+.label-password-container {
   display: flex;
   align-items: center;
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: map.get($spacing, 'default');
-
-  background: map.get($color-palette, 'common', 'white');
-  box-shadow: 0px 0 3px 0px rgb(0 0 0 / 15%);
-
-  width: 100%;
-  max-width: 24rem;
-
-  padding: map.get($spacing, 'default');
-  border-radius: map.get($border-radius, 'default');
-
-  text-align: center;
-
-  & form button[type='submit'] {
-    width: 100%;
-  }
-
-  & #loginForm {
-    text-align: left;
-  }
-
-  & .label-password-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-.light-text {
-  color: map.get($color-palette, 'gray', 'variant-2');
-}
-
-.delimiter {
-  position: relative;
-
-  text-align: center;
-
-  &::before {
-    content: '';
-
-    position: absolute;
-    top: 50%;
-    left: 0;
-
-    transform: translateY(-50%);
-
-    width: 100%;
-    border-top: 1px solid map.get($color-palette, 'gray', 'variant-3');
-  }
-
-  & > span {
-    position: relative;
-    z-index: 1;
-    background: map.get($color-palette, 'common', 'white');
-    padding: map.get($spacing, 'sm');
-  }
-}
-
-.underline {
-  text-decoration: underline;
-}
-
-.agree-info {
-  text-align: center;
-  width: 15rem;
-  font-size: 0.8rem;
-  color: map.get($color-palette, 'gray', 'variant-2');
-}
-
-.redirect-link {
-  font-weight: 300;
+  justify-content: space-between;
 }

@@ -7,7 +7,14 @@ const routes: Routes = [
   {
     path: allRoutes.login.path,
     loadChildren: () =>
-      import('./features/authentication/login/login.module').then((module) => module.LoginModule),
+      import('./features/authentication/login/login.module').then(module => module.LoginModule),
+  },
+  {
+    path: allRoutes.register.path,
+    loadChildren: () =>
+      import('./features/authentication/register/register.module').then(
+        module => module.RegisterModule
+      ),
   },
 ];
 
