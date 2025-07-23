@@ -13,12 +13,14 @@ import { allRoutes } from '@script/globalData';
   styleUrls: ['./app.component.scss'],
   host: {
     '[id]': 'pageID',
+    '[attr.data-logged-in]': 'userIsLoggedIn',
   },
 })
 export class AppComponent implements OnInit {
   private readonly _router: Router;
 
   pageID: string = '';
+  userIsLoggedIn: boolean = false;
 
   constructor(router: Router) {
     this._router = router;
@@ -37,13 +39,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._router.events
-      .pipe(
-        filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        )
-      )
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe({
-        next: (data) => {
+        next: data => {
           this._setPageID(data.url);
         },
       });
