@@ -4,6 +4,8 @@ import { Router, NavigationEnd } from '@angular/router';
 
 import { filter } from 'rxjs';
 
+// import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import { allRoutes } from '@script/globalData';
 
 @Component({
@@ -17,9 +19,16 @@ import { allRoutes } from '@script/globalData';
 })
 export class AppComponent implements OnInit {
   private readonly _router: Router;
+  // private readonly _mediaQueryService: MediaQueryService;
+
+  // private readonly _cleanupSubscriptions: Record<'mediaQueryService', Subscription> = {
+  //   mediaQueryService: new Subscription(),
+  // };
 
   pageID: string = '';
   userIsLoggedIn: boolean = true;
+
+  // isMobile: boolean = false;
 
   constructor(router: Router) {
     this._router = router;

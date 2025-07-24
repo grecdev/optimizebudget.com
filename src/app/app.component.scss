@@ -6,6 +6,7 @@
 
   &[data-logged-in='false'] {
     min-height: 100svh;
+    grid-template-columns: 0 1fr;
   }
 
   &[data-logged-in='true'] {
@@ -32,5 +33,18 @@ header {
   & .main-scrollable-container {
     overflow: auto;
     border: 10px solid pink;
+  }
+}
+
+// Will me moved into its own directory
+@media screen and (max-width: map.get($breakpoints, 'xl')) {
+  .sidebar {
+    display: none;
+  }
+
+  :host {
+    &[data-logged-in='true'] {
+      grid-template-columns: 1fr;
+    }
   }
 }
