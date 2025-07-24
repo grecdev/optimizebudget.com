@@ -1,5 +1,15 @@
-<header *ngIf="userIsLoggedIn">Header</header>
+<ng-container *ngIf="userIsLoggedIn; else authenticationContainer">
+  <div class="sidebar">SIDEBAR</div>
 
-<router-outlet />
+  <main class="main-wrapper">
+    <header>HEADER</header>
 
-<footer *ngIf="userIsLoggedIn">Footer</footer>
+    <div class="main-scrollable-container">
+      <router-outlet />
+    </div>
+  </main>
+</ng-container>
+
+<ng-template #authenticationContainer>
+  <router-outlet name="authentication"></router-outlet>
+</ng-template>

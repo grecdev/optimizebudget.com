@@ -26,19 +26,11 @@ export class MediaQueryService {
    *
    * @implements
    * ```
-   *   initMediaQuerySubscription(): void {
-   *     const mediaQuerySubscription = this.mediaQueryService.mediaQuery('max', 'xl').subscribe({
-   *       next: (data) => {
-   *         this.isMobile.set(data);
-   *
-   *         this.setBodySpacing();
-   *       },
-   *     });
-   *
-   *     this.destroyRef.onDestroy(() => {
-   *       mediaQuerySubscription.unsubscribe();
-   *     });
-   *   }
+   * this.mediaQueryService.mediaQuery('max', 'xl').subscribe({
+   *  next: (data) => {
+   *    // Do whatever
+   *  },
+   * });
    * ```
    *
    * @public

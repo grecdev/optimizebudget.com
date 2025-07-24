@@ -7,6 +7,7 @@ const paths: Route[] = [
   {
     path: '',
     component: ForgotPasswordComponent,
+    outlet: 'authentication',
   },
 ];
 

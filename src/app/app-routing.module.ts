@@ -23,6 +23,11 @@ const routes: Routes = [
         module => module.ForgotPasswordModule
       ),
   },
+  // {
+  //   path: '**',
+  //   loadChildren: () =>
+  //     import('./features/not-found/not-found.module').then(module => module.NotFoundModule),
+  // },
 ];
 
 @NgModule({

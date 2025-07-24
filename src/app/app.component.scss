@@ -3,14 +3,48 @@
 
 :host {
   display: grid;
-  justify-content: center;
-  // minmax(auto, map.get($container-width, 'sm'));
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 0 1fr auto;
-
-  min-height: 100svh;
 
   &[data-logged-in='false'] {
-    grid-template-rows: 0 1fr;
+    min-height: 100svh;
+    grid-template-columns: 0 1fr;
+  }
+
+  &[data-logged-in='true'] {
+    height: 100svh;
+    grid-template-columns: max-content auto;
+  }
+}
+
+header {
+  border: 10px solid green;
+}
+
+.sidebar {
+  border: 10px solid red;
+}
+
+.main-wrapper {
+  overflow: hidden;
+  border: 10px solid blue;
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  & .main-scrollable-container {
+    overflow: auto;
+    border: 10px solid pink;
+  }
+}
+
+// Will me moved into its own directory
+@media screen and (max-width: map.get($breakpoints, 'xl')) {
+  .sidebar {
+    display: none;
+  }
+
+  :host {
+    &[data-logged-in='true'] {
+      grid-template-columns: 1fr;
+    }
   }
 }

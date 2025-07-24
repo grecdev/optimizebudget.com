@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 import { ThemeColor, ThemeVariant } from '@script/types';
 import { ButtonInputs, IconPosition } from './button.model';
@@ -35,7 +30,6 @@ import { ButtonInputs, IconPosition } from './button.model';
   selector: 'button[appButton], a[appButton]',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
-  standalone: false,
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -49,9 +43,7 @@ export class ButtonComponent implements ButtonInputs {
   @Input() icon: IconPosition | undefined = undefined;
 
   get classNameHost() {
-    const classNameArray = [
-      `btnVariant-${this.variant} btnColor-${this.color}`,
-    ];
+    const classNameArray = [`btnVariant-${this.variant} btnColor-${this.color}`];
 
     return classNameArray.join(' ');
   }
