@@ -1,10 +1,12 @@
 <ng-container *ngIf="userIsLoggedIn; else authenticationContainer">
-  <div id="sidebar">i am sidebar!</div>
+  <div class="sidebar">SIDEBAR</div>
 
-  <main id="main-wrapper">
-    <header>Header</header>
+  <main class="main-wrapper">
+    <header>HEADER</header>
 
-    <router-outlet />
+    <div class="main-scrollable-container">
+      <router-outlet />
+    </div>
   </main>
 </ng-container>
 

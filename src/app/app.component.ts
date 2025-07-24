@@ -9,7 +9,6 @@ import { allRoutes } from '@script/globalData';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  standalone: false,
   styleUrls: ['./app.component.scss'],
   host: {
     '[id]': 'pageID',
