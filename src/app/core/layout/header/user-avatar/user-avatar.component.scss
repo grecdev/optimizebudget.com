@@ -1,0 +1,22 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+.user-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacing, 'sm');
+
+  & .avatar-profile-image {
+    $image-size: 40px;
+
+    width: $image-size;
+    height: $image-size;
+    border-radius: map.get($border-radius, 'rounded');
+  }
+
+  & .user-info-container {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+}
