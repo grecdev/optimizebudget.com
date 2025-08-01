@@ -1,4 +1,4 @@
-import { Injectable, SecurityContext } from '@angular/core';
+import { Injectable, OnDestroy, SecurityContext } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -9,7 +9,7 @@ import { SvgIconConfig, type AddSvgIconConfigOptions } from './icon.model';
 @Injectable({
   providedIn: 'root',
 })
-export class IconRegistryService {
+export class IconRegistryService implements OnDestroy {
   private _httpClient: HttpClient;
   private _svgIconConfigs = new Map<string, SvgIconConfig>();
   private _sanitizer: DomSanitizer;
@@ -66,7 +66,7 @@ export class IconRegistryService {
         div.innerHTML = config.svgText;
       }
 
-      const svg = document.querySelector('svg');
+      const svg = div.querySelector('svg');
 
       if (!svg) {
         throw Error('<svg> tag not found!');
@@ -125,5 +125,9 @@ export class IconRegistryService {
     } else {
       return this._fetchIcon(config);
     }
+  }
+
+  ngOnDestroy() {
+    this._svgIconConfigs.clear();
   }
 }
