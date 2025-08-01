@@ -1,24 +1,21 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 
 import { take } from 'rxjs';
 
 import { IconRegistryService } from './icon-registry.service';
 
-/**
- * https://hackernoon.com/efficient-svg-icon-management-in-angular-a-comprehensive-guide-using-angular-components
- * https://catalincodes.com/posts/one-way-of-building-an-svg-library
- * https://github.com/czeckd/angular-svg-icon/tree/master/projects/angular-svg-icon/src/lib
- */
 @Component({
   selector: 'app-icon',
-  templateUrl: './icon.component.html',
+  template: '<ng-content></ng-content>',
   styleUrls: ['./icon.component.scss'],
 })
 export class IconComponent {
   private _iconRegistryService: IconRegistryService;
+  private _elementRef: ElementRef<HTMLElement>;
 
-  constructor(iconRegistryService: IconRegistryService) {
+  constructor(iconRegistryService: IconRegistryService, elementRef: ElementRef) {
     this._iconRegistryService = iconRegistryService;
+    this._elementRef = elementRef;
   }
 
   @Input({ required: true }) get svgIcon(): string {
@@ -38,7 +35,14 @@ export class IconComponent {
   private _svgIcon: string = '';
 
   private _renderSvg(svg: SVGElement) {
-    console.log(svg);
+    const elementRef = this._elementRef && this._elementRef.nativeElement;
+
+    if (!elementRef) {
+      console.error('Element ref not found!');
+      return;
+    }
+
+    elementRef.appendChild(svg);
   }
 
   private _fetchIcon(iconName: string) {
@@ -53,7 +57,5 @@ export class IconComponent {
           console.error(error);
         },
       });
-
-    console.log('Fetch icon 😁', iconName);
   }
 }
