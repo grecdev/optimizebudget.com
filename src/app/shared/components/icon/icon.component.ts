@@ -20,6 +20,7 @@ import { IconRegistryService } from './icon-registry.service';
   encapsulation: ViewEncapsulation.None,
   host: {
     'role': 'img',
+    class: 'app-icon',
   },
 })
 export class IconComponent implements OnDestroy {

@@ -6,5 +6,8 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
   styleUrls: ['./icon-button.component.scss'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'app-icon-button',
+  },
 })
 export class IconButtonComponent {}
