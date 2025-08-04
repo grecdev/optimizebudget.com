@@ -1,13 +1,14 @@
 type RoutesName = 'login' | 'register' | 'forgotPassword';
 
 // Make sure these values match $theme-variant and vice versa
-type ThemeVariant = 'basic' | 'contained' | 'outlined';
+type ThemeVariant = null | 'basic' | 'contained' | 'outlined';
 
 // Make sure these values match $spacing and vice versa
 type ThemeSpacing = 'sm' | 'default' | 'md' | 'lg';
 
 // Make sure these values match $color-palette and vice versa
 type ThemeColor =
+  | null
   | 'primary-default'
   | 'primary-variant-2'
   | 'primary-variant-3'

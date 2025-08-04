@@ -34,17 +34,14 @@ import { ButtonInputs, IconPosition } from './button.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'btn',
-    '[class]': 'classNameHost',
+    '[class.app-button-variant-basic]': 'variant === "basic"',
+    '[class.app-button-variant-outlined]': 'variant === "outlined"',
+    '[class.app-button-variant-contained]': 'variant === "contained"',
+    '[class.app-button-color]': 'color === "primary-default"',
   },
 })
 export class ButtonComponent implements ButtonInputs {
-  @Input({ required: true }) variant!: ThemeVariant;
-  @Input({ required: true }) color!: ThemeColor;
+  @Input() variant: ThemeVariant = null;
+  @Input() color: ThemeColor = null;
   @Input() icon: IconPosition | undefined = undefined;
-
-  get classNameHost() {
-    const classNameArray = [`btnVariant-${this.variant} btnColor-${this.color}`];
-
-    return classNameArray.join(' ');
-  }
 }
