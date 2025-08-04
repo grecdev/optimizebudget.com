@@ -1,8 +1,9 @@
-import { Injectable, OnDestroy, SecurityContext } from '@angular/core';
+import { Injectable, OnDestroy, Renderer2, SecurityContext } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { map, Observable, of, tap, throwError } from 'rxjs';
+import { map, Observable, of, tap, throwError, share } from 'rxjs';
 
 import { SvgIconConfig, type AddSvgIconConfigOptions } from './icon.model';
 
@@ -13,6 +14,8 @@ export class IconRegistryService implements OnDestroy {
   private _httpClient: HttpClient;
   private _svgIconConfigs = new Map<string, SvgIconConfig>();
   private _sanitizer: DomSanitizer;
+
+  public renderer: Renderer2 | null = null;
 
   constructor(httpClient: HttpClient, sanitizer: DomSanitizer) {
     this._httpClient = httpClient;
@@ -59,14 +62,18 @@ export class IconRegistryService implements OnDestroy {
    * @returns {SVGElement}
    */
   private _transformTextToSVGElement(config: SvgIconConfig): SVGElement {
+    if (!this.renderer) {
+      throw Error('Renderer2 does not exist!');
+    }
+
     if (!config.svgElement) {
-      const div = document.createElement('div');
+      const div = this.renderer.createElement('div');
 
       if (typeof config.svgText === 'string') {
-        div.innerHTML = config.svgText;
+        this.renderer.setProperty(div, 'innerHTML', config.svgText);
       }
 
-      const svg = div.querySelector('svg');
+      const svg = div.querySelector('svg') as SVGElement;
 
       if (!svg) {
         throw Error('<svg> tag not found!');
@@ -104,8 +111,9 @@ export class IconRegistryService implements OnDestroy {
         map(() => {
           const finalSvgElement = this._transformTextToSVGElement(config);
 
-          return finalSvgElement;
-        })
+          return this._cloneNode(finalSvgElement);
+        }),
+        share()
       );
   }
 
@@ -121,10 +129,14 @@ export class IconRegistryService implements OnDestroy {
     if (config.svgText) {
       const finalSvgElement = this._transformTextToSVGElement(config);
 
-      return of(finalSvgElement);
+      return of(this._cloneNode(finalSvgElement));
     } else {
       return this._fetchIcon(config);
     }
+  }
+
+  private _cloneNode(node: SVGElement): SVGElement {
+    return node.cloneNode(true) as SVGElement;
   }
 
   ngOnDestroy() {

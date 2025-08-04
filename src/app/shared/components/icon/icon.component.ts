@@ -1,6 +1,14 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  type OnDestroy,
+  Renderer2,
+  ViewEncapsulation,
+} from '@angular/core';
 
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 
 import { IconRegistryService } from './icon-registry.service';
 
@@ -8,14 +16,31 @@ import { IconRegistryService } from './icon-registry.service';
   selector: 'app-icon',
   template: '<ng-content></ng-content>',
   styleUrls: ['./icon.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    'role': 'img',
+  },
 })
-export class IconComponent {
+export class IconComponent implements OnDestroy {
+  private readonly _elementRef: ElementRef<HTMLElement> | null = null;
   private _iconRegistryService: IconRegistryService;
-  private _elementRef: ElementRef<HTMLElement>;
+  private _renderer: Renderer2;
 
-  constructor(iconRegistryService: IconRegistryService, elementRef: ElementRef) {
+  private _subscriptions: Record<'iconRegistryService', Subscription> = {
+    iconRegistryService: Subscription.EMPTY,
+  };
+
+  constructor(
+    iconRegistryService: IconRegistryService,
+    elementRef: ElementRef,
+    renderer: Renderer2
+  ) {
     this._iconRegistryService = iconRegistryService;
     this._elementRef = elementRef;
+    this._renderer = renderer;
+
+    iconRegistryService.renderer = renderer;
   }
 
   @Input({ required: true }) get svgIcon(): string {
@@ -42,11 +67,13 @@ export class IconComponent {
       return;
     }
 
-    elementRef.appendChild(svg);
+    this._renderer.appendChild(elementRef, svg);
   }
 
   private _fetchIcon(iconName: string) {
-    this._iconRegistryService
+    this._subscriptions.iconRegistryService.unsubscribe();
+
+    this._subscriptions.iconRegistryService = this._iconRegistryService
       .getSvg(iconName)
       .pipe(take(1))
       .subscribe({
@@ -57,5 +84,9 @@ export class IconComponent {
           console.error(error);
         },
       });
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.iconRegistryService.unsubscribe();
   }
 }
