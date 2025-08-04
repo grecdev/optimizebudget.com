@@ -59,6 +59,13 @@ export class IconComponent implements OnDestroy {
 
   private _svgIcon: string = '';
 
+  /**
+   * @summary - Render the SVG insie our host element
+   * @param {SVGElement} svg - The SVGElement fetched from our assets
+   *
+   * @private
+   * @returns {void}
+   */
   private _renderSvg(svg: SVGElement) {
     const elementRef = this._elementRef && this._elementRef.nativeElement;
 
@@ -70,6 +77,14 @@ export class IconComponent implements OnDestroy {
     this._renderer.appendChild(elementRef, svg);
   }
 
+  /**
+   * @summary - Fetch the icon and then transform it in a SVGElement
+   *
+   * @param {string} iconName - The icon's name
+   *
+   * @private
+   * @returns {void}
+   */
   private _fetchIcon(iconName: string) {
     this._subscriptions.iconRegistryService.unsubscribe();
 
