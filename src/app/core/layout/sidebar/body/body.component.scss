@@ -3,4 +3,8 @@
 
 :host {
   padding: map.get($spacing, 'sm') map.get($spacing, 'default') 0;
+
+  border: 10px solid red;
+
+  overflow: auto;
 }

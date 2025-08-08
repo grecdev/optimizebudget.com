@@ -3,4 +3,6 @@
 
 :host {
   padding: 0 map.get($spacing, 'default') map.get($spacing, 'sm');
+
+  border: 10px solid purple;
 }

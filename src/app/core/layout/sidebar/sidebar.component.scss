@@ -6,6 +6,7 @@
   grid-template-rows: auto 1fr auto;
 
   border-right: $layout-border;
+  overflow: hidden;
 }
 
 // Will me moved into its own directory
