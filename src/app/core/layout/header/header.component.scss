@@ -1,5 +1,15 @@
+@use 'variables' as *;
+@use 'sass:map';
+
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: map.get($spacing, 'sm') 0;
+}
+
+.right-side {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacing, 'default');
 }
