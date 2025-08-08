@@ -1,0 +1,6 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+:host {
+  padding: 0 map.get($spacing, 'default') map.get($spacing, 'sm');
+}

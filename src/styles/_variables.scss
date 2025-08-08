@@ -1,3 +1,5 @@
+@use 'sass:map';
+
 // Colors
 $color-palette: (
   'primary': (
@@ -9,7 +11,7 @@ $color-palette: (
   'gray': (
     'default': #f5f5f5,
     'variant-2': #737373,
-    'variant-3': #e5e5e5,
+    'variant-3': #f4f4f4,
     'variant-4': #a1a1a1,
     'variant-5': #c9c9c9,
   ),
@@ -35,6 +37,8 @@ $container-width: (
   'md': 1300px,
   'lg': 1400px,
 );
+
+$layout-border: 2px solid map.get($color-palette, 'gray', 'variant-3');
 
 // Spacing
 $spacing: (

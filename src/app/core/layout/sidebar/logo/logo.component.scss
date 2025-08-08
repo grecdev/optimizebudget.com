@@ -1,16 +1,15 @@
 @use 'variables' as *;
 @use 'sass:map';
 
-header {
+:host {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: map.get($spacing, 'sm');
+
   padding: map.get($spacing, 'sm') map.get($spacing, 'default');
   border-bottom: $layout-border;
 }
 
-.right-side {
-  display: flex;
-  align-items: center;
-  gap: map.get($spacing, 'default');
+#logo {
+  width: 40px;
 }

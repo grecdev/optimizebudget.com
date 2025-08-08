@@ -1,13 +1,16 @@
 @use 'variables' as *;
 @use 'sass:map';
 
-:host.sidebar {
-  border: 10px solid red;
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  border-right: $layout-border;
 }
 
 // Will me moved into its own directory
 @media screen and (max-width: map.get($breakpoints, 'xl')) {
-  .sidebar {
+  :host {
     display: none;
   }
 }

@@ -17,14 +17,12 @@
 
 .main-wrapper {
   overflow: hidden;
-  border: 10px solid blue;
 
   display: grid;
   grid-template-rows: auto 1fr;
 
   & .main-scrollable-container {
     overflow: auto;
-    border: 10px solid pink;
   }
 }
 
