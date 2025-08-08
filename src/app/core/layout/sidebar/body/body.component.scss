@@ -2,9 +2,10 @@
 @use 'sass:map';
 
 :host {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacing, 'default');
+
   padding: map.get($spacing, 'sm') map.get($spacing, 'default') 0;
-
-  border: 10px solid red;
-
   overflow: auto;
 }

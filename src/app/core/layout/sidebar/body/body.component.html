@@ -1,37 +1,9 @@
-<p>first child</p>
-
-<br />
-
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-<p>body works!</p>
-
-<br />
-
-<p>last child</p>
+<a
+  *ngFor="let item of links; trackBy: trackByLinks"
+  appButton
+  routerLink="{{item.path}}"
+  [attr.aria-label]="item.ariaLabel"
+  class="text-align-left"
+>
+  {{ item.textContent }}
+</a>

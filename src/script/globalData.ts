@@ -1,9 +1,9 @@
-import { HeaderLink } from '@script/interfaces';
+import { Route } from '@script/interfaces';
 import { ApiEndpoints, RoutesName } from '@script/types';
 
 import { environment } from '@environments/environment';
 
-const allRoutes: Record<RoutesName, HeaderLink> = {
+const allRoutes: Record<RoutesName, Route> = {
   login: {
     id: 0,
     path: 'login',

@@ -1,4 +1,4 @@
-interface HeaderLink {
+interface Route {
   id: number;
   path: string;
   target?: '_self' | '_blank';
@@ -7,4 +7,4 @@ interface HeaderLink {
   ariaLabel: string;
 }
 
-export type { HeaderLink };
+export type { Route };
