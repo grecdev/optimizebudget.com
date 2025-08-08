@@ -8,7 +8,6 @@ type ThemeSpacing = 'sm' | 'default' | 'md' | 'lg';
 
 // Make sure these values match $color-palette and vice versa
 type ThemeColor =
-  | null
   | 'primary-default'
   | 'primary-variant-2'
   | 'primary-variant-3'
