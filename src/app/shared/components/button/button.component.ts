@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
-import { ThemeColor, ThemeVariant } from '@script/types';
-import { ButtonInputs, IconPosition } from './button.model';
+import { ThemeVariant } from '@script/types';
+import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
 
 /**
  * @summary - Button util component
  *
  * @param {ThemeVariant} variant - Button style basically
- * @param {ThemeColor} color - Button color
+ * @param {ButtonColor} color - Button color
  * @param {IconPosition} [icon] - If you want to add an icon on the left side of the button (I usually use <FontAwesome /> components)
  *
  * @example Implementation
@@ -17,7 +17,7 @@ import { ButtonInputs, IconPosition } from './button.model';
  *    type="button"
  *    appButton
  *    variant="basic"
- *    color="white-default"
+ *    color="primary"
  *    icon="left">
  *      Hello world!
  * </button>
@@ -33,15 +33,37 @@ import { ButtonInputs, IconPosition } from './button.model';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'btn',
+    class: 'app-button',
+    '[class]': 'className',
+
     '[class.app-button-variant-basic]': 'variant === "basic"',
     '[class.app-button-variant-outlined]': 'variant === "outlined"',
     '[class.app-button-variant-contained]': 'variant === "contained"',
-    '[class.app-button-color]': 'color === "primary-default"',
   },
 })
 export class ButtonComponent implements ButtonInputs {
   @Input() variant: ThemeVariant = null;
-  @Input() color: ThemeColor = null;
   @Input() icon: IconPosition | undefined = undefined;
+
+  get color(): ButtonColor {
+    return this._color;
+  }
+
+  @Input() set color(value: ButtonColor) {
+    this.className = `app-button-color-${value}`;
+
+    this._color = value;
+  }
+
+  private _color: ButtonColor = 'primary';
+
+  get className(): string {
+    return this._className.join(' ');
+  }
+
+  set className(value: string) {
+    this._className.push(value);
+  }
+
+  private _className: string[] = [];
 }
