@@ -6,6 +6,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: map.get($spacing, 'sm') 0;
+  border: 10px solid green;
 }
 
 .right-side {

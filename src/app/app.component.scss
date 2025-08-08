@@ -15,14 +15,6 @@
   }
 }
 
-header {
-  border: 10px solid green;
-}
-
-.sidebar {
-  border: 10px solid red;
-}
-
 .main-wrapper {
   overflow: hidden;
   border: 10px solid blue;
@@ -38,10 +30,6 @@ header {
 
 // Will me moved into its own directory
 @media screen and (max-width: map.get($breakpoints, 'xl')) {
-  .sidebar {
-    display: none;
-  }
-
   :host {
     &[data-logged-in='true'] {
       grid-template-columns: 1fr;
