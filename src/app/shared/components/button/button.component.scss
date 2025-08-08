@@ -23,15 +23,17 @@ $colorMap: (
   padding: map.get($spacing, sm);
   border-radius: map.get($border-radius, 'default');
   text-transform: capitalize;
-  transition: all 250ms ease-in-out;
+  transition: background 250ms ease-in-out;
   line-height: 1;
-  font-size: 14px;
   cursor: pointer;
   text-align: center;
   vertical-align: middle;
   text-decoration: none;
   color: inherit;
-  font-family: 'Roboto Medium', 'sans-serif';
+
+  &:hover {
+    background: map.get($color-palette, 'gray', 'default');
+  }
 }
 
 .app-button.app-button-variant-contained {

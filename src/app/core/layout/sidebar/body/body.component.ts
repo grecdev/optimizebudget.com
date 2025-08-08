@@ -12,7 +12,7 @@ export class BodyComponent {
     {
       id: 0,
       textContent: 'Page 1',
-      path: '/',
+      path: '/login',
       ariaLabel: 'Some page',
     },
     {
@@ -24,7 +24,7 @@ export class BodyComponent {
     {
       id: 2,
       textContent: 'Page 3',
-      path: '/',
+      path: '/register',
       ariaLabel: 'Some page',
     },
   ];

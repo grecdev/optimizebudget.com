@@ -4,8 +4,16 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: map.get($spacing, 'default');
+  gap: map.get($spacing, 'sm');
 
   padding: map.get($spacing, 'sm') map.get($spacing, 'default') 0;
   overflow: auto;
+}
+
+.link {
+  &.active {
+    background: map.get($color-palette, 'secondary', 'variant-2');
+    color: map.get($color-palette, 'secondary', 'default');
+    font-weight: 500;
+  }
 }

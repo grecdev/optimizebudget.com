@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { ButtonModule } from '@shared/components/button/button.module';
 
@@ -11,7 +11,7 @@ import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [SidebarComponent, LogoComponent, BodyComponent, FooterComponent],
-  imports: [CommonModule, RouterLink, ButtonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ButtonModule],
   exports: [SidebarComponent],
 })
 export class SidebarModule {}
