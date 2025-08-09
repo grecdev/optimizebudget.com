@@ -15,33 +15,15 @@
   }
 }
 
-header {
-  border: 10px solid green;
-}
-
-.sidebar {
-  border: 10px solid red;
-}
-
 .main-wrapper {
   overflow: hidden;
-  border: 10px solid blue;
 
   display: grid;
   grid-template-rows: auto 1fr;
-
-  & .main-scrollable-container {
-    overflow: auto;
-    border: 10px solid pink;
-  }
 }
 
 // Will me moved into its own directory
 @media screen and (max-width: map.get($breakpoints, 'xl')) {
-  .sidebar {
-    display: none;
-  }
-
   :host {
     &[data-logged-in='true'] {
       grid-template-columns: 1fr;

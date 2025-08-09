@@ -16,6 +16,6 @@
   background: transparent;
 
   &:hover {
-    background: map.get($color-palette, 'gray', 'variant-3');
+    background: map.get($color-palette, 'gray', 'default');
   }
 }

@@ -1,10 +1,10 @@
-interface HeaderLink {
+interface Route {
   id: number;
   path: string;
-  target?: '_self' | '_blank';
-  textContent?: string;
-  icon?: any;
   ariaLabel: string;
+  textContent?: string;
+  target?: '_self' | '_blank';
+  icon?: any;
 }
 
-export type { HeaderLink };
+export type { Route };

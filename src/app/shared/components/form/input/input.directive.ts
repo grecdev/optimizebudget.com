@@ -29,7 +29,7 @@ export class AppInput implements AppFormFieldControl {
     this._id = value;
   }
 
-  protected _id: string = '';
+  private _id: string = '';
 
   _focusChanged(isFocused: boolean): void {
     if (isFocused === this.focused) {

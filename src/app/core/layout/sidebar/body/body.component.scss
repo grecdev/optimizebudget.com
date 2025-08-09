@@ -1,0 +1,10 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+@use '../sidebar.component' as *;
+
+:host {
+  @include links-container;
+
+  padding: map.get($spacing, 'sm') map.get($spacing, 'default') 0;
+}

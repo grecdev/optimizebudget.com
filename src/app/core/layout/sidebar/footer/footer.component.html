@@ -1,0 +1,13 @@
+<a
+  *ngFor="let item of links; trackBy: trackByLinks"
+  appButton
+  class="link text-align-left"
+  routerLink="{{item.path}}"
+  routerLinkActive="active"
+  [routerLinkActiveOptions]="{exact: true}"
+  [attr.aria-label]="item.ariaLabel"
+>
+  {{ item.textContent }}
+</a>
+
+<button appButton type="button" class="text-align-left">Sign out</button>
