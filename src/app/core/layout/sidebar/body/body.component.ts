@@ -5,7 +5,7 @@ import { Route } from '@script/interfaces';
 @Component({
   selector: 'app-sidebar-body',
   templateUrl: './body.component.html',
-  styleUrls: ['./body.component.scss'],
+  styleUrls: ['../sidebar.component.scss', './body.component.scss'],
 })
 export class BodyComponent {
   links: Array<Route> = [

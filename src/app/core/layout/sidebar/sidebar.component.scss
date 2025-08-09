@@ -1,7 +1,13 @@
 @use 'variables' as *;
 @use 'sass:map';
 
-:host {
+@mixin links-container {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacing, 'sm');
+}
+
+:host.sidebar {
   display: grid;
   grid-template-rows: auto 1fr auto;
 
@@ -9,9 +15,16 @@
   overflow: hidden;
 }
 
-// Will me moved into its own directory
+.link {
+  &.active {
+    background: map.get($color-palette, 'secondary', 'variant-2');
+    color: map.get($color-palette, 'secondary', 'default');
+    font-weight: 500;
+  }
+}
+
 @media screen and (max-width: map.get($breakpoints, 'xl')) {
-  :host {
+  :host.sidebar {
     display: none;
   }
 }
