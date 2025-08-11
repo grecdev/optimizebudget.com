@@ -23,7 +23,7 @@ $colorMap: (
   padding: map.get($spacing, sm);
   border-radius: map.get($border-radius, 'default');
   text-transform: capitalize;
-  transition: background 250ms ease-in-out;
+  transition: background 100ms ease-in-out;
   line-height: 1;
   cursor: pointer;
   text-align: center;

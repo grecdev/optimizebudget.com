@@ -10,10 +10,9 @@
 
   // Always have a correct padding so our icon is centered
   padding: calc(calc($parent-size - $icon-size) / 2);
-
   border-radius: map.get($border-radius, 'rounded');
-
   background: transparent;
+  transition: background 100ms ease-in-out;
 
   &:hover {
     background: map.get($color-palette, 'gray', 'default');

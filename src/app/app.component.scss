@@ -20,6 +20,10 @@
 
   display: grid;
   grid-template-rows: auto 1fr;
+
+  & .router-container {
+    padding: map.get($spacing, 'default');
+  }
 }
 
 // Will me moved into its own directory
