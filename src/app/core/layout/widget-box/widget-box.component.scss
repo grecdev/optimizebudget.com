@@ -1,10 +1,14 @@
 @use 'variables' as *;
 @use 'sass:map';
 
-:host {
+.widget-box {
   border: $layout-border;
   display: block;
   padding: map.get($spacing, 'default');
   border-radius: map.get($border-radius, 'default');
   box-shadow: 0px 0px 5px 0px #ededed;
+
+  & [app-widget-box-title] {
+    margin-bottom: map.get($spacing, 'sm');
+  }
 }

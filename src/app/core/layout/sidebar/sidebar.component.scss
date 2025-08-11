@@ -7,7 +7,7 @@
   gap: map.get($spacing, 'sm');
 }
 
-:host.sidebar {
+.sidebar {
   display: grid;
   grid-template-rows: auto 1fr auto;
 
@@ -24,7 +24,7 @@
 }
 
 @media screen and (max-width: map.get($breakpoints, 'xl')) {
-  :host.sidebar {
+  .sidebar {
     display: none;
   }
 }
