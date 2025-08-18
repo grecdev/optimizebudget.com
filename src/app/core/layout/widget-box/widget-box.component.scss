@@ -10,5 +10,6 @@
 
   & [app-widget-box-title] {
     margin-bottom: map.get($spacing, 'sm');
+    text-transform: capitalize;
   }
 }

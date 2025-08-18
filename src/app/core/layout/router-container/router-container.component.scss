@@ -8,8 +8,10 @@
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    //grid-template-rows: repeat(auto-fit, minmax(max-content, 25%));
+    grid-template-rows: repeat(auto-fill, minmax(10%, max-content));
 
     gap: map.get($spacing, 'lg');
+
+    height: 100%;
   }
 }
