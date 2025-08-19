@@ -2,14 +2,23 @@
 @use 'sass:map';
 
 .widget-box {
+  display: grid;
+  grid-template-rows: auto 1fr;
+
   border: $layout-border;
-  display: block;
-  padding: map.get($spacing, 'default');
   border-radius: map.get($border-radius, 'default');
+
+  padding: map.get($spacing, 'default');
   box-shadow: 0px 0px 5px 0px #ededed;
+  overflow: hidden;
 
   & [app-widget-box-title] {
     margin-bottom: map.get($spacing, 'sm');
     text-transform: capitalize;
+  }
+
+  & .widget-box-body {
+    overflow: auto;
+    height: 100%;
   }
 }

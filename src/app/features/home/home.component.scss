@@ -1,0 +1,17 @@
+.box-top-expenses {
+  grid-row: span 4;
+}
+
+.box-money-statistics {
+  grid-row: span 2;
+}
+
+.box-total-balance {
+  grid-column: 2;
+  grid-row: span 2;
+}
+
+.box-payments-history {
+  grid-column: 3;
+  grid-row: 1 / span 4;
+}
