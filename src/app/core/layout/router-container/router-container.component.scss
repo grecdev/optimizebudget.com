@@ -1,0 +1,16 @@
+@use 'variables' as *;
+@use 'sass:map';
+
+.router-container {
+  & router-outlet + * {
+    padding: map.get($spacing, 'default');
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(12, minmax(10%, 50%));
+
+    gap: map.get($spacing, 'lg');
+
+    height: 100%;
+  }
+}
