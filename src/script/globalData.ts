@@ -4,18 +4,24 @@ import { ApiEndpoints, RoutesName } from '@script/types';
 import { environment } from '@environments/environment';
 
 const allRoutes: Record<RoutesName, Route> = {
-  login: {
+  overview: {
     id: 0,
+    path: '',
+    textContent: 'Overview',
+    ariaLabel: 'Overview page path',
+  },
+  login: {
+    id: 1,
     path: 'login',
     ariaLabel: 'Login page path',
   },
   register: {
-    id: 1,
+    id: 2,
     path: 'register',
     ariaLabel: 'Register page path',
   },
   forgotPassword: {
-    id: 1,
+    id: 3,
     path: 'forgot-password',
     ariaLabel: 'Forgot password page path',
   },
