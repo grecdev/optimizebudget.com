@@ -5,9 +5,9 @@ printWidth: 100
 quoteProps: 'preserve'
 bracketSpacing: true
 arrowParens: 'avoid'
-embeddedLanguageFormatting: 'off'
 htmlWhitespaceSensitivity: 'ignore'
 overrides:
-  - files: "*.html"
+  - files:
+      - "*.html"
     options:
       parser: "angular"

@@ -1,4 +1,4 @@
-type RoutesName = 'login' | 'register' | 'forgotPassword';
+type RoutesName = 'overview' | 'login' | 'register' | 'forgotPassword';
 
 // Make sure these values match $theme-variant and vice versa
 type ThemeVariant = null | 'basic' | 'contained' | 'outlined';
