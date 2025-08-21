@@ -1,8 +1,7 @@
-.box-top-expenses {
+.row-1 {
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.box-money-statistics {
-}
-
-.box-payments-history {
+.row-2 {
+  grid-template-columns: repeat(2, 1fr);
 }
