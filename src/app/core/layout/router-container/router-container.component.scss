@@ -5,22 +5,10 @@
   & router-outlet + * {
     padding: map.get($spacing, 'default');
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 50%);
-
-    gap: map.get($spacing, 'md');
-
-    height: 100%;
-
-    & .masonry-box {
+    &,
+    & > * {
       display: grid;
-      align-content: start;
-      gap: inherit;
-
-      & > * {
-        max-height: 100%;
-      }
+      gap: map.get($spacing, 'md');
     }
   }
 }

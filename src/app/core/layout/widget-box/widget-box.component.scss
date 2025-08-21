@@ -16,9 +16,4 @@
     margin-bottom: map.get($spacing, 'sm');
     text-transform: capitalize;
   }
-
-  & .widget-box-body {
-    overflow: auto;
-    height: 100%;
-  }
 }
