@@ -3,12 +3,19 @@ import { CommonModule } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 import { TotalBalanceModule } from '@features/home/total-balance/total-balance.module';
+import { MonthlyBudgetModule } from '@features/home/monthly-budget/monthly-budget.module';
 
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 
 @NgModule({
   declarations: [HomeComponent],
-  imports: [CommonModule, HomeRoutingModule, WidgetBoxModule, TotalBalanceModule],
+  imports: [
+    CommonModule,
+    HomeRoutingModule,
+    WidgetBoxModule,
+    TotalBalanceModule,
+    MonthlyBudgetModule,
+  ],
 })
 export class HomeModule {}
