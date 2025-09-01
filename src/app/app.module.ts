@@ -11,6 +11,9 @@ import { HomeModule } from '@features/home/home.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+// Remove
+import { TableModule } from '@shared/components/table/table.module';
+
 @NgModule({
   declarations: [AppComponent, RouterContainerComponent],
   imports: [
@@ -21,6 +24,8 @@ import { AppComponent } from './app.component';
     HomeModule,
     HeaderModule,
     SidebarModule,
+    // Remove
+    TableModule,
   ],
   bootstrap: [AppComponent],
 })

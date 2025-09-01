@@ -1,15 +1,19 @@
-<ng-container *ngIf="userIsLoggedIn; else authenticationContainer">
-  <app-sidebar />
+<!--<ng-container *ngIf="userIsLoggedIn; else authenticationContainer">-->
+<!--  <app-sidebar />-->
 
-  <main class="main-wrapper">
-    <app-header />
+<!--  <main class="main-wrapper">-->
+<!--    <app-header />-->
 
-    <app-router-container>
-      <router-outlet />
-    </app-router-container>
-  </main>
-</ng-container>
+<!--    <app-router-container>-->
+<!--      <router-outlet />-->
+<!--    </app-router-container>-->
+<!--  </main>-->
+<!--</ng-container>-->
 
-<ng-template #authenticationContainer>
-  <router-outlet name="authentication"></router-outlet>
-</ng-template>
+<!--<ng-template #authenticationContainer>-->
+<!--  <router-outlet name="authentication"></router-outlet>-->
+<!--</ng-template>-->
+
+<table app-table>
+  <ng-container appColumnDef="score"></ng-container>
+</table>
