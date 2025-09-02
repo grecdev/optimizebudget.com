@@ -1,4 +1,18 @@
-import { Directive, Input } from '@angular/core';
+import { Directive, Inject, Input, TemplateRef } from '@angular/core';
+
+import type { CellDef } from './table.model';
+
+@Directive({
+  selector: '[appHeaderCellDef]',
+})
+export class HeaderCellDef implements CellDef {
+  template: CellDef['template'];
+
+  constructor(...args: unknown[]);
+  constructor(@Inject(TemplateRef) template: CellDef['template']) {
+    this.template = template;
+  }
+}
 
 @Directive({
   selector: '[appColumnDef]',
@@ -32,6 +46,8 @@ export class ColumnDef {
   }
 
   private _name: string = '';
+
+  // @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | undefined;
 
   /**
    * @summary - Create the column class definition class name

@@ -15,5 +15,7 @@
 <!--</ng-template>-->
 
 <table app-table>
-  <ng-container appColumnDef="score"></ng-container>
+  <ng-container appColumnDef="score">
+    <th app-header-cell *appHeaderCellDef>Score</th>
+  </ng-container>
 </table>

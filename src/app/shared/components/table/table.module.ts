@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TableComponent } from './table.component';
-import { ColumnDef } from './cell.component';
+import { ColumnDef, HeaderCellDef } from './cell.component';
 
 @NgModule({
-  declarations: [TableComponent, ColumnDef],
+  declarations: [TableComponent, ColumnDef, HeaderCellDef],
   imports: [CommonModule],
-  exports: [TableComponent, ColumnDef],
+  exports: [TableComponent, ColumnDef, HeaderCellDef],
 })
 export class TableModule {}
