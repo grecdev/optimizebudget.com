@@ -1,13 +1,13 @@
 import { TemplateRef } from '@angular/core';
 
-type TemplateRefElement =
+type TableRefElement =
   | HTMLTableElement
   | HTMLTableColElement
   | HTMLTableRowElement
   | HTMLTableCellElement;
 
 interface CellDef {
-  template: TemplateRef<TemplateRefElement>;
+  template: TemplateRef<TableRefElement>;
 }
 
-export type { CellDef };
+export type { CellDef, TableRefElement };

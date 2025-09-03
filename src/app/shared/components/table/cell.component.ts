@@ -1,7 +1,37 @@
-import { Directive, Inject, Input, TemplateRef } from '@angular/core';
+import { Directive, ElementRef, Inject, Input, TemplateRef } from '@angular/core';
 
-import type { CellDef } from './table.model';
+import type { CellDef, TableRefElement } from './table.model';
 
+/**
+ * @summary - Base class for the cell, adds a classname that identifies the column it renders in.
+ */
+export class BaseCell {
+  constructor(columnDef: ColumnDef, elementRef: ElementRef<TableRefElement>) {
+    elementRef.nativeElement.classList.add(...columnDef.columnCssClassName);
+  }
+}
+
+/**
+ * @summary - Header cell template container.
+ */
+@Directive({
+  selector: 'th[app-header-cell]',
+  host: {
+    class: 'app-header-cell',
+    role: 'columnheader',
+  },
+})
+export class HeaderCell extends BaseCell {
+  constructor(...args: unknown[]);
+
+  constructor(columnDef: ColumnDef, elementRef: ElementRef) {
+    super(columnDef, elementRef);
+  }
+}
+
+/**
+ * @summary - Captures the template of a column's header cell as well as cell-specific properties.
+ */
 @Directive({
   selector: '[appHeaderCellDef]',
 })
@@ -14,6 +44,9 @@ export class HeaderCellDef implements CellDef {
   }
 }
 
+/**
+ * @summary - Defines a set of cells available for a table column.
+ */
 @Directive({
   selector: '[appColumnDef]',
 })
@@ -23,7 +56,7 @@ export class ColumnDef {
    *
    * @private
    */
-  private _columnCssClassName: string[] = [];
+  columnCssClassName: string[] = [];
 
   /**
    * Unique column definition name
@@ -58,6 +91,6 @@ export class ColumnDef {
    * @returns {void}
    */
   private _updateColumnCssClassName(value: string) {
-    this._columnCssClassName.push(value);
+    this.columnCssClassName.push(value);
   }
 }
