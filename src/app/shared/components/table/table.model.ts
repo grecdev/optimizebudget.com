@@ -6,8 +6,8 @@ type TableRefElement =
   | HTMLTableRowElement
   | HTMLTableCellElement;
 
-interface CellDef {
+interface ICellDef {
   template: TemplateRef<TableRefElement>;
 }
 
-export type { CellDef, TableRefElement };
+export type { ICellDef, TableRefElement };

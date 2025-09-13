@@ -1,6 +1,6 @@
 import { Directive, ElementRef, Inject, Input, TemplateRef } from '@angular/core';
 
-import type { CellDef, TableRefElement } from './table.model';
+import type { ICellDef, TableRefElement } from './table.model';
 
 /**
  * @summary - Base class for the cell, adds a classname that identifies the column it renders in.
@@ -37,6 +37,21 @@ export class HeaderCell extends BaseCell {
 })
 export class HeaderCellDef implements CellDef {
   template: CellDef['template'];
+
+  constructor(...args: unknown[]);
+  constructor(@Inject(TemplateRef) template: CellDef['template']) {
+    this.template = template;
+  }
+}
+
+/**
+ * @summary - Captures the template of a column's header cell as well as cell-specific properties.
+ */
+@Directive({
+  selector: '[appCellDef]',
+})
+export class CellDef implements ICellDef {
+  template: ICellDef['template'];
 
   constructor(...args: unknown[]);
   constructor(@Inject(TemplateRef) template: CellDef['template']) {
