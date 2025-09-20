@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Inject, Input, TemplateRef } from '@angular/core';
+import { ContentChild, Directive, ElementRef, Inject, Input, TemplateRef } from '@angular/core';
 
 import type { ICellDef, TableRefElement } from './table.model';
 
@@ -66,6 +66,8 @@ export class CellDef implements ICellDef {
   selector: '[appColumnDef]',
 })
 export class ColumnDef {
+  // _table? = inject(CDK_TABLE, {optional: true});
+  
   /**
    * Column definition class name
    *
@@ -95,7 +97,8 @@ export class ColumnDef {
 
   private _name: string = '';
 
-  // @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | undefined;
+  @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | undefined;
+  @ContentChild(CellDef) cellDef: CellDef | undefined;
 
   /**
    * @summary - Create the column class definition class name
