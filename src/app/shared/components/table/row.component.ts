@@ -11,12 +11,41 @@ import {
   OnChanges,
   SimpleChanges,
   IterableChanges,
+  ElementRef,
+  Inject,
 } from '@angular/core';
 
+import { TableRefElement, RowOutlet } from './table.model';
+import { TABLE } from './tokens';
+
+import { TableComponent } from './table.component';
 import { CellDef, ColumnDef } from './cell.component';
-import { TableRefElement } from '@shared/components/table/table.model';
 
 const ROW_TEMPLATE = '<ng-container cellOutlet></ng-container>';
+
+@Directive({
+  selector: '[headerRowOutlet]',
+})
+export class HeaderRowOutlet implements RowOutlet {
+  viewContainer: ViewContainerRef;
+  elementRef: ElementRef;
+
+  constructor(...args: unknown[]);
+
+  constructor(
+    viewContainer: ViewContainerRef,
+    elementRef: ElementRef,
+    @Inject(TABLE) table: TableComponent
+  ) {
+    this.viewContainer = viewContainer;
+    this.elementRef = elementRef;
+
+    table._headerRowOutlet = this;
+    table._outletAssigned();
+
+    console.log(table, 'from HeaderRowOutlet');
+  }
+}
 
 /**
  * Outlet for rendering cells inside a row.
@@ -133,8 +162,6 @@ export class HeaderRowDef extends BaseRowDef implements OnChanges {
 
   override ngOnChanges(changes: SimpleChanges) {
     super.ngOnChanges(changes);
-
-    console.log(changes);
   }
 }
 

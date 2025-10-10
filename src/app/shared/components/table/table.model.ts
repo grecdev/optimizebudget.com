@@ -1,4 +1,4 @@
-import { TemplateRef } from '@angular/core';
+import { TemplateRef, ViewContainerRef } from '@angular/core';
 
 type TableRefElement =
   | HTMLTableElement
@@ -10,4 +10,8 @@ interface ICellDef {
   template: TemplateRef<TableRefElement>;
 }
 
-export type { ICellDef, TableRefElement };
+interface RowOutlet {
+  viewContainer: ViewContainerRef;
+}
+
+export type { ICellDef, TableRefElement, RowOutlet };
