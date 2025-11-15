@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 
-import { TABLE } from './tokens';
 import { HeaderRowOutlet } from '@shared/components/table/row.component';
+
+import { TABLE, VIEW_REPEATER_STRATEGY } from './tokens';
+
+import { _ViewRepeaterStrategy } from './view-repeater-strategy';
 
 @Component({
   selector: 'table[app-table]',
@@ -11,6 +14,10 @@ import { HeaderRowOutlet } from '@shared/components/table/row.component';
     {
       provide: TABLE,
       useExisting: TableComponent,
+    },
+    {
+      provide: VIEW_REPEATER_STRATEGY,
+      useClass: _ViewRepeaterStrategy,
     },
   ],
 })

@@ -9,7 +9,6 @@
  */
 
 import {
-  InjectionToken,
   type IterableChangeRecord,
   type IterableChanges,
   type TemplateRef,
@@ -115,12 +114,18 @@ interface _ViewRepeater<T, R, C extends _ViewRepeaterItemContext<T>> {
     viewContainerRef: ViewContainerRef,
     itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
     itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
-    itemViewChanged: _ViewRepeaterItemChange<R, C>
+    itemViewChanged?: _ViewRepeaterItemChanged<R, C>
   ): void;
 
   detach(): void;
 }
 
-export const VIEW_REPEATER_STRATEGY = new InjectionToken<
-  _ViewRepeater<unknown, unknown, _ViewRepeaterItemContext<unknown>>
->('_ViewRepeater');
+export type {
+  _ViewRepeater,
+  _ViewRepeaterItemContext,
+  _ViewRepeaterItemContextFactory,
+  _ViewRepeaterItemValueResolver,
+  _ViewRepeaterItemChanged,
+};
+
+export { _ViewRepeaterOperation };
