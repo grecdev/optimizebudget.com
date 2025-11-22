@@ -35,7 +35,7 @@ export class HeaderRowOutlet implements RowOutlet {
   constructor(
     viewContainer: ViewContainerRef,
     elementRef: ElementRef,
-    @Inject(TABLE) table: TableComponent
+    @Inject(TABLE) table: TableComponent<unknown>
   ) {
     this.viewContainer = viewContainer;
     this.elementRef = elementRef;
@@ -179,3 +179,45 @@ export class HeaderRowDef extends BaseRowDef implements OnChanges {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderRow {}
+
+/**
+ * @summary - Data row definition for our table.
+ *
+ * Captures the row's template and other row properties such as
+ * the columns to display and a `when` predicate that describes when this row should be used.
+ */
+@Directive({
+  selector: '[appRowDef]',
+  inputs: [
+    {
+      name: 'columns',
+      alias: 'rowDefColumns',
+    },
+    {
+      name: 'when',
+      alias: 'rowDefWhen',
+    },
+  ],
+})
+export class RowDef<T> extends BaseRowDef {
+  /**
+   * @summary - Function that should return true if  this row should be used
+   * for the provided index and row data.
+   *
+   * If left undefined, this row will be considered the default row template to use
+   * when no other `when` functions returns true for the data.
+   *
+   * For every row, there must be at least one `when` function that passes or returns undefined (default).
+   */
+  when: ((index: number, rowData: T) => boolean) | undefined;
+
+  constructor(...args: unknown[]);
+
+  constructor(
+    templateRef: TemplateRef<any>,
+    iterableDiffers: IterableDiffers,
+    @Inject(TABLE) table: any
+  ) {
+    super(templateRef, iterableDiffers);
+  }
+}

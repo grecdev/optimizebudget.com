@@ -4,8 +4,8 @@ import type { _ViewRepeater, _ViewRepeaterItemContext } from './view-repeater.mo
 
 const TABLE = new InjectionToken<any>('TABLE');
 
-export const VIEW_REPEATER_STRATEGY = new InjectionToken<
+const _VIEW_REPEATER_STRATEGY = new InjectionToken<
   _ViewRepeater<unknown, unknown, _ViewRepeaterItemContext<unknown>>
 >('_ViewRepeater');
 
-export { TABLE };
+export { TABLE, _VIEW_REPEATER_STRATEGY };

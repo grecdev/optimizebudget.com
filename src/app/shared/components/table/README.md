@@ -1,5 +1,7 @@
 # Tabel component CDK
 
+Learning source: [Angular's Material](https://material.angular.dev/components/table/overview)
+
 _**Not for future self:**_
 
 At first, I learned how the Angular's Material UI team implemented this component.

@@ -54,7 +54,7 @@ export class CellDef implements ICellDef {
   template: ICellDef['template'];
 
   constructor(...args: unknown[]);
-  constructor(@Inject(TemplateRef) template: CellDef['template']) {
+  constructor(@Inject(TemplateRef) template: ICellDef['template']) {
     this.template = template;
   }
 }
@@ -66,8 +66,8 @@ export class CellDef implements ICellDef {
   selector: '[appColumnDef]',
 })
 export class ColumnDef {
-  // _table? = inject(CDK_TABLE, {optional: true});
-  
+  // _table? = inject(CDK_TABLE, {optional: true}); // Not used, IDK why they injected it, maybe for different table??
+
   /**
    * Column definition class name
    *
