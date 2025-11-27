@@ -40,10 +40,8 @@ export class HeaderRowOutlet implements RowOutlet {
     this.viewContainer = viewContainer;
     this.elementRef = elementRef;
 
-    table._headerRowOutlet = this;
-    table._outletAssigned();
-
-    console.log(table, 'from HeaderRowOutlet');
+    table.headerRowOutlet = this;
+    table.outletAssigned();
   }
 }
 
