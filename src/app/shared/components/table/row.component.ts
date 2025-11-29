@@ -66,7 +66,7 @@ export class DataRowOutlet implements RowOutlet {
     this.viewContainer = viewContainerRef;
     this.elementRef = elementRef;
 
-    table._rowOutlet = this;
+    table.rowOutlet = this;
     table.outletAssigned();
   }
 }

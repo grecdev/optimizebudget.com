@@ -59,7 +59,7 @@ export class TableComponent<T> {
    *
    * @private
    */
-  private _renderRows: Array<RenderRow<T>> = [];
+  private _renderRowsArray: Array<RenderRow<T>> = [];
 
   /**
    * @summary - Differ used to find the changes in the data provided by the data source.
@@ -70,7 +70,7 @@ export class TableComponent<T> {
 
   // Outlets in the table's template where the header, data rows, and footer will be inserted.
   public headerRowOutlet: HeaderRowOutlet | null = null;
-  public _rowOutlet: DataRowOutlet | null = null;
+  public rowOutlet: DataRowOutlet | null = null;
 
   constructor(...args: Array<unknown>);
 
@@ -123,9 +123,37 @@ export class TableComponent<T> {
    * @summary - Update the meta context of a rows' context data (index, count, first, last, etc.).
    *
    * @private
+   * @returns {void}
    */
   private _updateRowIndexContext() {
-    return null;
+    if (!this.rowOutlet) {
+      return;
+    }
+
+    const VIEW_CONTAINER = this.rowOutlet.viewContainer;
+    const COUNT = VIEW_CONTAINER.length - 1;
+
+    for (let renderIndex = 0; renderIndex <= COUNT; renderIndex++) {
+      const VIEW_REF = VIEW_CONTAINER.get(renderIndex) as RowViewRef<T>;
+      const CONTEXT = VIEW_REF.context as RowContext<T>;
+
+      Object.assign(CONTEXT, {
+        count: COUNT,
+        first: renderIndex === 0,
+        last: renderIndex === COUNT,
+        even: renderIndex % 2 === 0,
+        odd: !CONTEXT.even,
+        index: this._renderRowsArray[renderIndex].dataIndex,
+      });
+
+      // CONTEXT.count = COUNT;
+      // CONTEXT.first = renderIndex === 0;
+      // CONTEXT.last = renderIndex === COUNT;
+      // CONTEXT.even = renderIndex % 2 === 0;
+      // CONTEXT.odd = !CONTEXT.even;
+      //
+      // CONTEXT.index = this._renderRowsArray[renderIndex].dataIndex;
+    }
   }
 
   /**
@@ -148,20 +176,20 @@ export class TableComponent<T> {
    * @returns {void}
    */
   renderRows() {
-    if (!this._rowOutlet) {
+    if (!this.rowOutlet) {
       return;
     }
 
-    this._renderRows = this._getAllRenderRows();
+    this._renderRowsArray = this._getAllRenderRows();
 
-    const CHANGES = this._dataDiffer && this._dataDiffer.diff(this._renderRows);
+    const CHANGES = this._dataDiffer && this._dataDiffer.diff(this._renderRowsArray);
 
     if (!CHANGES) {
       this.contentChanged.next();
       return;
     }
 
-    const VIEW_CONTAINER_REF = this._rowOutlet.viewContainer;
+    const VIEW_CONTAINER_REF = this.rowOutlet.viewContainer;
 
     this._viewRepeater.applyChanges(
       CHANGES,
