@@ -7,6 +7,7 @@ import {
   type IterableChangeRecord,
   IterableDiffer,
   Output,
+  TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
 
@@ -15,7 +16,7 @@ import { HeaderRowOutlet, DataRowOutlet } from '@shared/components/table/row.com
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
 import { _ViewRepeaterStrategy } from './view-repeater-strategy';
-import { _ViewRepeaterOperation } from './view-repeater.model';
+import { _ViewRepeaterOperation, type _ViewRepeaterItemInsertArgs } from './view-repeater.model';
 
 import { type RenderRow, type RowContext } from './table.model';
 
@@ -88,8 +89,30 @@ export class TableComponent<T> {
     return [];
   }
 
-  private _getEmbeddedViewArgs() {
-    return null;
+  /**
+   * @summary - Factory function to construct an embedded view for an item in a view container
+   *
+   * @param {RenderRow<T>} renderRow - Identity of a single rendered row
+   * @param {number} index - Index of embedded view
+   *
+   * @private
+   * @returns {_ViewRepeaterItemInsertArgs<RowContext<T>>}
+   */
+  private _getEmbeddedViewArgs(
+    renderRow: RenderRow<T>,
+    index: number
+  ): _ViewRepeaterItemInsertArgs<RowContext<T>> {
+    const ROW_DEF = renderRow.rowDef;
+
+    const CONTEXT: RowContext<T> = {
+      $implicit: renderRow.data,
+    };
+
+    return {
+      templateRef: ROW_DEF.template as TemplateRef<RowContext<T>>,
+      context: CONTEXT,
+      index,
+    };
   }
 
   private _renderCellTemplateForItem() {
@@ -120,8 +143,15 @@ export class TableComponent<T> {
    *
    * Otherwise, if your data is an array, this method will need to be called manually
    * in our table component to render any changes.
+   *
+   * @public
+   * @returns {void}
    */
   renderRows() {
+    if (!this._rowOutlet) {
+      return;
+    }
+
     this._renderRows = this._getAllRenderRows();
 
     const CHANGES = this._dataDiffer && this._dataDiffer.diff(this._renderRows);
@@ -131,16 +161,22 @@ export class TableComponent<T> {
       return;
     }
 
-    const VIEW_CONTAINER_REF = this._rowOutlet.viewContainerRef;
+    const VIEW_CONTAINER_REF = this._rowOutlet.viewContainer;
 
     this._viewRepeater.applyChanges(
       CHANGES,
       VIEW_CONTAINER_REF,
       (
         record: IterableChangeRecord<RenderRow<T>>,
-        adjustedPreviousIndex: number | null,
+        _adjustedPreviousIndex: number | null,
         currentIndex: number | null
-      ) => this._getEmbeddedViewArgs(),
+      ) => {
+        if (currentIndex === null) {
+          return null;
+        }
+
+        return this._getEmbeddedViewArgs(record.item, currentIndex);
+      },
       record => record.item.data,
       change => {
         if (change.operation === _ViewRepeaterOperation.INSERTED && change.context) {
@@ -152,6 +188,10 @@ export class TableComponent<T> {
     this._updateRowIndexContext();
 
     CHANGES.forEachIdentityChange(record => {
+      if (!record.currentIndex) {
+        return;
+      }
+
       const ROW_VIEW = VIEW_CONTAINER_REF.get(record.currentIndex) as RowViewRef<T>;
 
       ROW_VIEW.context.$implicit = record.item.data;

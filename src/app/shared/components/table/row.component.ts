@@ -238,9 +238,9 @@ export class RowDef<T> extends BaseRowDef {
   constructor(...args: Array<unknown>);
 
   constructor(
-    templateRef: TemplateRef<any>,
+    templateRef: TemplateRef<TableRefElement>,
     iterableDiffers: IterableDiffers,
-    @Inject(TABLE) table: any
+    @Inject(TABLE) table: TableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
   }

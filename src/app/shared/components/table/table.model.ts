@@ -34,7 +34,7 @@ interface RowOutlet {
 interface RenderRow<T> {
   data: T;
   dataIndex: number;
-  RowDef: RowDef<T>;
+  rowDef: RowDef<T>;
 }
 
 /**

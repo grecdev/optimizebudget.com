@@ -52,7 +52,7 @@ type _ViewRepeaterItemContextFactory<T, R, C extends _ViewRepeaterItemContext<T>
   record: IterableChangeRecord<R>,
   adjustedPreviousIndex: number | null,
   currentIndex: number | null
-) => _ViewRepeaterItemInsertArgs<C>;
+) => _ViewRepeaterItemInsertArgs<C> | null;
 
 /**
  * @summary - Extracts the value of an item from an "IterableChangeRecord".
@@ -126,6 +126,7 @@ export type {
   _ViewRepeaterItemContextFactory,
   _ViewRepeaterItemValueResolver,
   _ViewRepeaterItemChanged,
+  _ViewRepeaterItemInsertArgs,
 };
 
 export { _ViewRepeaterOperation };

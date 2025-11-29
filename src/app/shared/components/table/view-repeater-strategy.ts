@@ -37,7 +37,7 @@ class _ViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemContext<T>>
   applyChanges(
     changes: IterableChanges<R>,
     viewContainerRef: ViewContainerRef,
-    itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
+    itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C> | undefined,
     itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
     itemViewChanged?: _ViewRepeaterItemChanged<R, C>
   ) {
@@ -48,27 +48,29 @@ class _ViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemContext<T>>
         // currentIndex: number | null
       ) => {
         let view: EmbeddedViewRef<C> | undefined;
-        let operation: _ViewRepeaterOperation;
+        let operation: _ViewRepeaterOperation | null = null;
 
-        if (record.previousIndex === null) {
+        const ITEM_CONTEXT_FACTORY =
+          itemContextFactory &&
+          itemContextFactory(record, record.previousIndex, record.currentIndex);
+
+        if (record.previousIndex === null && record.currentIndex !== null && ITEM_CONTEXT_FACTORY) {
           operation = _ViewRepeaterOperation.INSERTED;
 
-          const INSERT_CONTEXT = itemContextFactory(
-            record,
-            record.previousIndex,
-            record.currentIndex
-          );
-
           view = viewContainerRef.createEmbeddedView(
-            INSERT_CONTEXT.templateRef,
-            INSERT_CONTEXT.context,
-            INSERT_CONTEXT.index
+            ITEM_CONTEXT_FACTORY.templateRef,
+            ITEM_CONTEXT_FACTORY.context,
+            ITEM_CONTEXT_FACTORY.index
           );
-        } else if (record.currentIndex === null) {
+        }
+
+        if (record.currentIndex === null && record.previousIndex !== null) {
           operation = _ViewRepeaterOperation.REMOVED;
 
           viewContainerRef.remove(record.previousIndex); // Of course, previousIndex will always be a number here.
-        } else {
+        }
+
+        if (record.currentIndex !== null && record.previousIndex !== null) {
           operation = _ViewRepeaterOperation.MOVED;
 
           view = viewContainerRef.get(record.previousIndex) as EmbeddedViewRef<C>;
@@ -76,7 +78,7 @@ class _ViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemContext<T>>
           viewContainerRef.move(view, record.currentIndex);
         }
 
-        if (!itemViewChanged) {
+        if (!itemViewChanged || !operation) {
           return;
         }
 
