@@ -30,7 +30,7 @@ export class HeaderRowOutlet implements RowOutlet {
   viewContainer: ViewContainerRef;
   elementRef: ElementRef;
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
 
   constructor(
     viewContainer: ViewContainerRef,
@@ -41,6 +41,32 @@ export class HeaderRowOutlet implements RowOutlet {
     this.elementRef = elementRef;
 
     table.headerRowOutlet = this;
+    table.outletAssigned();
+  }
+}
+
+/**
+ * @summary - Provides a handle for the table to grab the
+ * view container's `ng-container` to insert data rows
+ */
+@Directive({
+  selector: '[rowOutlet]',
+})
+export class DataRowOutlet implements RowOutlet {
+  viewContainer: ViewContainerRef;
+  elementRef: ElementRef;
+
+  constructor(...args: Array<unknown>);
+
+  constructor(
+    viewContainerRef: ViewContainerRef,
+    elementRef: ElementRef,
+    @Inject(TABLE) table: TableComponent<unknown>
+  ) {
+    this.viewContainer = viewContainerRef;
+    this.elementRef = elementRef;
+
+    table._rowOutlet = this;
     table.outletAssigned();
   }
 }
@@ -70,7 +96,7 @@ export class CellOutlet implements OnDestroy {
    */
   static mostRecentCellOutlet: CellOutlet | null = null;
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
 
   constructor(viewContainerRef: ViewContainerRef) {
     this._viewContainerRef = viewContainerRef;
@@ -104,7 +130,7 @@ export class BaseRowDef implements OnChanges {
 
   protected _columnsDiffer: IterableDiffer<any> | null = null;
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
   constructor(template: TemplateRef<TableRefElement>, differs: IterableDiffers) {
     this.template = template;
     this._differs = differs;
@@ -153,7 +179,7 @@ export class BaseRowDef implements OnChanges {
   ],
 })
 export class HeaderRowDef extends BaseRowDef implements OnChanges {
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
   constructor(templateRef: TemplateRef<TableRefElement>, iterableDiffers: IterableDiffers) {
     super(templateRef, iterableDiffers);
   }
@@ -209,7 +235,7 @@ export class RowDef<T> extends BaseRowDef {
    */
   when: ((index: number, rowData: T) => boolean) | undefined;
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
 
   constructor(
     templateRef: TemplateRef<any>,

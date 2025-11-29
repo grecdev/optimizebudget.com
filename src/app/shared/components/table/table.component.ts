@@ -10,7 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import { HeaderRowOutlet } from '@shared/components/table/row.component';
+import { HeaderRowOutlet, DataRowOutlet } from '@shared/components/table/row.component';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -69,9 +69,9 @@ export class TableComponent<T> {
 
   // Outlets in the table's template where the header, data rows, and footer will be inserted.
   public headerRowOutlet: HeaderRowOutlet | null = null;
-  public _rowOutlet: DataRowOutlet;
+  public _rowOutlet: DataRowOutlet | null = null;
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
 
   constructor(
     @Inject(_VIEW_REPEATER_STRATEGY)

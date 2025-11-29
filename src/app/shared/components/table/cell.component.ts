@@ -22,7 +22,7 @@ export class BaseCell {
   },
 })
 export class HeaderCell extends BaseCell {
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
 
   constructor(columnDef: ColumnDef, elementRef: ElementRef) {
     super(columnDef, elementRef);
@@ -38,7 +38,7 @@ export class HeaderCell extends BaseCell {
 export class HeaderCellDef implements CellDef {
   template: CellDef['template'];
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
   constructor(@Inject(TemplateRef) template: CellDef['template']) {
     this.template = template;
   }
@@ -53,7 +53,7 @@ export class HeaderCellDef implements CellDef {
 export class CellDef implements ICellDef {
   template: ICellDef['template'];
 
-  constructor(...args: unknown[]);
+  constructor(...args: Array<unknown>);
   constructor(@Inject(TemplateRef) template: ICellDef['template']) {
     this.template = template;
   }
