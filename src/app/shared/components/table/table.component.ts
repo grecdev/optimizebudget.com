@@ -9,9 +9,15 @@ import {
   Output,
   TemplateRef,
   ViewEncapsulation,
+  ChangeDetectorRef,
 } from '@angular/core';
 
-import { HeaderRowOutlet, DataRowOutlet } from '@shared/components/table/row.component';
+import {
+  HeaderRowOutlet,
+  DataRowOutlet,
+  BaseRowDef,
+  CellOutlet,
+} from '@shared/components/table/row.component';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -43,7 +49,8 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
   ],
 })
 export class TableComponent<T> {
-  protected readonly _viewRepeater: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>;
+  private readonly _viewRepeater: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
 
   /**
    * @summary - Emits when the table completes rendering a set of data rows based on the latest data.
@@ -76,9 +83,11 @@ export class TableComponent<T> {
 
   constructor(
     @Inject(_VIEW_REPEATER_STRATEGY)
-    viewRepeaterStrategy: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>
+    viewRepeaterStrategy: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>,
+    changeDetectorRef: ChangeDetectorRef
   ) {
     this._viewRepeater = viewRepeaterStrategy;
+    this._changeDetectorRef = changeDetectorRef;
   }
 
   public outletAssigned() {
@@ -115,8 +124,31 @@ export class TableComponent<T> {
     };
   }
 
-  private _renderCellTemplateForItem() {
-    return null;
+  private _getCellTemplates(): Array<TemplateRef<RowContext<T>>> {
+    return [];
+  }
+
+  /**
+   * @summary - Create an embedded view for the cell outlet
+   *
+   * @param {BaseRowDef} rowDef - Row definition
+   * @param {RowContext<T>} context - Row context
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderCellTemplateForItem(rowDef: BaseRowDef, context: RowContext<T>) {
+    const CELL_TEMPLATES = this._getCellTemplates();
+
+    for (const ITEM of CELL_TEMPLATES) {
+      if (!CellOutlet.mostRecentCellOutlet || !CellOutlet.mostRecentCellOutlet.viewContainerRef) {
+        break;
+      }
+
+      CellOutlet.mostRecentCellOutlet.viewContainerRef.createEmbeddedView(ITEM, context);
+    }
+
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
@@ -145,14 +177,6 @@ export class TableComponent<T> {
         odd: !CONTEXT.even,
         index: this._renderRowsArray[renderIndex].dataIndex,
       });
-
-      // CONTEXT.count = COUNT;
-      // CONTEXT.first = renderIndex === 0;
-      // CONTEXT.last = renderIndex === COUNT;
-      // CONTEXT.even = renderIndex % 2 === 0;
-      // CONTEXT.odd = !CONTEXT.even;
-      //
-      // CONTEXT.index = this._renderRowsArray[renderIndex].dataIndex;
     }
   }
 
@@ -208,7 +232,7 @@ export class TableComponent<T> {
       record => record.item.data,
       change => {
         if (change.operation === _ViewRepeaterOperation.INSERTED && change.context) {
-          this._renderCellTemplateForItem();
+          this._renderCellTemplateForItem(change.record.item.rowDef, change.context);
         }
       }
     );

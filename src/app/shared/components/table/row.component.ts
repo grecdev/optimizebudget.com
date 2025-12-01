@@ -78,7 +78,7 @@ export class DataRowOutlet implements RowOutlet {
   selector: '[cellOutlet]',
 })
 export class CellOutlet implements OnDestroy {
-  _viewContainerRef: ViewContainerRef;
+  public readonly viewContainerRef: ViewContainerRef;
 
   cells: CellDef[] = [];
 
@@ -94,12 +94,12 @@ export class CellOutlet implements OnDestroy {
    *
    * After the initialization the cell outlet will construct the cells with the provided context.
    */
-  static mostRecentCellOutlet: CellOutlet | null = null;
+  public static mostRecentCellOutlet: CellOutlet | null = null;
 
   constructor(...args: Array<unknown>);
 
   constructor(viewContainerRef: ViewContainerRef) {
-    this._viewContainerRef = viewContainerRef;
+    this.viewContainerRef = viewContainerRef;
 
     CellOutlet.mostRecentCellOutlet = this;
   }
