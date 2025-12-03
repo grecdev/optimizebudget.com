@@ -12,19 +12,16 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 
-import {
-  HeaderRowOutlet,
-  DataRowOutlet,
-  BaseRowDef,
-  CellOutlet,
-} from '@shared/components/table/row.component';
-
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
 import { _ViewRepeaterStrategy } from './view-repeater-strategy';
 import { _ViewRepeaterOperation, type _ViewRepeaterItemInsertArgs } from './view-repeater.model';
 
-import { type RenderRow, type RowContext } from './table.model';
+import { type RenderRow, type RowContext, TableRefElement } from './table.model';
+
+import { HeaderRowOutlet, DataRowOutlet, BaseRowDef, CellOutlet } from './row.component';
+
+import { ColumnDef } from './cell.component';
 
 /**
  * @summary - This class is used to define the type for embedded view ref for rows with context.
@@ -75,6 +72,16 @@ export class TableComponent<T> {
    */
   private _dataDiffer: IterableDiffer<RenderRow<T>> | null = null;
 
+  /**
+   * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
+   *
+   * Collection populated by the column definitions gathered by `ContentChildren` as well as
+   * any custom column definitions added to `_customColumnDefs`.
+   *
+   * @private
+   */
+  private _columnDefsByName = new Map<string, ColumnDef>();
+
   // Outlets in the table's template where the header, data rows, and footer will be inserted.
   public headerRowOutlet: HeaderRowOutlet | null = null;
   public rowOutlet: DataRowOutlet | null = null;
@@ -124,8 +131,31 @@ export class TableComponent<T> {
     };
   }
 
-  private _getCellTemplates(): Array<TemplateRef<RowContext<T>>> {
-    return [];
+  /**
+   * @summary - Get the column definitions for the provided row definition
+   *
+   * @param {BaseRowDef} rowDef - Row definition
+   *
+   * @private
+   * @returns {Array<TemplateRef<TableRefElement>>}
+   */
+  private _getCellTemplates(rowDef: BaseRowDef): Array<TemplateRef<TableRefElement>> {
+    if (!rowDef || !rowDef.columns) {
+      return [];
+    }
+
+    const CELL_TEMPLATES = Array.from(rowDef.columns, item => {
+      const COLUMN = this._columnDefsByName.get(item);
+      const TEMPLATE = COLUMN && rowDef.extractCellTemplate(COLUMN);
+
+      if (!TEMPLATE) {
+        throw Error(`Could not find column ${item}`);
+      }
+
+      return TEMPLATE;
+    });
+
+    return CELL_TEMPLATES;
   }
 
   /**
@@ -137,15 +167,18 @@ export class TableComponent<T> {
    * @private
    * @returns {void}
    */
-  private _renderCellTemplateForItem(rowDef: BaseRowDef, context: RowContext<T>) {
-    const CELL_TEMPLATES = this._getCellTemplates();
+  private _renderCellTemplateForItem(rowDef: BaseRowDef, context: RowContext<T>): void {
+    const CELL_TEMPLATES = this._getCellTemplates(rowDef);
 
     for (const ITEM of CELL_TEMPLATES) {
       if (!CellOutlet.mostRecentCellOutlet || !CellOutlet.mostRecentCellOutlet.viewContainerRef) {
         break;
       }
 
-      CellOutlet.mostRecentCellOutlet.viewContainerRef.createEmbeddedView(ITEM, context);
+      CellOutlet.mostRecentCellOutlet.viewContainerRef.createEmbeddedView(
+        ITEM,
+        context as TableRefElement // I don't want to use `any`...
+      );
     }
 
     this._changeDetectorRef.markForCheck();
@@ -157,7 +190,7 @@ export class TableComponent<T> {
    * @private
    * @returns {void}
    */
-  private _updateRowIndexContext() {
+  private _updateRowIndexContext(): void {
     if (!this.rowOutlet) {
       return;
     }
@@ -199,7 +232,7 @@ export class TableComponent<T> {
    * @public
    * @returns {void}
    */
-  renderRows() {
+  renderRows(): void {
     if (!this.rowOutlet) {
       return;
     }

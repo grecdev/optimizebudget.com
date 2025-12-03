@@ -97,8 +97,8 @@ export class ColumnDef {
 
   private _name: string = '';
 
-  @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | undefined;
-  @ContentChild(CellDef) cellDef: CellDef | undefined;
+  @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | null = null;
+  @ContentChild(CellDef) cellDef: CellDef | null = null;
 
   /**
    * @summary - Create the column class definition class name

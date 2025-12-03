@@ -156,7 +156,7 @@ export class BaseRowDef implements OnChanges {
     return this._columnsDiffer.diff(this.columns);
   }
 
-  extractCellTemplate(column: ColumnDef): TemplateRef<TableRefElement> | undefined {
+  extractCellTemplate(column: ColumnDef): TemplateRef<TableRefElement> | null {
     if (this instanceof HeaderRowDef && column.headerCellDef) {
       return column.headerCellDef.template;
     }
