@@ -17,7 +17,12 @@ import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 import { _ViewRepeaterStrategy } from './view-repeater-strategy';
 import { _ViewRepeaterOperation, type _ViewRepeaterItemInsertArgs } from './view-repeater.model';
 
-import { type RenderRow, type RowContext, TableRefElement } from './table.model';
+import {
+  type RenderRow,
+  type RowContext,
+  type RowOutlet,
+  type TableRefElement,
+} from './table.model';
 
 import { HeaderRowOutlet, DataRowOutlet, BaseRowDef, CellOutlet } from './row.component';
 
@@ -159,6 +164,38 @@ export class TableComponent<T> {
   }
 
   /**
+   * @summary - Creates a new row template in the outlet and fills it
+   * with the set of cell templates.
+   *
+   * Optionally takes a context to provide to the row and cells, as well as
+   * an index of where to place the new row template in the outlet.
+   *
+   * @param {RowOutlet} outlet - Row outlet directive where we embed the view
+   * @param {BaseRowDef} rowDef - Row definition
+   * @param {number} index
+   * @param {RowContext<T>} context
+   *
+   * @private
+   * @returns {EmbeddedViewRef<TableRefElement>}
+   */
+  private _renderRow(
+    outlet: RowOutlet,
+    rowDef: BaseRowDef,
+    index: number,
+    context: RowContext<T>
+  ): EmbeddedViewRef<TableRefElement> {
+    const VIEW = outlet.viewContainer.createEmbeddedView(
+      rowDef.template,
+      context as TableRefElement,
+      index
+    );
+
+    this._renderCellTemplateForItem(rowDef, context);
+
+    return VIEW;
+  }
+
+  /**
    * @summary - Create an embedded view for the cell outlet
    *
    * @param {BaseRowDef} rowDef - Row definition
@@ -177,7 +214,7 @@ export class TableComponent<T> {
 
       CellOutlet.mostRecentCellOutlet.viewContainerRef.createEmbeddedView(
         ITEM,
-        context as TableRefElement // I don't want to use `any`...
+        context as TableRefElement
       );
     }
 
