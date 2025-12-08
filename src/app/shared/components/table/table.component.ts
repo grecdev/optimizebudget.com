@@ -24,7 +24,7 @@ import {
   type TableRefElement,
 } from './table.model';
 
-import { HeaderRowOutlet, DataRowOutlet, BaseRowDef, CellOutlet } from './row.component';
+import { HeaderRowOutlet, DataRowOutlet, BaseRowDef, CellOutlet, RowDef } from './row.component';
 
 import { ColumnDef } from './cell.component';
 
@@ -51,13 +51,26 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
   ],
 })
 export class TableComponent<T> {
+  /**
+   * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
+   *
+   * @private
+   */
   private readonly _viewRepeater: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>;
+
+  /**
+   * @type {ChangeDetectorRef}
+   *
+   * @private
+   */
   private readonly _changeDetectorRef: ChangeDetectorRef;
 
   /**
    * @summary - Emits when the table completes rendering a set of data rows based on the latest data.
    *
    * Even if the set of rows is empty.
+   *
+   * @type {EventEmitter<void>}
    *
    * @public
    */
@@ -66,12 +79,16 @@ export class TableComponent<T> {
   /**
    * @summary - List of rendered rows as identified by their `RenderRow` object.
    *
+   * @type {Array<RenderRow<T>>}
+   *
    * @private
    */
   private _renderRowsArray: Array<RenderRow<T>> = [];
 
   /**
    * @summary - Differ used to find the changes in the data provided by the data source.
+   *
+   * @type {IterableDiffer<RenderRow<T>> | null}
    *
    * @private
    */
@@ -83,11 +100,40 @@ export class TableComponent<T> {
    * Collection populated by the column definitions gathered by `ContentChildren` as well as
    * any custom column definitions added to `_customColumnDefs`.
    *
+   * @type {Map<string, ColumnDef>}
+   *
    * @private
    */
   private _columnDefsByName = new Map<string, ColumnDef>();
 
-  // Outlets in the table's template where the header, data rows, and footer will be inserted.
+  /**
+   * @summary - Cache of the latest rendered `RenderRow` objects as a map
+   * for easy retrieval when constructing a new list.
+   *
+   * Since the new list is constructed with the cached `RenderRow` objects, the row
+   * identity is preserved when data and row template matches, allowing the `IterableDiffer`
+   * API to check for reference and understand which rows are added/moved/removed.
+   *
+   * @type {Map<T, WeakMap<RowDef<T>, RenderRow<T>[]>>}
+   *
+   * @private
+   */
+  private _cachedRenderRowsMap = new Map<T, WeakMap<RowDef<T>, Array<RenderRow<T>>>>();
+
+  /**
+   * @summary - The latest data provided by the data source
+   *
+   * @type {Array<T> | null}
+   *
+   * @private
+   */
+  private _data: Array<T> | null = null;
+
+  /**
+   * @summary - Outlets in the table's template where the header, data rows, and footer will be inserted.
+   *
+   * @public
+   */
   public headerRowOutlet: HeaderRowOutlet | null = null;
   public rowOutlet: DataRowOutlet | null = null;
 
@@ -106,8 +152,59 @@ export class TableComponent<T> {
     console.log('assign all outlets');
   }
 
-  private _getAllRenderRows() {
+  private _getRenderRowsForData(): Array<RenderRow<T>> {
     return [];
+  }
+
+  /**
+   * @summary - Get the list of `RenderRow` objects to render according
+   * to the current list of data and defined row definitions.
+   *
+   * If the previous list already contained a particular pair, it should be reused
+   * so that the differ equates their references.
+   *
+   * @private
+   * @returns {Array<RenderRow<T>>}
+   */
+  private _getAllRenderRows() {
+    const RENDER_ROWS: Array<RenderRow<T>> = [];
+    const PREV_CACHED_RENDER_ROWS = this._cachedRenderRowsMap;
+
+    this._cachedRenderRowsMap = new Map();
+
+    if (!this._data) {
+      return RENDER_ROWS;
+    }
+
+    for (let i = 0; i < this._data.length; i++) {
+      const ITEM = this._data[i];
+      const RENDER_ROWS_FOR_DATA = this._getRenderRowsForData();
+
+      if (!this._cachedRenderRowsMap.has(ITEM)) {
+        this._cachedRenderRowsMap.set(ITEM, new WeakMap());
+      }
+
+      for (let j = 0; j < RENDER_ROWS_FOR_DATA.length; j++) {
+        const INNER_ITEM = RENDER_ROWS_FOR_DATA[j];
+        const CACHED_ITEM = this._cachedRenderRowsMap.get(INNER_ITEM.data);
+
+        if (!CACHED_ITEM) {
+          break;
+        }
+
+        if (CACHED_ITEM.has(INNER_ITEM.rowDef)) {
+          CACHED_ITEM.get(INNER_ITEM.rowDef)!.push(INNER_ITEM);
+        } else {
+          CACHED_ITEM.set(INNER_ITEM.rowDef, [INNER_ITEM]);
+        }
+
+        RENDER_ROWS.push(INNER_ITEM);
+      }
+
+      return RENDER_ROWS;
+    }
+
+    return RENDER_ROWS;
   }
 
   /**
