@@ -152,8 +152,50 @@ export class TableComponent<T> {
     console.log('assign all outlets');
   }
 
-  private _getRenderRowsForData(): Array<RenderRow<T>> {
+  private _getRowDefs() {
     return [];
+  }
+
+  /**
+   * @summary - Get a list of `RenderRow<T> for the provided data object.
+   *
+   * And also get any `RowDef` objects that should be rendered for this data.
+   *
+   * Reuse the cached `RenderRow<T>` objects if they match the same data object
+   * and row template pair.
+   *
+   * @param {T} data - The data source
+   * @param {number} dataIndex - The item's index
+   * @param {WeakMap<RowDef<T>, Array<RenderRow<T>>>} [cache] - Cache with all row definitions
+   *
+   * @private
+   * @returns {Array<RenderRow<T>>}
+   */
+  private _getRenderRowsForData(
+    data: T,
+    dataIndex: number,
+    cache?: WeakMap<RowDef<T>, Array<RenderRow<T>>>
+  ): Array<RenderRow<T>> {
+    const ROW_DEFS = this._getRowDefs();
+
+    const RENDER_ROWS_FOR_DATA = ROW_DEFS.map(item => {
+      const CACHE_RENDER_ROWS = cache && cache.has(item) ? cache.get(item) : [];
+      const CACHED_ROW = CACHE_RENDER_ROWS && CACHE_RENDER_ROWS.length && CACHE_RENDER_ROWS.shift();
+
+      if (CACHED_ROW) {
+        CACHED_ROW.dataIndex = dataIndex;
+
+        return CACHED_ROW;
+      }
+
+      return {
+        data,
+        rowDef: item,
+        dataIndex,
+      };
+    });
+
+    return RENDER_ROWS_FOR_DATA;
   }
 
   /**
@@ -178,7 +220,12 @@ export class TableComponent<T> {
 
     for (let i = 0; i < this._data.length; i++) {
       const ITEM = this._data[i];
-      const RENDER_ROWS_FOR_DATA = this._getRenderRowsForData();
+
+      const RENDER_ROWS_FOR_DATA = this._getRenderRowsForData(
+        ITEM,
+        i,
+        PREV_CACHED_RENDER_ROWS.get(ITEM)
+      );
 
       if (!this._cachedRenderRowsMap.has(ITEM)) {
         this._cachedRenderRowsMap.set(ITEM, new WeakMap());
