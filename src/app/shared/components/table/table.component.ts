@@ -130,6 +130,27 @@ export class TableComponent<T> {
   private _data: Array<T> | null = null;
 
   /**
+   * @summary - Set of all row definitions that can be used by this table.
+   *
+   * Populated by the rows gathered by using `ContentChildren` as well as
+   * any custom row definitions added to `_customRowDefs`.
+   *
+   * @type {Array<RowDef<T>>}
+   *
+   * @private
+   */
+  private _rowDefs: Array<RowDef<T>> = [];
+
+  /**
+   * @summary - Stores the row definition that does not have a `when` predicate.
+   *
+   * @type {RowDef<T> | null}
+   *
+   * @private
+   */
+  private _defaultRowDef: RowDef<T> | null = null;
+
+  /**
    * @summary - Outlets in the table's template where the header, data rows, and footer will be inserted.
    *
    * @public
@@ -152,8 +173,39 @@ export class TableComponent<T> {
     console.log('assign all outlets');
   }
 
-  private _getRowDefs() {
-    return [];
+  /**
+   * @summary - Get the matching row definitions that should be used for this row data.
+   *
+   * If there is only one row definition, return it. Otherwise, find the row definitions that has a
+   * `when` predicate that return true with the data.
+   *
+   * If none return true, then return the default row definition
+   *
+   * @param {T} data - Item from data object
+   * @param {number} dataIndex - Data's index
+   *
+   * @private
+   * @returns {Array<RowDef<T>>}
+   */
+  private _getRowDefs(data: T, dataIndex: number): Array<RowDef<T>> {
+    if (this._rowDefs.length > 0) {
+      return [this._rowDefs[0]];
+    }
+
+    const ROW_DEFS: Array<RowDef<T>> = [];
+
+    const ROW_DEF_ITEM =
+      this._rowDefs.find(item => item.when && item.when(data, dataIndex)) ?? this._defaultRowDef;
+
+    if (ROW_DEF_ITEM) {
+      ROW_DEFS.push(ROW_DEF_ITEM);
+    }
+
+    if (ROW_DEFS.length === 0) {
+      throw Error('Row definitions has no data!');
+    }
+
+    return ROW_DEFS;
   }
 
   /**
@@ -176,7 +228,7 @@ export class TableComponent<T> {
     dataIndex: number,
     cache?: WeakMap<RowDef<T>, Array<RenderRow<T>>>
   ): Array<RenderRow<T>> {
-    const ROW_DEFS = this._getRowDefs();
+    const ROW_DEFS = this._getRowDefs(data, dataIndex);
 
     const RENDER_ROWS_FOR_DATA = ROW_DEFS.map(item => {
       const CACHE_RENDER_ROWS = cache && cache.has(item) ? cache.get(item) : [];

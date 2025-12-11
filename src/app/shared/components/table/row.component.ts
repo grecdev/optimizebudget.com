@@ -233,7 +233,7 @@ export class RowDef<T> extends BaseRowDef {
    *
    * For every row, there must be at least one `when` function that passes or returns undefined (default).
    */
-  when: ((index: number, rowData: T) => boolean) | undefined;
+  when: ((rowData: T, index: number) => boolean) | undefined;
 
   constructor(...args: Array<unknown>);
 
