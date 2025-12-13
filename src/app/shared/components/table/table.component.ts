@@ -10,7 +10,13 @@ import {
   TemplateRef,
   ViewEncapsulation,
   ChangeDetectorRef,
+  Attribute,
+  ElementRef,
+  PLATFORM_ID,
+  IterableDiffers,
 } from '@angular/core';
+
+import { isPlatformServer } from '@angular/common';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -52,6 +58,15 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
 })
 export class TableComponent<T> {
   /**
+   * @summary - Whether the component is rendered on the server
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  protected _isServer: boolean = false;
+
+  /**
    * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
    *
    * @private
@@ -77,13 +92,20 @@ export class TableComponent<T> {
   @Output() public readonly contentChanged = new EventEmitter<void>();
 
   /**
-   * @summary - List of rendered rows as identified by their `RenderRow` object.
+   * @summary - The latest data provided by the data source
    *
-   * @type {Array<RenderRow<T>>}
+   * @type {Array<T> | null}
    *
    * @private
    */
-  private _renderRowsArray: Array<RenderRow<T>> = [];
+  private _data: Array<T> | null = null;
+
+  /**
+   * @type {IterableDiffers}
+   *
+   * @private
+   */
+  private _differs: IterableDiffers;
 
   /**
    * @summary - Differ used to find the changes in the data provided by the data source.
@@ -95,16 +117,13 @@ export class TableComponent<T> {
   private _dataDiffer: IterableDiffer<RenderRow<T>> | null = null;
 
   /**
-   * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
+   * @summary - List of rendered rows as identified by their `RenderRow` object.
    *
-   * Collection populated by the column definitions gathered by `ContentChildren` as well as
-   * any custom column definitions added to `_customColumnDefs`.
-   *
-   * @type {Map<string, ColumnDef>}
+   * @type {Array<RenderRow<T>>}
    *
    * @private
    */
-  private _columnDefsByName = new Map<string, ColumnDef>();
+  private _renderRowsArray: Array<RenderRow<T>> = [];
 
   /**
    * @summary - Cache of the latest rendered `RenderRow` objects as a map
@@ -121,13 +140,13 @@ export class TableComponent<T> {
   private _cachedRenderRowsMap = new Map<T, WeakMap<RowDef<T>, Array<RenderRow<T>>>>();
 
   /**
-   * @summary - The latest data provided by the data source
+   * @summary - Stores the row definition that does not have a `when` predicate.
    *
-   * @type {Array<T> | null}
+   * @type {RowDef<T> | null}
    *
    * @private
    */
-  private _data: Array<T> | null = null;
+  private _defaultRowDef: RowDef<T> | null = null;
 
   /**
    * @summary - Set of all row definitions that can be used by this table.
@@ -142,13 +161,16 @@ export class TableComponent<T> {
   private _rowDefs: Array<RowDef<T>> = [];
 
   /**
-   * @summary - Stores the row definition that does not have a `when` predicate.
+   * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
    *
-   * @type {RowDef<T> | null}
+   * Collection populated by the column definitions gathered by `ContentChildren` as well as
+   * any custom column definitions added to `_customColumnDefs`.
+   *
+   * @type {Map<string, ColumnDef>}
    *
    * @private
    */
-  private _defaultRowDef: RowDef<T> | null = null;
+  private _columnDefsByName = new Map<string, ColumnDef>();
 
   /**
    * @summary - Outlets in the table's template where the header, data rows, and footer will be inserted.
@@ -161,16 +183,31 @@ export class TableComponent<T> {
   constructor(...args: Array<unknown>);
 
   constructor(
+    @Attribute('role') role: string,
     @Inject(_VIEW_REPEATER_STRATEGY)
     viewRepeaterStrategy: _ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>,
-    changeDetectorRef: ChangeDetectorRef
+    changeDetectorRef: ChangeDetectorRef,
+    elementRef: ElementRef,
+    @Inject(PLATFORM_ID) platformId: Object,
+    differs: IterableDiffers
   ) {
     this._viewRepeater = viewRepeaterStrategy;
     this._changeDetectorRef = changeDetectorRef;
+
+    if (!role && elementRef.nativeElement) {
+      elementRef.nativeElement.setAttribute('role', 'table');
+    }
+
+    this._isServer = isPlatformServer(platformId);
+    this._differs = differs;
+
+    this._dataDiffer = this._differs
+      .find([])
+      .create((_i: number, dataRow: RenderRow<T>) => dataRow);
   }
 
   public outletAssigned() {
-    console.log('assign all outlets');
+    // console.log('assign all outlets');
   }
 
   /**
