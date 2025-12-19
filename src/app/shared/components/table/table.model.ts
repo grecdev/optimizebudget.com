@@ -1,5 +1,7 @@
 import { TemplateRef, ViewContainerRef } from '@angular/core';
 
+import { type Observable } from 'rxjs';
+
 import { RowDef } from '@shared/components/table/row.component';
 
 type TableRefElement =
@@ -57,4 +59,9 @@ interface RowContext<T> {
   odd?: boolean;
 }
 
-export type { ICellDef, TableRefElement, RowOutlet, RenderRow, RowContext };
+/**
+ * @summary - Possible types that can be set as the data source.
+ */
+type TableDataSourceInput<T> = readonly T[] | Observable<T> | DataSource<T>;
+
+export type { ICellDef, TableRefElement, RowOutlet, RenderRow, RowContext, TableDataSourceInput };

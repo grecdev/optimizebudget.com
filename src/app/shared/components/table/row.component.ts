@@ -116,6 +116,21 @@ export class CellOutlet implements OnDestroy {
 }
 
 /**
+ * Header template component that contains the cell outlet.
+ */
+@Component({
+  selector: 'tr[app-header-row]',
+  template: ROW_TEMPLATE,
+  host: {
+    class: 'app-header-row',
+    role: 'row',
+  },
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class HeaderRow {}
+
+/**
  * Base class for row definitions to check columns inputs for changes and notifying the table.
  */
 @Directive()
@@ -166,8 +181,10 @@ export class BaseRowDef implements OnChanges {
 }
 
 /**
- * Header row definition for our table component.
- * Captures the header row's template and other header properties such as the columns to display.
+ * @summary - Header row definition for our table component.
+ *
+ * Captures the header row's template and other header properties such as
+ * the columns to display.
  */
 @Directive({
   selector: '[appHeaderRowDef]',
@@ -178,9 +195,13 @@ export class BaseRowDef implements OnChanges {
     },
   ],
 })
-export class HeaderRowDef extends BaseRowDef implements OnChanges {
+export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
   constructor(...args: Array<unknown>);
-  constructor(templateRef: TemplateRef<TableRefElement>, iterableDiffers: IterableDiffers) {
+  constructor(
+    templateRef: TemplateRef<TableRefElement>,
+    iterableDiffers: IterableDiffers,
+    @Inject(TABLE) table: TableComponent<TableRefElement>
+  ) {
     super(templateRef, iterableDiffers);
   }
 
@@ -188,21 +209,6 @@ export class HeaderRowDef extends BaseRowDef implements OnChanges {
     super.ngOnChanges(changes);
   }
 }
-
-/**
- * Header template component that contains the cell outlet.
- */
-@Component({
-  selector: 'tr[app-header-row]',
-  template: ROW_TEMPLATE,
-  host: {
-    class: 'app-header-row',
-    role: 'row',
-  },
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class HeaderRow {}
 
 /**
  * @summary - Data row definition for our table.
@@ -243,5 +249,35 @@ export class RowDef<T> extends BaseRowDef {
     @Inject(TABLE) table: TableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
+  }
+}
+
+/**
+ * @summary - Footer row definition for our table component.
+ *
+ * Captures the footer row's template and other footer properties such as
+ * the columns to display.
+ */
+@Directive({
+  selector: '[appFooterRowDef]',
+  inputs: [
+    {
+      name: 'columns',
+      alias: 'appFooterRowDef',
+    },
+  ],
+})
+export class FooterRowDef<T> extends BaseRowDef implements OnChanges {
+  constructor(...args: Array<unknown>);
+  constructor(
+    templateRef: TemplateRef<TableRefElement>,
+    iterableDiffers: IterableDiffers,
+    @Inject(TABLE) table: TableComponent<TableRefElement>
+  ) {
+    super(templateRef, iterableDiffers);
+  }
+
+  override ngOnChanges(changes: SimpleChanges) {
+    super.ngOnChanges(changes);
   }
 }

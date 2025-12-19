@@ -14,9 +14,12 @@ import {
   ElementRef,
   PLATFORM_ID,
   IterableDiffers,
+  Input,
 } from '@angular/core';
 
 import { isPlatformServer } from '@angular/common';
+
+import { type Subscription } from 'rxjs';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -28,9 +31,18 @@ import {
   type RowContext,
   type RowOutlet,
   type TableRefElement,
+  type TableDataSourceInput,
 } from './table.model';
 
-import { HeaderRowOutlet, DataRowOutlet, BaseRowDef, CellOutlet, RowDef } from './row.component';
+import {
+  HeaderRowOutlet,
+  DataRowOutlet,
+  BaseRowDef,
+  CellOutlet,
+  HeaderRowDef,
+  RowDef,
+  FooterRowDef,
+} from './row.component';
 
 import { ColumnDef } from './cell.component';
 
@@ -92,6 +104,64 @@ export class TableComponent<T> {
   @Output() public readonly contentChanged = new EventEmitter<void>();
 
   /**
+   * @summary - The table's source of data.
+   *
+   * Which can be provided in three ways:
+   *
+   * 1) Simple data array (each object represents one table row)
+   *
+   * If a data array is provided, the table must be notified whenever our data source is modified.
+   * This can be done by calling the `renderRows(...)` method, which will render the diff since
+   * the last table render.
+   *
+   * 2) Stream that emits a data array each time the array changes
+   *
+   * When providing an `Observable` stream, the table will trigger an update automatically
+   * when the stream emits a new array of data.
+   *
+   * 3) `DataSource` object that implements the connect/disconnect interface
+   *
+   * When providing a `DataSource` object, the table will use the `Observable` stream provided by
+   * the `connect` method and trigger updates when that stream emits a new data array values.
+   *
+   * During the table's `ngOnDestroy` hook or when the data source is removed from the table,
+   * the table will call the `DataSource's` disconnect method. (may be useful for cleaning up any
+   * subscriptions registered during the connect process).
+   *
+   * This is also what Angular Material's recommend to use.
+   *
+   * @type {TableDataSourceInput<T>}
+   *
+   * @public
+   * @returns {TableDataSourceInput<T>}
+   */
+  @Input() public get dataSource(): TableDataSourceInput<T> {
+    return this._dataSource;
+  }
+
+  /**
+   * @summary - Modify data source from input.
+   *
+   * @param {TableDataSourceInput<T>} value - Value passed from component
+   *
+   * @public
+   */
+  public set dataSource(value: TableDataSourceInput<T>) {
+    if (this._dataSource === value) {
+      return;
+    }
+
+    this._switchDataSource();
+  }
+
+  /**
+   * @type {TableDataSourceInput<T>}
+   *
+   * @private
+   */
+  private _dataSource: TableDataSourceInput<T>;
+
+  /**
    * @summary - The latest data provided by the data source
    *
    * @type {Array<T> | null}
@@ -115,6 +185,15 @@ export class TableComponent<T> {
    * @private
    */
   private _dataDiffer: IterableDiffer<RenderRow<T>> | null = null;
+
+  /**
+   * @summary - Subscription that listens for data provided by the data source.
+   *
+   * @type {Subscription | null}
+   *
+   * @private
+   */
+  private _renderChangeSubscription: Subscription | null = null;
 
   /**
    * @summary - List of rendered rows as identified by their `RenderRow` object.
@@ -149,6 +228,18 @@ export class TableComponent<T> {
   private _defaultRowDef: RowDef<T> | null = null;
 
   /**
+   * @summary - Set of all header row definitions that can be used by this table.
+   *
+   * Populated by the header rows gathered by using `ContentChildren` as well as
+   * any custom header row definitions added to `_customHeaderRowDefs`.
+   *
+   * @type {Array<HeaderRowDef<T>>}
+   *
+   * @private
+   */
+  private _headerRowDefs: Array<HeaderRowDef<T>> = [];
+
+  /**
    * @summary - Set of all row definitions that can be used by this table.
    *
    * Populated by the rows gathered by using `ContentChildren` as well as
@@ -161,6 +252,18 @@ export class TableComponent<T> {
   private _rowDefs: Array<RowDef<T>> = [];
 
   /**
+   * @summary - Set of all footer row definitions that can be used by this table.
+   *
+   * Populated by the footer rows gathered by using `ContentChildren` as well as
+   * any custom footer row definitions added to `_customFooterRowDefs`.
+   *
+   * @type {Array<FooterRowDef<T>>}
+   *
+   * @private
+   */
+  private _footerRowDefs: Array<FooterRowDef<T>> = [];
+
+  /**
    * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
    *
    * Collection populated by the column definitions gathered by `ContentChildren` as well as
@@ -171,6 +274,32 @@ export class TableComponent<T> {
    * @private
    */
   private _columnDefsByName = new Map<string, ColumnDef>();
+
+  /**
+   * @summary - Whether the header row definition has been changed.
+   *
+   * Triggers an update to the header row after the content is checked.
+   *
+   * Initialized as `true` in order to render the initial set of rows.
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  private _headerRowDefChanged: boolean = true;
+
+  /**
+   * @summary - Whether the footer row definition has been changed.
+   *
+   * Triggers an update to the footer row after the content is checked.
+   *
+   * Initialized as `true` in order to render the initial set of rows.
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  private _footerRowDefChanged: boolean = true;
 
   /**
    * @summary - Outlets in the table's template where the header, data rows, and footer will be inserted.
@@ -553,5 +682,40 @@ export class TableComponent<T> {
     });
 
     this.contentChanged.next();
+  }
+
+  /**
+   * @summary - Renders the table if its state has been changed
+   *
+   * @private
+   * @returns {void}
+   */
+  private _render(): void {
+    this._cacheRowDefs();
+    this._cacheColumnDefs();
+
+    if (
+      this._rowDefs.length === 0 &&
+      this._headerRowDefs.length === 0 &&
+      this._footerRowDefs.length === 0
+    ) {
+      throw Error('Table is missing row definitions!');
+    }
+
+    if (this._headerRowDefChanged) {
+      this._forceRenderHeaderRows();
+      this._headerRowDefChanged = false;
+    }
+
+    if (this._footerRowDefChanged) {
+      this._forceRenderFooterRows();
+      this._footerRowDefChanged = false;
+    }
+
+    if (!this._dataSource || this._rowDefs.length === 0 || this._renderChangeSubscription) {
+      return;
+    }
+
+    this._observeRenderChanges();
   }
 }

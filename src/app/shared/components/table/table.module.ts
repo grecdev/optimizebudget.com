@@ -11,6 +11,7 @@ import {
   HeaderRowDef,
   HeaderRowOutlet,
   RowDef,
+  FooterRowDef,
 } from './row.component';
 
 @NgModule({
@@ -24,6 +25,7 @@ import {
     //
     HeaderRowDef,
     RowDef,
+    FooterRowDef,
     CellDef,
     ColumnDef,
     HeaderCellDef,
@@ -36,6 +38,7 @@ import {
     //
     HeaderRowDef,
     RowDef,
+    FooterRowDef,
     CellDef,
     ColumnDef,
     HeaderCellDef,
