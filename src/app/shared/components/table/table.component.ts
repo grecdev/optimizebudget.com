@@ -153,7 +153,7 @@ export class TableComponent<T> {
       return;
     }
 
-    this._switchDataSource();
+    this._switchDataSource(value);
   }
 
   /**
