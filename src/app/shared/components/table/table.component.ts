@@ -299,6 +299,19 @@ export class TableComponent<T> {
   private _contentFooterRowDefs: QueryList<FooterRowDef<T>> | null = null;
 
   /**
+   * @summary - The column definitions provided by the user that contain what the header, data, and footer
+   * cells should render for each column.
+   *
+   * @type {QueryList<ColumnDef> | null}
+   *
+   * @private
+   */
+  @ContentChildren(ColumnDef, {
+    descendants: true,
+  })
+  private _contentColumnDefs: QueryList<ColumnDef> | null = null;
+
+  /**
    * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
    *
    * Collection populated by the column definitions gathered by `ContentChildren`.
@@ -396,6 +409,26 @@ export class TableComponent<T> {
     }
 
     this._defaultRowDef = DEFAULT_ROW_DEFS[0];
+  }
+
+  /**
+   * @summary - Update the map containing the content's column definitions.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _cacheColumnDefs(): void {
+    this._columnDefsByName.clear();
+
+    const COLUMN_DEFS = this._getOwnDefs(this._contentColumnDefs);
+
+    COLUMN_DEFS.forEach(item => {
+      if (this._columnDefsByName.has(item.name)) {
+        throw Error(`Duplicate column definition: ${item.name}`);
+      }
+
+      this._columnDefsByName.set(item.name, item);
+    });
   }
 
   /**
