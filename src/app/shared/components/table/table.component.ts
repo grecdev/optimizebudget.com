@@ -1,10 +1,11 @@
 import {
+  type QueryList,
+  type IterableChangeRecord,
   ChangeDetectionStrategy,
   Component,
   EmbeddedViewRef,
   EventEmitter,
   Inject,
-  type IterableChangeRecord,
   IterableDiffer,
   Output,
   TemplateRef,
@@ -15,6 +16,7 @@ import {
   PLATFORM_ID,
   IterableDiffers,
   Input,
+  ContentChildren,
 } from '@angular/core';
 
 import { isPlatformServer } from '@angular/common';
@@ -230,8 +232,7 @@ export class TableComponent<T> {
   /**
    * @summary - Set of all header row definitions that can be used by this table.
    *
-   * Populated by the header rows gathered by using `ContentChildren` as well as
-   * any custom header row definitions added to `_customHeaderRowDefs`.
+   * Populated by the header rows gathered by using `ContentChildren`.
    *
    * @type {Array<HeaderRowDef<T>>}
    *
@@ -242,8 +243,7 @@ export class TableComponent<T> {
   /**
    * @summary - Set of all row definitions that can be used by this table.
    *
-   * Populated by the rows gathered by using `ContentChildren` as well as
-   * any custom row definitions added to `_customRowDefs`.
+   * Populated by the rows gathered by using `ContentChildren`.
    *
    * @type {Array<RowDef<T>>}
    *
@@ -254,8 +254,7 @@ export class TableComponent<T> {
   /**
    * @summary - Set of all footer row definitions that can be used by this table.
    *
-   * Populated by the footer rows gathered by using `ContentChildren` as well as
-   * any custom footer row definitions added to `_customFooterRowDefs`.
+   * Populated by the footer rows gathered by using `ContentChildren`.
    *
    * @type {Array<FooterRowDef<T>>}
    *
@@ -264,10 +263,45 @@ export class TableComponent<T> {
   private _footerRowDefs: Array<FooterRowDef<T>> = [];
 
   /**
+   * @summary - Set of header row definitions that were provided to the table as content children.
+   *
+   * @type {QueryList<HeaderRowDef<T>> | null}
+   *
+   * @private
+   */
+  @ContentChildren(HeaderRowDef, {
+    descendants: true,
+  })
+  private _contentHeaderRowDefs: QueryList<HeaderRowDef<T>> | null = null;
+
+  /**
+   * @summary - Set of row definitions that were provided to the table as content children.
+   *
+   * @type {QueryList<RowDef<T>> | null}
+   *
+   * @private
+   */
+  @ContentChildren(RowDef, {
+    descendants: true,
+  })
+  private _contentRowDefs: QueryList<RowDef<T>> | null = null;
+
+  /**
+   * @summary - Set of footer row definitions that were provided to the table as content children.
+   *
+   * @type {QueryList<FooterRowDef<T>> | null}
+   *
+   * @private
+   */
+  @ContentChildren(FooterRowDef, {
+    descendants: true,
+  })
+  private _contentFooterRowDefs: QueryList<FooterRowDef<T>> | null = null;
+
+  /**
    * @summary - Map of all the user's defined columns (header, data, and footer cell template) identified by name.
    *
-   * Collection populated by the column definitions gathered by `ContentChildren` as well as
-   * any custom column definitions added to `_customColumnDefs`.
+   * Collection populated by the column definitions gathered by `ContentChildren`.
    *
    * @type {Map<string, ColumnDef>}
    *
@@ -337,6 +371,31 @@ export class TableComponent<T> {
 
   public outletAssigned() {
     // console.log('assign all outlets');
+  }
+
+  /**
+   * @summary - Update the list of all available row definitions tha can be used.
+   *
+   * And after all row definitions are determined, find the row
+   * definition to be considered default.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _cacheRowDefs(): void {
+    this._headerRowDefs = this._getOwnDefs(this._contentHeaderRowDefs);
+    this._rowDefs = this._getOwnDefs(this._contentRowDefs);
+    this._footerRowDefs = this._getOwnDefs(this._contentFooterRowDefs);
+
+    const DEFAULT_ROW_DEFS = this._rowDefs.filter(item => !item.when);
+
+    if (DEFAULT_ROW_DEFS.length > 0) {
+      throw Error(
+        'Only one row without `when` predicate is allowed\nOr maybe you need to have a `multiTemplateDataRows` table.'
+      );
+    }
+
+    this._defaultRowDef = DEFAULT_ROW_DEFS[0];
   }
 
   /**
@@ -526,38 +585,6 @@ export class TableComponent<T> {
   }
 
   /**
-   * @summary - Creates a new row template in the outlet and fills it
-   * with the set of cell templates.
-   *
-   * Optionally takes a context to provide to the row and cells, as well as
-   * an index of where to place the new row template in the outlet.
-   *
-   * @param {RowOutlet} outlet - Row outlet directive where we embed the view
-   * @param {BaseRowDef} rowDef - Row definition
-   * @param {number} index
-   * @param {RowContext<T>} context
-   *
-   * @private
-   * @returns {EmbeddedViewRef<TableRefElement>}
-   */
-  private _renderRow(
-    outlet: RowOutlet,
-    rowDef: BaseRowDef,
-    index: number,
-    context: RowContext<T>
-  ): EmbeddedViewRef<TableRefElement> {
-    const VIEW = outlet.viewContainer.createEmbeddedView(
-      rowDef.template,
-      context as TableRefElement,
-      index
-    );
-
-    this._renderCellTemplateForItem(rowDef, context);
-
-    return VIEW;
-  }
-
-  /**
    * @summary - Create an embedded view for the cell outlet
    *
    * @param {BaseRowDef} rowDef - Row definition
@@ -610,6 +637,38 @@ export class TableComponent<T> {
         index: this._renderRowsArray[renderIndex].dataIndex,
       });
     }
+  }
+
+  /**
+   * @summary - Creates a new row template in the outlet and fills it
+   * with the set of cell templates.
+   *
+   * Optionally takes a context to provide to the row and cells, as well as
+   * an index of where to place the new row template in the outlet.
+   *
+   * @param {RowOutlet} outlet - Row outlet directive where we embed the view
+   * @param {BaseRowDef} rowDef - Row definition
+   * @param {number} index
+   * @param {RowContext<T>} context
+   *
+   * @private
+   * @returns {EmbeddedViewRef<TableRefElement>}
+   */
+  private _renderRow(
+    outlet: RowOutlet,
+    rowDef: BaseRowDef,
+    index: number,
+    context: RowContext<T>
+  ): EmbeddedViewRef<TableRefElement> {
+    const VIEW = outlet.viewContainer.createEmbeddedView(
+      rowDef.template,
+      context as TableRefElement,
+      index
+    );
+
+    this._renderCellTemplateForItem(rowDef, context);
+
+    return VIEW;
   }
 
   /**
