@@ -387,6 +387,46 @@ export class TableComponent<T> {
   }
 
   /**
+   * @summary - Switch to the provided data source.
+   *
+   * We do this by resetting the data and subscribing from
+   * the current render change subscription if one exists.
+   *
+   * If the data source is `null`, interpret this by clearing the row outlet.
+   *
+   * Otherwise, start listening for new data.
+   *
+   * @param {TableDataSourceInput<T>} dataSource - The data source you want to change with.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _switchDataSource(dataSource: TableDataSourceInput<T>): void {
+    this._data = null;
+
+    if (isDataSource(dataSource)) {
+      this.dataSource.disconnect(this);
+    }
+
+    if (this._renderChangeSubscription) {
+      this._renderChangeSubscription.unsubscribe();
+      this._renderChangeSubscription = null;
+    }
+
+    if (!dataSource) {
+      if (this._dataDiffer) {
+        this._dataDiffer.diff([]);
+      }
+
+      if (this.rowOutlet) {
+        this.rowOutlet.viewContainer.clear();
+      }
+    }
+
+    this._dataSource = dataSource;
+  }
+
+  /**
    * @summary - Update the list of all available row definitions tha can be used.
    *
    * And after all row definitions are determined, find the row
