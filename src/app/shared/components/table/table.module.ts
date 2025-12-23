@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TableComponent } from './table.component';
-import { CellDef, ColumnDef, HeaderCell, HeaderCellDef } from './cell.component';
+import { HeaderCell, Cell, FooterCell, HeaderCellDef, CellDef, ColumnDef } from './cell.component';
 
 import {
   CellOutlet,
@@ -20,6 +20,8 @@ import {
     TableComponent,
     HeaderRow,
     HeaderCell,
+    Cell,
+    FooterCell,
     CellOutlet,
     HeaderRowOutlet,
     DataRowOutlet,
@@ -37,6 +39,8 @@ import {
     TableComponent,
     HeaderRow,
     HeaderCell,
+    Cell,
+    FooterCell,
     //
     HeaderRowDef,
     RowDef,

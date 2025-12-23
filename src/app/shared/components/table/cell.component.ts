@@ -1,6 +1,9 @@
 import { ContentChild, Directive, ElementRef, Inject, Input, TemplateRef } from '@angular/core';
 
+import { TABLE } from './tokens';
+
 import type { ICellDef, TableRefElement } from './table.model';
+import { TableComponent } from './table.component';
 
 /**
  * @summary - Base class for the cell, adds a classname that identifies the column it renders in.
@@ -26,6 +29,52 @@ export class HeaderCell extends BaseCell {
 
   constructor(columnDef: ColumnDef, elementRef: ElementRef) {
     super(columnDef, elementRef);
+  }
+}
+
+/**
+ * @summary - Cell template container that adds the right classes and role.
+ */
+@Directive({
+  selector: 'app-cell, td[app-cell]',
+  host: {
+    class: 'app-cell',
+  },
+})
+export class Cell extends BaseCell {
+  constructor(...args: Array<unknown>);
+
+  constructor(columnDef: ColumnDef, elementRef: ElementRef) {
+    super(columnDef, elementRef);
+
+    const CELL_ROLE = columnDef.table.getCellRole();
+
+    if (CELL_ROLE) {
+      elementRef.nativeElement.setAttribute('role', CELL_ROLE);
+    }
+  }
+}
+
+/**
+ * @summary - Footer Cell template container that adds the right classes and role.
+ */
+@Directive({
+  selector: 'app-footer-cell, td[app-footer-cell]',
+  host: {
+    class: 'app-footer-cell',
+  },
+})
+export class FooterCell extends BaseCell {
+  constructor(...args: Array<unknown>);
+
+  constructor(columnDef: ColumnDef, elementRef: ElementRef) {
+    super(columnDef, elementRef);
+
+    const CELL_ROLE = columnDef.table.getCellRole();
+
+    if (CELL_ROLE) {
+      elementRef.nativeElement.setAttribute('role', CELL_ROLE);
+    }
   }
 }
 
@@ -66,8 +115,7 @@ export class CellDef implements ICellDef {
   selector: '[appColumnDef]',
 })
 export class ColumnDef {
-  // _table? = inject(CDK_TABLE, {optional: true}); // Not used, IDK why they injected it, maybe for different table??
-
+  public table: TableComponent<unknown>;
   /**
    * Column definition class name
    *
@@ -99,6 +147,11 @@ export class ColumnDef {
 
   @ContentChild(HeaderCellDef) headerCellDef: HeaderCellDef | null = null;
   @ContentChild(CellDef) cellDef: CellDef | null = null;
+
+  constructor(...args: Array<unknown>);
+  constructor(@Inject(TABLE) table: TableComponent<unknown>) {
+    this.table = table;
+  }
 
   /**
    * @summary - Create the column class definition class name
