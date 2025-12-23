@@ -21,7 +21,7 @@ import {
 
 import { isPlatformServer } from '@angular/common';
 
-import { type Subscription } from 'rxjs';
+import { type Observable, type Subscription, isObservable, from, takeUntil, Subject } from 'rxjs';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -95,6 +95,15 @@ export class TableComponent<T> {
   private readonly _changeDetectorRef: ChangeDetectorRef;
 
   /**
+   * @summary - Subject that emits when the component has been destroyed.
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   */
+  private _onDestroy: Subject<void> = new Subject<void>();
+
+  /**
    * @summary - Emits when the table completes rendering a set of data rows based on the latest data.
    *
    * Even if the set of rows is empty.
@@ -166,11 +175,11 @@ export class TableComponent<T> {
   /**
    * @summary - The latest data provided by the data source
    *
-   * @type {Array<T> | null}
+   * @type {readonly T[] | null}
    *
    * @private
    */
-  private _data: Array<T> | null = null;
+  private _data: readonly T[] | null = null;
 
   /**
    * @type {IterableDiffers}
@@ -424,6 +433,47 @@ export class TableComponent<T> {
     }
 
     this._dataSource = dataSource;
+  }
+
+  /**
+   * @summary - Set up a subscription for the provided data source.
+   *
+   * Based on the data source type, declare the observable.
+   *
+   * And we need to execute this subscription until the table component is destroyed.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _observeRenderChanges(): void {
+    if (!this.dataSource) {
+      return;
+    }
+
+    let dataStream: Observable<readonly T[]> | null = null;
+
+    if (isDataSource(this.dataSource)) {
+      dataStream = this.dataSource.connect(this);
+    }
+
+    if (isObservable(this.dataSource)) {
+      dataStream = this.dataSource as TableDataSourceInput<T>;
+    }
+
+    if (Array.isArray(this.dataSource)) {
+      dataStream = from(this.dataSource);
+    }
+
+    if (!dataStream) {
+      throw Error('Data stream is invalid!');
+    }
+
+    this._renderChangeSubscription = dataStream.pipe(takeUntil(this._onDestroy)).subscribe({
+      next: data => {
+        this._data = data;
+        this.renderRows();
+      },
+    });
   }
 
   /**
