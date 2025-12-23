@@ -12,6 +12,7 @@ import {
   HeaderRowOutlet,
   RowDef,
   FooterRowDef,
+  FooterRowOutlet,
 } from './row.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import {
     CellOutlet,
     HeaderRowOutlet,
     DataRowOutlet,
+    FooterRowOutlet,
     //
     HeaderRowDef,
     RowDef,

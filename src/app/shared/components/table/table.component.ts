@@ -39,8 +39,9 @@ import {
 import {
   HeaderRowOutlet,
   DataRowOutlet,
-  BaseRowDef,
+  FooterRowOutlet,
   CellOutlet,
+  BaseRowDef,
   HeaderRowDef,
   RowDef,
   FooterRowDef,
@@ -358,12 +359,22 @@ export class TableComponent<T> {
   private _footerRowDefChanged: boolean = true;
 
   /**
+   * @summary - Whether the table has rendered out all the outlets for the first time.
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  private _hasAllOutlets: boolean = false;
+
+  /**
    * @summary - Outlets in the table's template where the header, data rows, and footer will be inserted.
    *
    * @public
    */
   public headerRowOutlet: HeaderRowOutlet | null = null;
   public rowOutlet: DataRowOutlet | null = null;
+  public footerRowOutlet: FooterRowOutlet | null = null;
 
   constructor(...args: Array<unknown>);
 
@@ -389,10 +400,6 @@ export class TableComponent<T> {
     this._dataDiffer = this._differs
       .find([])
       .create((_i: number, dataRow: RenderRow<T>) => dataRow);
-  }
-
-  public outletAssigned() {
-    // console.log('assign all outlets');
   }
 
   /**
@@ -899,5 +906,21 @@ export class TableComponent<T> {
     }
 
     this._observeRenderChanges();
+  }
+
+  /**
+   * @summary - Invoked whenever an outlet is created and has been assigned to the table.
+   *
+   * @public
+   * @returns {void}
+   */
+  public outletAssigned(): void {
+    if (!this._hasAllOutlets && this.headerRowOutlet && this.rowOutlet && this.footerRowOutlet) {
+      this._hasAllOutlets = true;
+
+      if (this._canRender()) {
+        this._render();
+      }
+    }
   }
 }

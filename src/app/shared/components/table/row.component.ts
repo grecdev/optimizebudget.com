@@ -71,6 +71,28 @@ export class DataRowOutlet implements RowOutlet {
   }
 }
 
+@Directive({
+  selector: '[footerRowOutlet]',
+})
+export class FooterRowOutlet implements RowOutlet {
+  viewContainer: ViewContainerRef;
+  elementRef: ElementRef;
+
+  constructor(...args: Array<unknown>);
+
+  constructor(
+    viewContainer: ViewContainerRef,
+    elementRef: ElementRef,
+    @Inject(TABLE) table: TableComponent<unknown>
+  ) {
+    this.viewContainer = viewContainer;
+    this.elementRef = elementRef;
+
+    table.footerRowOutlet = this;
+    table.outletAssigned();
+  }
+}
+
 /**
  * Outlet for rendering cells inside a row.
  */
