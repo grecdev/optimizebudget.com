@@ -73,15 +73,6 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
 })
 export class TableComponent<T> {
   /**
-   * @summary - Whether the component is rendered on the server
-   *
-   * @type {boolean}
-   *
-   * @private
-   */
-  protected _isServer: boolean = false;
-
-  /**
    * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
    *
    * @private
@@ -94,6 +85,31 @@ export class TableComponent<T> {
    * @private
    */
   private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  /**
+   * @type {ElementRef}
+   *
+   * @private
+   */
+  private readonly _elementRef: ElementRef;
+
+  /**
+   * @summary - Role assigned to cell @Directives.
+   *
+   * @type {string | null}
+   *
+   * @private
+   */
+  private _cellRoleInternal: string | null = null;
+
+  /**
+   * @summary - Whether the component is rendered on the server
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  protected _isServer: boolean = false;
 
   /**
    * @summary - Subject that emits when the component has been destroyed.
@@ -389,9 +405,10 @@ export class TableComponent<T> {
   ) {
     this._viewRepeater = viewRepeaterStrategy;
     this._changeDetectorRef = changeDetectorRef;
+    this._elementRef = elementRef;
 
     if (!role && elementRef.nativeElement) {
-      elementRef.nativeElement.setAttribute('role', 'table');
+      elementRef.nativeElement.setAttribute('role', 'table') as ARIAMixin['role'];
     }
 
     this._isServer = isPlatformServer(platformId);
@@ -911,10 +928,10 @@ export class TableComponent<T> {
   /**
    * @summary - Invoked whenever an outlet is created and has been assigned to the table.
    *
-   * @public
+   * @private
    * @returns {void}
    */
-  public outletAssigned(): void {
+  private _outletAssigned(): void {
     if (!this._hasAllOutlets && this.headerRowOutlet && this.rowOutlet && this.footerRowOutlet) {
       this._hasAllOutlets = true;
 
@@ -922,5 +939,23 @@ export class TableComponent<T> {
         this._render();
       }
     }
+  }
+
+  /**
+   * @summary - Aria role attribute to apply to the table's cells based on table's own role.
+   *
+   * @public
+   * @returns {string|null}
+   */
+  public getCellRole(): string | null {
+    if (!this._cellRoleInternal) {
+      const TABLE_ROLE = this._elementRef.nativeElement.getAttribute('role') as ARIAMixin['role'];
+
+      const IS_GRID_CELL = ['grid', 'treegrid'].includes(TABLE_ROLE ?? '');
+
+      return IS_GRID_CELL ? 'gridcell' : 'cell';
+    }
+
+    return this._cellRoleInternal;
   }
 }
