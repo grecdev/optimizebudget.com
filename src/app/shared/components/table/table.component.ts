@@ -787,6 +787,54 @@ export class TableComponent<T> {
   }
 
   /**
+   * @summary - Clears any existing content in the header row outlet.
+   *
+   * And creates a new embedded view in the outlet using the header row definition.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _forceRenderHeaderRows(): void {
+    const IS_HEADER_OUTLET = this.headerRowOutlet && this.headerRowOutlet.viewContainer;
+
+    if (!IS_HEADER_OUTLET) {
+      throw Error('Cannot find header row outlet!');
+    }
+
+    if (this.headerRowOutlet!.viewContainer.length > 0) {
+      this.headerRowOutlet!.viewContainer.clear();
+    }
+
+    this._headerRowDefs.forEach((item, index) =>
+      this._renderRow(this.headerRowOutlet!, item, index)
+    );
+  }
+
+  /**
+   * @summary - Clears any existing content in the footer row outlet.
+   *
+   * And creates a new embedded view in the outlet using the footer row definition.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _forceRenderFooterRows(): void {
+    const IS_FOOTER_OUTLET = this.footerRowOutlet && this.footerRowOutlet.viewContainer;
+
+    if (!IS_FOOTER_OUTLET) {
+      throw Error('Cannot find footer row outlet!');
+    }
+
+    if (this.footerRowOutlet!.viewContainer.length > 0) {
+      this.footerRowOutlet!.viewContainer.clear();
+    }
+
+    this._footerRowDefs.forEach((item, index) =>
+      this._renderRow(this.footerRowOutlet!, item, index)
+    );
+  }
+
+  /**
    * @summary - Creates a new row template in the outlet and fills it
    * with the set of cell templates.
    *
@@ -805,7 +853,7 @@ export class TableComponent<T> {
     outlet: RowOutlet,
     rowDef: BaseRowDef,
     index: number,
-    context: RowContext<T>
+    context: RowContext<T> = {}
   ): EmbeddedViewRef<TableRefElement> {
     const VIEW = outlet.viewContainer.createEmbeddedView(
       rowDef.template,
