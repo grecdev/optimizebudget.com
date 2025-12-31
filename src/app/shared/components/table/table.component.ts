@@ -18,6 +18,8 @@ import {
   Input,
   ContentChildren,
   OnDestroy,
+  AfterContentChecked,
+  AfterContentInit,
 } from '@angular/core';
 
 import { isPlatformServer } from '@angular/common';
@@ -72,7 +74,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
     },
   ],
 })
-export class TableComponent<T> implements OnDestroy {
+export class TableComponent<T> implements AfterContentInit, AfterContentChecked, OnDestroy {
   /**
    * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
    *
@@ -1037,6 +1039,18 @@ export class TableComponent<T> implements OnDestroy {
    */
   private _canRender(): boolean {
     return this._hasAllOutlets && this._hasInitialized;
+  }
+
+  ngAfterContentInit() {
+    this._hasInitialized = true;
+  }
+
+  ngAfterContentChecked() {
+    const CAN_RENDER = this._canRender();
+
+    if (CAN_RENDER) {
+      this._render();
+    }
   }
 
   /**
