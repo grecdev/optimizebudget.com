@@ -95,6 +95,15 @@ export class TableComponent<T> implements OnDestroy {
   private readonly _elementRef: ElementRef;
 
   /**
+   * @summary - Check if the table is done initializing.
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  private _hasInitialized: boolean = false;
+
+  /**
    * @summary - Role assigned to cell @Directives.
    *
    * @type {string | null}
@@ -1018,6 +1027,16 @@ export class TableComponent<T> implements OnDestroy {
     }
 
     return this._cellRoleInternal;
+  }
+
+  /**
+   * @summary - Chec jif our table has all the required components and all data to start rendering.
+   *
+   * @private
+   * @returns {boolean}
+   */
+  private _canRender(): boolean {
+    return this._hasAllOutlets && this._hasInitialized;
   }
 
   /**
