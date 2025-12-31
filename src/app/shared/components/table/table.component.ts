@@ -17,6 +17,7 @@ import {
   IterableDiffers,
   Input,
   ContentChildren,
+  OnDestroy,
 } from '@angular/core';
 
 import { isPlatformServer } from '@angular/common';
@@ -71,7 +72,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
     },
   ],
 })
-export class TableComponent<T> {
+export class TableComponent<T> implements OnDestroy {
   /**
    * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
    *
@@ -420,6 +421,20 @@ export class TableComponent<T> {
   }
 
   /**
+   * @summary - Disconnect data source when this action is required.
+   *
+   * @param {TableDataSourceInput<T>} dataSource - Data source provided
+   *
+   * @private
+   * @returns {void}
+   */
+  private _disconnectDataSource(dataSource: TableDataSourceInput<T>): void {
+    if (isDataSource(dataSource)) {
+      dataSource.disconnect(this);
+    }
+  }
+
+  /**
    * @summary - Switch to the provided data source.
    *
    * We do this by resetting the data and subscribing from
@@ -437,9 +452,7 @@ export class TableComponent<T> {
   private _switchDataSource(dataSource: TableDataSourceInput<T>): void {
     this._data = null;
 
-    if (isDataSource(dataSource)) {
-      this.dataSource.disconnect(this);
-    }
+    this._disconnectDataSource(dataSource);
 
     if (this._renderChangeSubscription) {
       this._renderChangeSubscription.unsubscribe();
@@ -1005,5 +1018,29 @@ export class TableComponent<T> {
     }
 
     return this._cellRoleInternal;
+  }
+
+  /**
+   * @summary - Hook to reset whatever you need.
+   */
+  ngOnDestroy() {
+    const VIEW_CONTAINERS = [this.rowOutlet, this.headerRowOutlet, this.footerRowOutlet]
+      .filter(item => item && item.viewContainer)
+      .map(item => item!.viewContainer);
+
+    const MAPS = [this._cachedRenderRowsMap, this._columnDefsByName];
+
+    [...VIEW_CONTAINERS, ...MAPS].forEach(item => item.clear());
+
+    this._headerRowDefs = [];
+    this._rowDefs = [];
+    this._footerRowDefs = [];
+
+    this._defaultRowDef = null;
+
+    this._onDestroy.next();
+    this._onDestroy.complete();
+
+    this._disconnectDataSource(this.dataSource);
   }
 }
