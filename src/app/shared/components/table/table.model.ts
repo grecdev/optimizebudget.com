@@ -2,7 +2,8 @@ import { TemplateRef, ViewContainerRef } from '@angular/core';
 
 import { type Observable } from 'rxjs';
 
-import { RowDef } from '@shared/components/table/row.component';
+import { FooterRowDef, HeaderRowDef, RowDef } from './row.component';
+import { ColumnDef } from './cell.component';
 
 type TableRefElement =
   | HTMLTableElement
@@ -64,4 +65,17 @@ interface RowContext<T> {
  */
 type TableDataSourceInput<T> = readonly T[] | Observable<T> | DataSource<T>;
 
-export type { ICellDef, TableRefElement, RowOutlet, RenderRow, RowContext, TableDataSourceInput };
+/**
+ * @summary - Query list content retrieved from @ContentChildren decorator.
+ */
+type QueryListDefs<T> = HeaderRowDef<T> | RowDef<T> | FooterRowDef<T> | ColumnDef;
+
+export type {
+  ICellDef,
+  TableRefElement,
+  RowOutlet,
+  RenderRow,
+  RowContext,
+  TableDataSourceInput,
+  QueryListDefs,
+};

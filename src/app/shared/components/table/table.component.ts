@@ -37,6 +37,7 @@ import {
   type RowOutlet,
   type TableRefElement,
   type TableDataSourceInput,
+  type QueryListDefs,
 } from './table.model';
 
 import {
@@ -534,9 +535,9 @@ export class TableComponent<T> implements AfterContentInit, AfterContentChecked,
    * @returns {void}
    */
   private _cacheRowDefs(): void {
-    this._headerRowDefs = this._getOwnDefs(this._contentHeaderRowDefs);
-    this._rowDefs = this._getOwnDefs(this._contentRowDefs);
-    this._footerRowDefs = this._getOwnDefs(this._contentFooterRowDefs);
+    this._headerRowDefs = this._getOwnDefs<HeaderRowDef<T>>(this._contentHeaderRowDefs);
+    this._rowDefs = this._getOwnDefs<RowDef<T>>(this._contentRowDefs);
+    this._footerRowDefs = this._getOwnDefs<FooterRowDef<T>>(this._contentFooterRowDefs);
 
     const DEFAULT_ROW_DEFS = this._rowDefs.filter(item => !item.when);
 
@@ -558,7 +559,7 @@ export class TableComponent<T> implements AfterContentInit, AfterContentChecked,
   private _cacheColumnDefs(): void {
     this._columnDefsByName.clear();
 
-    const COLUMN_DEFS = this._getOwnDefs(this._contentColumnDefs);
+    const COLUMN_DEFS = this._getOwnDefs<ColumnDef>(this._contentColumnDefs);
 
     COLUMN_DEFS.forEach(item => {
       if (this._columnDefsByName.has(item.name)) {
@@ -1000,10 +1001,10 @@ export class TableComponent<T> implements AfterContentInit, AfterContentChecked,
   /**
    * @summary - Invoked whenever an outlet is created and has been assigned to the table.
    *
-   * @private
+   * @public
    * @returns {void}
    */
-  private _outletAssigned(): void {
+  outletAssigned(): void {
     if (!this._hasAllOutlets && this.headerRowOutlet && this.rowOutlet && this.footerRowOutlet) {
       this._hasAllOutlets = true;
 
@@ -1039,6 +1040,24 @@ export class TableComponent<T> implements AfterContentInit, AfterContentChecked,
    */
   private _canRender(): boolean {
     return this._hasAllOutlets && this._hasInitialized;
+  }
+
+  /**
+   * @summary - Filters definitions that belong to this table from a `QueryList`.
+   *
+   * @param {QueryList<QueryListDefs>} items - Items to filter.
+   *
+   * @private
+   * @returns {Array<QueryListDefs>}
+   */
+  private _getOwnDefs<T>(items: QueryList<QueryListDefs<T>> | null): Array<T> {
+    if (!items) {
+      return [];
+    }
+
+    const FILTERED_ITEMS = items.filter(item => !item.table || item.table === this);
+
+    return FILTERED_ITEMS as Array<T>;
   }
 
   ngAfterContentInit() {

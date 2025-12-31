@@ -218,6 +218,8 @@ export class BaseRowDef implements OnChanges {
   ],
 })
 export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
+  table: TableComponent<TableRefElement>;
+
   constructor(...args: Array<unknown>);
   constructor(
     templateRef: TemplateRef<TableRefElement>,
@@ -225,6 +227,8 @@ export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
     @Inject(TABLE) table: TableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
+
+    this.table = table;
   }
 
   override ngOnChanges(changes: SimpleChanges) {
@@ -252,6 +256,8 @@ export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
   ],
 })
 export class RowDef<T> extends BaseRowDef {
+  table: TableComponent<TableRefElement>;
+
   /**
    * @summary - Function that should return true if  this row should be used
    * for the provided index and row data.
@@ -271,6 +277,8 @@ export class RowDef<T> extends BaseRowDef {
     @Inject(TABLE) table: TableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
+
+    this.table = table;
   }
 }
 
@@ -290,6 +298,8 @@ export class RowDef<T> extends BaseRowDef {
   ],
 })
 export class FooterRowDef<T> extends BaseRowDef implements OnChanges {
+  table: TableComponent<TableRefElement>;
+
   constructor(...args: Array<unknown>);
   constructor(
     templateRef: TemplateRef<TableRefElement>,
@@ -297,6 +307,8 @@ export class FooterRowDef<T> extends BaseRowDef implements OnChanges {
     @Inject(TABLE) table: TableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
+
+    this.table = table;
   }
 
   override ngOnChanges(changes: SimpleChanges) {
