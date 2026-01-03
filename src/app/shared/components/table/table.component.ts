@@ -24,7 +24,15 @@ import {
 
 import { isPlatformServer } from '@angular/common';
 
-import { type Observable, type Subscription, isObservable, from, takeUntil, Subject } from 'rxjs';
+import {
+  type Observable,
+  type Subscription,
+  isObservable,
+  from,
+  takeUntil,
+  Subject,
+  BehaviorSubject,
+} from 'rxjs';
 
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
@@ -38,6 +46,8 @@ import {
   type TableRefElement,
   type TableDataSourceInput,
   type QueryListDefs,
+  type ListRange,
+  type CollectionViewer,
 } from './table.model';
 
 import {
@@ -75,7 +85,22 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
     },
   ],
 })
-export class TableComponent<T> implements AfterContentInit, AfterContentChecked, OnDestroy {
+export class TableComponent<T>
+  implements AfterContentInit, AfterContentChecked, OnDestroy, CollectionViewer
+{
+  /**
+   * @summary - The latest information on what rows are displayed to the screen.
+   *
+   * Used by the `DataSource` class.
+   *
+   *
+   * @public
+   */
+  readonly viewChange = new BehaviorSubject<ListRange>({
+    start: 0,
+    end: Number.MAX_VALUE,
+  });
+
   /**
    * @type {_ViewRepeaterStrategy<T, RenderRow<T>, RowContext<T>>}
    *

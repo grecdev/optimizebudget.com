@@ -70,6 +70,21 @@ type TableDataSourceInput<T> = readonly T[] | Observable<T> | DataSource<T>;
  */
 type QueryListDefs<T> = HeaderRowDef<T> | RowDef<T> | FooterRowDef<T> | ColumnDef;
 
+interface ListRange {
+  start: number;
+  end: number;
+}
+
+/**
+ * @summary - Interface for any component that provides a view of some data collection
+ * and wants to provide information regarding the view and changes made.
+ *
+ * P.S: Maybe I need to move this outside the table component, idk for now.
+ */
+interface CollectionViewer {
+  viewChange: Observable<ListRange>;
+}
+
 export type {
   ICellDef,
   TableRefElement,
@@ -78,4 +93,6 @@ export type {
   RowContext,
   TableDataSourceInput,
   QueryListDefs,
+  ListRange,
+  CollectionViewer,
 };
