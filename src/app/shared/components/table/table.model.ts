@@ -2,6 +2,8 @@ import { TemplateRef, ViewContainerRef } from '@angular/core';
 
 import { type Observable } from 'rxjs';
 
+import { DataSource } from './data-source';
+
 import { FooterRowDef, HeaderRowDef, RowDef } from './row.component';
 import { ColumnDef } from './cell.component';
 
@@ -63,7 +65,7 @@ interface RowContext<T> {
 /**
  * @summary - Possible types that can be set as the data source.
  */
-type TableDataSourceInput<T> = readonly T[] | Observable<T> | DataSource<T>;
+type TableDataSourceInput<T> = readonly T[] | Observable<readonly T[]> | DataSource<T>;
 
 /**
  * @summary - Query list content retrieved from @ContentChildren decorator.

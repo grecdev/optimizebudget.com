@@ -34,6 +34,8 @@ import {
   BehaviorSubject,
 } from 'rxjs';
 
+import { isDataSource } from './data-source';
+
 import { _VIEW_REPEATER_STRATEGY, TABLE } from './tokens';
 
 import { _ViewRepeaterStrategy } from './view-repeater-strategy';
@@ -225,7 +227,7 @@ export class TableComponent<T>
    *
    * @private
    */
-  private _dataSource: TableDataSourceInput<T>;
+  private _dataSource: TableDataSourceInput<T> = [];
 
   /**
    * @summary - The latest data provided by the data source
@@ -524,14 +526,14 @@ export class TableComponent<T>
       return;
     }
 
-    let dataStream: Observable<readonly T[]> | null = null;
+    let dataStream: TableDataSourceInput<T> | null = null;
 
     if (isDataSource(this.dataSource)) {
       dataStream = this.dataSource.connect(this);
     }
 
     if (isObservable(this.dataSource)) {
-      dataStream = this.dataSource as TableDataSourceInput<T>;
+      dataStream = this.dataSource;
     }
 
     if (Array.isArray(this.dataSource)) {
