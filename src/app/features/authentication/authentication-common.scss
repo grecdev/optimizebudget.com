@@ -1,5 +1,8 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'spacing' as *;
+@use 'color-palette' as *;
 
 app-login,
 app-register,
@@ -42,5 +45,5 @@ app-forgot-password {
 }
 
 .light-text {
-  color: map.get($color-palette, 'gray', 'variant-2');
+  color: map.get($color-palette, 'gray', 'variant-4');
 }

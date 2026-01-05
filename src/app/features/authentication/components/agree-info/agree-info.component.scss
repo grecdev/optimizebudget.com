@@ -1,9 +1,11 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'color-palette' as *;
 
 .agree-info {
   text-align: center;
   width: 15rem;
   font-size: 0.8rem;
-  color: map.get($color-palette, 'gray', 'variant-2');
+  color: map.get($color-palette, 'gray', 'variant-4');
 }

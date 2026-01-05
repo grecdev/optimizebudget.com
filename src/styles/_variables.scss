@@ -1,36 +1,6 @@
 @use 'sass:map';
 
-// Colors
-$color-palette: (
-  'primary': (
-    'default': #171717,
-    'variant-2': #404040,
-  ),
-  'secondary': (
-    'default': #008000,
-    'variant-2': #e7f1e7,
-    'variant-3': #459635,
-  ),
-  'gray': (
-    'default': #eeeeee,
-    'variant-2': #c9c9c9,
-    'variant-3': #a1a1a1,
-    'variant-4': #737373,
-  ),
-  'body-text-color': (
-    'default': #000,
-  ),
-  'common': (
-    'white': #fff,
-  ),
-  'red': (
-    'default': #db2c2c,
-    'variant-2': #ff8b8b,
-  ),
-  'green': (
-    'default': #5ee942,
-  ),
-);
+@use 'color-palette' as *;
 
 // Layout
 $container-width: (
@@ -41,14 +11,6 @@ $container-width: (
 );
 
 $layout-border: 2px solid map.get($color-palette, 'gray', 'default');
-
-// Spacing
-$spacing: (
-  'sm': 0.5rem,
-  'default': 1rem,
-  'md': 1.5rem,
-  'lg': 2rem,
-);
 
 // Shape
 $border-radius: (
@@ -87,15 +49,6 @@ $breakpoints: (
   'lg': 850px,
   'xl': 1024px,
   'xxl': 1280px,
-);
-
-// Misc
-$font-size: (
-  'h1': 1.8rem,
-  'h2': 1.5rem,
-  'h3': 1.3rem,
-  'h4': 1.1rem,
-  'body': 0.9rem,
 );
 
 $overlap-index-everything: 999;
