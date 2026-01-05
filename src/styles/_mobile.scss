@@ -1,5 +1,7 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'spacing' as *;
 
 @media screen and (max-width: map.get($breakpoints, xl)) {
   /* Prevent adjustments of font size after orientation changes in iOS. @normalize-css  */

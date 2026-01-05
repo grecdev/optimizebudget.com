@@ -1,5 +1,7 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'spacing' as *;
 
 .router-container {
   & router-outlet + * {

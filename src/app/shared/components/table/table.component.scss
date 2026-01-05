@@ -1,0 +1,38 @@
+@use 'sass:map';
+
+@use 'variables';
+@use 'spacing' as *;
+@use 'color-palette' as *;
+
+.app-table {
+  overflow: hidden;
+  border: variables.$layout-border;
+  width: 100%;
+
+  & thead {
+    border-bottom: variables.$layout-border;
+
+    & tr th {
+      font-weight: 500;
+    }
+  }
+
+  & thead tr th,
+  & tbody tr td {
+    text-align: left;
+    padding: map.get($spacing, 'sm');
+  }
+
+  & tbody tr {
+    border-bottom: variables.$layout-border;
+    transition: background-color 100ms linear;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: map.get($color-palette, 'gray', 'variant-5');
+    }
+  }
+}

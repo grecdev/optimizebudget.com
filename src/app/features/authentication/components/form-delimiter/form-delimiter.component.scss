@@ -1,5 +1,8 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'color-palette' as *;
+@use 'spacing' as *;
 
 .delimiter {
   position: relative;

@@ -1,7 +1,10 @@
-@use 'variables' as *;
 @use 'sass:color';
 @use 'sass:map';
 @use 'sass:list';
+
+@use 'variables' as *;
+@use 'color-palette' as *;
+@use 'spacing' as *;
 
 $colorMap: (
   'primary': (

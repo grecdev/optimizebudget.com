@@ -85,6 +85,9 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
       useClass: _ViewRepeaterStrategy,
     },
   ],
+  host: {
+    class: 'app-table',
+  },
 })
 export class AppTableComponent<T>
   implements AfterContentInit, AfterContentChecked, OnDestroy, CollectionViewer

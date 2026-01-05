@@ -1,5 +1,7 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'variables' as *;
+@use 'color-palette' as *;
 
 .app-icon-button {
   $parent-size: 35px;

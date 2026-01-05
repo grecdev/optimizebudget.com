@@ -1,5 +1,7 @@
-@use 'variables' as *;
 @use 'sass:map';
+
+@use 'spacing' as *;
+@use 'variables' as *;
 
 :host {
   display: flex;
