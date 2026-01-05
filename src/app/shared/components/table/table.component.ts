@@ -203,7 +203,10 @@ export class TableComponent<T>
    * @public
    * @returns {TableDataSourceInput<T>}
    */
-  @Input() public get dataSource(): TableDataSourceInput<T> {
+  @Input({
+    required: true,
+  })
+  public get dataSource(): TableDataSourceInput<T> {
     return this._dataSource;
   }
 

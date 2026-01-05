@@ -1,4 +1,4 @@
-import { connectable, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { CollectionViewer } from './table.model';
 
@@ -45,15 +45,5 @@ export abstract class DataSource<T> {
  * @public
  * @returns {boolean}
  */
-export const isDataSource = (target: any): target is DataSource<any> => {
-  const CONNECTABLE = connectable(target) as any;
-
-  const INSTANCE_OF_CONNECTABLE = target instanceof CONNECTABLE;
-
-  return (
-    target &&
-    Object.hasOwn(target, 'connect') &&
-    typeof target.connect === 'function' &&
-    !INSTANCE_OF_CONNECTABLE
-  );
-};
+export const isDataSource = (target: any): target is DataSource<any> =>
+  target && Object.hasOwn(target, 'connect') && typeof target.connect === 'function';

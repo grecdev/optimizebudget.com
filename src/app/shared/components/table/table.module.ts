@@ -15,39 +15,23 @@ import {
   FooterRowOutlet,
 } from './row.component';
 
+const DECLARATIONS = [
+  TableComponent,
+  HeaderRow,
+  HeaderCell,
+  Cell,
+  FooterCell,
+  HeaderRowDef,
+  RowDef,
+  FooterRowDef,
+  CellDef,
+  ColumnDef,
+  HeaderCellDef,
+];
+
 @NgModule({
-  declarations: [
-    TableComponent,
-    HeaderRow,
-    HeaderCell,
-    Cell,
-    FooterCell,
-    CellOutlet,
-    HeaderRowOutlet,
-    DataRowOutlet,
-    FooterRowOutlet,
-    //
-    HeaderRowDef,
-    RowDef,
-    FooterRowDef,
-    CellDef,
-    ColumnDef,
-    HeaderCellDef,
-  ],
+  declarations: [...DECLARATIONS, CellOutlet, HeaderRowOutlet, DataRowOutlet, FooterRowOutlet],
   imports: [CommonModule],
-  exports: [
-    TableComponent,
-    HeaderRow,
-    HeaderCell,
-    Cell,
-    FooterCell,
-    //
-    HeaderRowDef,
-    RowDef,
-    FooterRowDef,
-    CellDef,
-    ColumnDef,
-    HeaderCellDef,
-  ],
+  exports: [...DECLARATIONS],
 })
 export class TableModule {}

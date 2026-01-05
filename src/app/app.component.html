@@ -14,9 +14,21 @@
 <!--  <router-outlet name="authentication"></router-outlet>-->
 <!--</ng-template>-->
 
-<table app-table>
-  <ng-container appColumnDef="score">
-    <th app-header-cell *appHeaderCellDef>Score</th>
+<table app-table [dataSource]="dataSource">
+  <ng-container appColumnDef="position">
+    <th app-header-cell *appHeaderCellDef>Position</th>
+  </ng-container>
+
+  <ng-container appColumnDef="name">
+    <th app-header-cell *appHeaderCellDef>Name</th>
+  </ng-container>
+
+  <ng-container appColumnDef="weight">
+    <th app-header-cell *appHeaderCellDef>Weight</th>
+  </ng-container>
+
+  <ng-container appColumnDef="symbol">
+    <th app-header-cell *appHeaderCellDef>Symbol</th>
   </ng-container>
 
   <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
