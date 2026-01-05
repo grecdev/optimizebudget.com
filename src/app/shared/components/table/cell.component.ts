@@ -3,7 +3,7 @@ import { ContentChild, Directive, ElementRef, Inject, Input, TemplateRef } from 
 import { TABLE } from './tokens';
 
 import type { ICellDef, TableRefElement } from './table.model';
-import { TableComponent } from './table.component';
+import { AppTableComponent } from './table.component';
 
 /**
  * @summary - Base class for the cell, adds a classname that identifies the column it renders in.
@@ -115,18 +115,18 @@ export class CellDef implements ICellDef {
   selector: '[appColumnDef]',
 })
 export class ColumnDef {
-  public table: TableComponent<unknown>;
+  public table: AppTableComponent<unknown>;
   /**
    * Column definition class name
    *
-   * @private
+   * @public
    */
-  columnCssClassName: string[] = [];
+  public columnCssClassName: string[] = [];
 
   /**
    * Unique column definition name
    *
-   * @private
+   * @public
    */
   @Input('appColumnDef') get name(): string {
     return this._name;
@@ -149,7 +149,7 @@ export class ColumnDef {
   @ContentChild(CellDef) cellDef: CellDef | null = null;
 
   constructor(...args: Array<unknown>);
-  constructor(@Inject(TABLE) table: TableComponent<unknown>) {
+  constructor(@Inject(TABLE) table: AppTableComponent<unknown>) {
     this.table = table;
   }
 

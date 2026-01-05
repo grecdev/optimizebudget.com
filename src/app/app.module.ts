@@ -12,7 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // Remove
-import { TableModule } from '@shared/components/table/table.module';
+import { AppTableModule } from '@shared/components/table/table.module';
 
 @NgModule({
   declarations: [AppComponent, RouterContainerComponent],
@@ -25,7 +25,7 @@ import { TableModule } from '@shared/components/table/table.module';
     HeaderModule,
     SidebarModule,
     // Remove
-    TableModule,
+    AppTableModule,
   ],
   bootstrap: [AppComponent],
 })

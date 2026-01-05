@@ -25,13 +25,12 @@ import {
 import { isPlatformServer } from '@angular/common';
 
 import {
-  type Observable,
   type Subscription,
   isObservable,
-  from,
   takeUntil,
   Subject,
   BehaviorSubject,
+  of as observableOf,
 } from 'rxjs';
 
 import { isDataSource } from './data-source';
@@ -79,7 +78,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
   providers: [
     {
       provide: TABLE,
-      useExisting: TableComponent,
+      useExisting: AppTableComponent,
     },
     {
       provide: _VIEW_REPEATER_STRATEGY,
@@ -87,7 +86,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
     },
   ],
 })
-export class TableComponent<T>
+export class AppTableComponent<T>
   implements AfterContentInit, AfterContentChecked, OnDestroy, CollectionViewer
 {
   /**
@@ -235,11 +234,11 @@ export class TableComponent<T>
   /**
    * @summary - The latest data provided by the data source
    *
-   * @type {readonly T[] | null}
+   * @type {readonly T[]}
    *
    * @private
    */
-  private _data: readonly T[] | null = null;
+  private _data: readonly T[] = [];
 
   /**
    * @type {IterableDiffers}
@@ -492,7 +491,7 @@ export class TableComponent<T>
    * @returns {void}
    */
   private _switchDataSource(dataSource: TableDataSourceInput<T>): void {
-    this._data = null;
+    this._data = [];
 
     this._disconnectDataSource(dataSource);
 
@@ -540,7 +539,7 @@ export class TableComponent<T>
     }
 
     if (Array.isArray(this.dataSource)) {
-      dataStream = from(this.dataSource);
+      dataStream = observableOf(this.dataSource);
     }
 
     if (!dataStream) {
@@ -571,7 +570,7 @@ export class TableComponent<T>
 
     const DEFAULT_ROW_DEFS = this._rowDefs.filter(item => !item.when);
 
-    if (DEFAULT_ROW_DEFS.length > 0) {
+    if (DEFAULT_ROW_DEFS.length > 1) {
       throw Error(
         'Only one row without `when` predicate is allowed\nOr maybe you need to have a `multiTemplateDataRows` table.'
       );
@@ -687,7 +686,7 @@ export class TableComponent<T>
    * @private
    * @returns {Array<RenderRow<T>>}
    */
-  private _getAllRenderRows() {
+  private _getAllRenderRows(): Array<RenderRow<T>> {
     const RENDER_ROWS: Array<RenderRow<T>> = [];
     const PREV_CACHED_RENDER_ROWS = this._cachedRenderRowsMap;
 
@@ -726,8 +725,6 @@ export class TableComponent<T>
 
         RENDER_ROWS.push(INNER_ITEM);
       }
-
-      return RENDER_ROWS;
     }
 
     return RENDER_ROWS;

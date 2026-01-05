@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TableComponent } from './table.component';
+import { AppTableComponent } from './table.component';
 import { HeaderCell, Cell, FooterCell, HeaderCellDef, CellDef, ColumnDef } from './cell.component';
 
 import {
@@ -13,14 +13,17 @@ import {
   RowDef,
   FooterRowDef,
   FooterRowOutlet,
+  Row,
 } from './row.component';
 
 const DECLARATIONS = [
-  TableComponent,
+  AppTableComponent,
   HeaderRow,
+  Row,
   HeaderCell,
   Cell,
   FooterCell,
+  //
   HeaderRowDef,
   RowDef,
   FooterRowDef,
@@ -34,4 +37,4 @@ const DECLARATIONS = [
   imports: [CommonModule],
   exports: [...DECLARATIONS],
 })
-export class TableModule {}
+export class AppTableModule {}

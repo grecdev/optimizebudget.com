@@ -16,20 +16,25 @@
 
 <table app-table [dataSource]="dataSource">
   <ng-container appColumnDef="position">
-    <th app-header-cell *appHeaderCellDef>Position</th>
+    <th app-header-cell *appHeaderCellDef>No.</th>
+    <td app-cell *appCellDef="let element">{{ element.position }}</td>
   </ng-container>
 
   <ng-container appColumnDef="name">
     <th app-header-cell *appHeaderCellDef>Name</th>
+    <td app-cell *appCellDef="let element">{{ element.name }}</td>
   </ng-container>
 
   <ng-container appColumnDef="weight">
     <th app-header-cell *appHeaderCellDef>Weight</th>
+    <td app-cell *appCellDef="let element">{{ element.weight }}</td>
   </ng-container>
 
   <ng-container appColumnDef="symbol">
     <th app-header-cell *appHeaderCellDef>Symbol</th>
+    <td app-cell *appCellDef="let element">{{ element.symbol }}</td>
   </ng-container>
 
   <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
+  <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
 </table>

@@ -18,7 +18,7 @@ import {
 import { TableRefElement, RowOutlet } from './table.model';
 import { TABLE } from './tokens';
 
-import { TableComponent } from './table.component';
+import { AppTableComponent } from './table.component';
 import { CellDef, ColumnDef } from './cell.component';
 
 const ROW_TEMPLATE = '<ng-container cellOutlet></ng-container>';
@@ -35,7 +35,7 @@ export class HeaderRowOutlet implements RowOutlet {
   constructor(
     viewContainer: ViewContainerRef,
     elementRef: ElementRef,
-    @Inject(TABLE) table: TableComponent<unknown>
+    @Inject(TABLE) table: AppTableComponent<unknown>
   ) {
     this.viewContainer = viewContainer;
     this.elementRef = elementRef;
@@ -61,7 +61,7 @@ export class DataRowOutlet implements RowOutlet {
   constructor(
     viewContainerRef: ViewContainerRef,
     elementRef: ElementRef,
-    @Inject(TABLE) table: TableComponent<unknown>
+    @Inject(TABLE) table: AppTableComponent<unknown>
   ) {
     this.viewContainer = viewContainerRef;
     this.elementRef = elementRef;
@@ -83,7 +83,7 @@ export class FooterRowOutlet implements RowOutlet {
   constructor(
     viewContainer: ViewContainerRef,
     elementRef: ElementRef,
-    @Inject(TABLE) table: TableComponent<unknown>
+    @Inject(TABLE) table: AppTableComponent<unknown>
   ) {
     this.viewContainer = viewContainer;
     this.elementRef = elementRef;
@@ -153,6 +153,21 @@ export class CellOutlet implements OnDestroy {
 export class HeaderRow {}
 
 /**
+ * Row template component that contains the cell outlet.
+ */
+@Component({
+  selector: 'tr[app-row]',
+  template: ROW_TEMPLATE,
+  host: {
+    class: 'app-header-row',
+    role: 'row',
+  },
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class Row {}
+
+/**
  * Base class for row definitions to check columns inputs for changes and notifying the table.
  */
 @Directive()
@@ -193,12 +208,28 @@ export class BaseRowDef implements OnChanges {
     return this._columnsDiffer.diff(this.columns);
   }
 
+  /**
+   * @summary - Extract cell template from its view container.
+   *
+   * @param {ColumnDef} column - The column definition `<td></td>` element.
+   *
+   * @public
+   * @returns {TemplateRef<TableRefElement> | null}
+   */
   extractCellTemplate(column: ColumnDef): TemplateRef<TableRefElement> | null {
-    if (this instanceof HeaderRowDef && column.headerCellDef) {
+    if (!column.headerCellDef) {
+      throw Error(`Header cell definition has not been found for column: ${column.name}!`);
+    }
+
+    if (!column.cellDef) {
+      throw Error(`Cell definition has not been found for column: ${column.name}!`);
+    }
+
+    if (this instanceof HeaderRowDef) {
       return column.headerCellDef.template;
     }
 
-    return column.cellDef && column.cellDef.template;
+    return column.cellDef.template;
   }
 }
 
@@ -218,13 +249,13 @@ export class BaseRowDef implements OnChanges {
   ],
 })
 export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
-  table: TableComponent<TableRefElement>;
+  table: AppTableComponent<TableRefElement>;
 
   constructor(...args: Array<unknown>);
   constructor(
     templateRef: TemplateRef<TableRefElement>,
     iterableDiffers: IterableDiffers,
-    @Inject(TABLE) table: TableComponent<TableRefElement>
+    @Inject(TABLE) table: AppTableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
 
@@ -247,16 +278,16 @@ export class HeaderRowDef<T> extends BaseRowDef implements OnChanges {
   inputs: [
     {
       name: 'columns',
-      alias: 'rowDefColumns',
+      alias: 'appRowDefColumns',
     },
     {
       name: 'when',
-      alias: 'rowDefWhen',
+      alias: 'appRowDefWhen',
     },
   ],
 })
 export class RowDef<T> extends BaseRowDef {
-  table: TableComponent<TableRefElement>;
+  table: AppTableComponent<TableRefElement>;
 
   /**
    * @summary - Function that should return true if  this row should be used
@@ -274,7 +305,7 @@ export class RowDef<T> extends BaseRowDef {
   constructor(
     templateRef: TemplateRef<TableRefElement>,
     iterableDiffers: IterableDiffers,
-    @Inject(TABLE) table: TableComponent<TableRefElement>
+    @Inject(TABLE) table: AppTableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
 
@@ -298,13 +329,13 @@ export class RowDef<T> extends BaseRowDef {
   ],
 })
 export class FooterRowDef<T> extends BaseRowDef implements OnChanges {
-  table: TableComponent<TableRefElement>;
+  table: AppTableComponent<TableRefElement>;
 
   constructor(...args: Array<unknown>);
   constructor(
     templateRef: TemplateRef<TableRefElement>,
     iterableDiffers: IterableDiffers,
-    @Inject(TABLE) table: TableComponent<TableRefElement>
+    @Inject(TABLE) table: AppTableComponent<TableRefElement>
   ) {
     super(templateRef, iterableDiffers);
 
