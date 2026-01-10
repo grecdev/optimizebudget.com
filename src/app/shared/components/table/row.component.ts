@@ -159,7 +159,7 @@ export class HeaderRow {}
   selector: 'tr[app-row]',
   template: ROW_TEMPLATE,
   host: {
-    class: 'app-header-row',
+    class: 'app-row',
     role: 'row',
   },
   encapsulation: ViewEncapsulation.None,

@@ -6,11 +6,11 @@
 
 .app-table {
   overflow: hidden;
-  border: variables.$layout-border;
   width: 100%;
 
   & thead {
     border-bottom: variables.$layout-border;
+    background-color: map.get($color-palette, 'gray', 'default');
 
     & tr th {
       font-weight: 500;
