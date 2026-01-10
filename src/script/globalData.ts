@@ -1,7 +1,7 @@
-import { Route } from '@script/interfaces';
-import { ApiEndpoints, RoutesName } from '@script/types';
-
 import { environment } from '@environments/environment';
+
+import { type ApiEndpoints, type RoutesName } from '@shared/models/types';
+import { type Route } from '@shared/models/interfaces';
 
 const allRoutes: Record<RoutesName, Route> = {
   overview: {

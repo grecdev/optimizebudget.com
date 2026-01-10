@@ -8,10 +8,10 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import {ThemeVariant, ThemeColor} from '@script/types';
+import { type ThemeVariant, type ThemeColor } from '@shared/models/types';
 
-import {TextFieldLabelOptions} from './form-field.model';
-import {AppFormFieldControl} from './form-field-control';
+import { TextFieldLabelOptions } from './form-field.model';
+import { AppFormFieldControl } from './form-field-control';
 
 /**
  * @summary - An input element used inside a form component, can be either controlled or uncontrolled
@@ -53,9 +53,9 @@ import {AppFormFieldControl} from './form-field-control';
   },
 })
 export class AppFormField {
-  @Input({required: true}) variant!: ThemeVariant;
-  @Input({required: true}) color!: ThemeColor;
-  @Input({required: true}) labelOptions!: TextFieldLabelOptions;
+  @Input({ required: true }) variant!: ThemeVariant;
+  @Input({ required: true }) color!: ThemeColor;
+  @Input({ required: true }) labelOptions!: TextFieldLabelOptions;
   @Input() error!: string;
 
   @ViewChild('appLabel') appLabel: ElementRef<HTMLElement> | undefined;

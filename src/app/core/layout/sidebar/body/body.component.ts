@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { type Route } from '@script/interfaces';
 import { allRoutes } from '@script/globalData';
+import { Route } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-sidebar-body',
