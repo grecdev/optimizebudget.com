@@ -6,6 +6,7 @@
 .widget-box {
   display: grid;
   grid-template-rows: auto 1fr;
+  gap: map.get($spacing, 'sm');
 
   border: $layout-border;
   border-radius: map.get($border-radius, 'default');
@@ -15,7 +16,6 @@
   overflow: hidden;
 
   & [app-widget-box-title] {
-    margin-bottom: map.get($spacing, 'sm');
     text-transform: capitalize;
   }
 }

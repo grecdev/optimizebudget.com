@@ -1,7 +1,15 @@
+@use 'sass:map';
+
+@use 'spacing' as *;
+
 .row-1 {
+  display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: map.get($spacing, 'md');
 }
 
 .row-2 {
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: map.get($spacing, 'md');
 }

@@ -5,12 +5,9 @@
 
 .router-container {
   & router-outlet + * {
-    padding: map.get($spacing, 'default');
+    display: grid;
+    gap: map.get($spacing, 'md');
 
-    &,
-    & > * {
-      display: grid;
-      gap: map.get($spacing, 'md');
-    }
+    padding: map.get($spacing, 'default');
   }
 }

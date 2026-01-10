@@ -1,0 +1,32 @@
+<app-widget-box>
+  <h4 app-widget-box-title>Top expenses last month</h4>
+
+  <table app-table [dataSource]="dataSource">
+    <ng-container [appColumnDef]="expenseItemKey.NAME">
+      <th app-header-cell *appHeaderCellDef>Name</th>
+      <td app-cell *appCellDef="let element">{{ element[expenseItemKey.NAME] }}</td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="expenseItemKey.CATEGORY">
+      <th app-header-cell *appHeaderCellDef>Category</th>
+      <td app-cell *appCellDef="let element">{{ element[expenseItemKey.CATEGORY] }}</td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="expenseItemKey.PRICE">
+      <th app-header-cell *appHeaderCellDef>Price</th>
+      <td app-cell *appCellDef="let element">
+        {{ element[expenseItemKey.PRICE] | currency: 'USD' }}
+      </td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="expenseItemKey.TIMESTAMP">
+      <th app-header-cell *appHeaderCellDef>Date</th>
+      <td app-cell *appCellDef="let element">
+        {{ element[expenseItemKey.TIMESTAMP] | date: 'dd MMMM yyy' }}
+      </td>
+    </ng-container>
+
+    <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
+    <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</app-widget-box>
