@@ -2,6 +2,7 @@
 
 @use 'variables' as *;
 @use 'color-palette' as *;
+@use 'shape' as *;
 
 .app-icon-button {
   $parent-size: 35px;

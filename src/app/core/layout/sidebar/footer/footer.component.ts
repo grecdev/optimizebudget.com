@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-
-import { Route } from '@script/interfaces';
+import { Route } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-sidebar-footer',

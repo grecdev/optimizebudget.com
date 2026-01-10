@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { type ExpenseItem, ExpenseItemKey, CategoryType } from './top-expenses.model';
+import { CategoryType } from '@shared/models/enums';
+import { type ExpenseItem, ExpenseItemKey } from './top-expenses.model';
 
 const TOP_EXPENSES: Array<ExpenseItem> = [
   {

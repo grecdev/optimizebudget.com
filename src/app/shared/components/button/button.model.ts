@@ -1,4 +1,4 @@
-import { ThemeVariant } from '@script/types';
+import { type ThemeVariant } from '@shared/models/types';
 
 type IconPosition = 'left' | 'right';
 

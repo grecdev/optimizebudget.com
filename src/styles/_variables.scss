@@ -12,14 +12,6 @@ $container-width: (
 
 $layout-border: 2px solid map.get($color-palette, 'gray', 'default');
 
-// Shape
-$border-radius: (
-  'sm': 5px,
-  'default': 10px,
-  'md': 15px,
-  'rounded': 50%,
-);
-
 $grid: (
   'direction': (
     row,

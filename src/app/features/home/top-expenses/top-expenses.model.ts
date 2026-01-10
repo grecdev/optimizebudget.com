@@ -1,15 +1,11 @@
+import { CategoryType } from '@shared/models/enums';
+
 enum ExpenseItemKey {
   ID = 'ID',
   NAME = 'NAME',
   CATEGORY = 'CATEGORY',
   PRICE = 'PRICE',
   TIMESTAMP = 'TIMESTAMP',
-}
-
-enum CategoryType {
-  SHOPPING = 'Shopping',
-  FOOD = 'Food',
-  HOME = 'Home',
 }
 
 interface ExpenseItem {
@@ -21,4 +17,4 @@ interface ExpenseItem {
 }
 
 export type { ExpenseItem };
-export { ExpenseItemKey, CategoryType };
+export { ExpenseItemKey };

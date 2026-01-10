@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
-import { ThemeVariant } from '@script/types';
+import { type ThemeVariant } from '@shared/models/types';
+
 import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
 
 /**
