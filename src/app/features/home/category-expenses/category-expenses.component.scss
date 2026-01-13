@@ -4,6 +4,10 @@
 @use 'spacing' as *;
 @use 'color-palette' as *;
 
+app-widget-box {
+  height: 100%;
+}
+
 .canvas-container {
   display: flex;
   flex-direction: column;
