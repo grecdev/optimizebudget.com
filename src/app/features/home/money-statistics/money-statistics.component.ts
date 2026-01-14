@@ -1,4 +1,4 @@
-import { type AfterViewInit, Component, type ElementRef, ViewChild } from '@angular/core';
+import { type AfterViewInit, type ElementRef, Component, OnInit, ViewChild } from '@angular/core';
 
 import { type DataSourceItem, DataSourceItemKey } from './money-statistics.model';
 
@@ -7,7 +7,7 @@ import { type DataSourceItem, DataSourceItemKey } from './money-statistics.model
   templateUrl: './money-statistics.component.html',
   styleUrls: ['./money-statistics.component.scss'],
 })
-export class MoneyStatisticsComponent implements AfterViewInit {
+export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   /**
    * @summary - Get the pixel ratio for current device.
    *
@@ -27,17 +27,20 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    *     width: number;
    *     height: number;
    *     spacing: number;
+   *     textSize: number;
    *   }}
    * @private
    */
-  private readonly _canvasStyling: {
+  private readonly _canvasStyle: {
     width: number;
     height: number;
     spacing: number;
+    textSize: number;
   } = {
     width: 800,
     height: 350,
     spacing: 16,
+    textSize: 16,
   };
 
   /**
@@ -68,12 +71,60 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       [DataSourceItemKey.VALUE]: 20,
       [DataSourceItemKey.TIMESTAMP]: 1768051385012,
     },
-    {
-      [DataSourceItemKey.ID]: 3,
-      [DataSourceItemKey.NAME]: 'Lamp',
-      [DataSourceItemKey.VALUE]: 5,
-      [DataSourceItemKey.TIMESTAMP]: 1768052221606,
-    },
+    // {
+    //   [DataSourceItemKey.ID]: 2,
+    //   [DataSourceItemKey.NAME]: 'Monthly gym membership',
+    //   [DataSourceItemKey.VALUE]: 45,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768137785012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 3,
+    //   [DataSourceItemKey.NAME]: 'Lamp',
+    //   [DataSourceItemKey.VALUE]: 5,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768052221606,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 4,
+    //   [DataSourceItemKey.NAME]: 'Electricity bill',
+    //   [DataSourceItemKey.VALUE]: 90,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768224185012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 5,
+    //   [DataSourceItemKey.NAME]: 'Cinema tickets',
+    //   [DataSourceItemKey.VALUE]: 25,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768310585012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 6,
+    //   [DataSourceItemKey.NAME]: 'Groceries',
+    //   [DataSourceItemKey.VALUE]: 110,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768396985012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 7,
+    //   [DataSourceItemKey.NAME]: 'Taxi ride',
+    //   [DataSourceItemKey.VALUE]: 18,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768483385012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 8,
+    //   [DataSourceItemKey.NAME]: 'Online course subscription',
+    //   [DataSourceItemKey.VALUE]: 60,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768569785012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 9,
+    //   [DataSourceItemKey.NAME]: 'Coffee with friends',
+    //   [DataSourceItemKey.VALUE]: 12,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768656185012,
+    // },
+    // {
+    //   [DataSourceItemKey.ID]: 10,
+    //   [DataSourceItemKey.NAME]: 'Book purchase',
+    //   [DataSourceItemKey.VALUE]: 15,
+    //   [DataSourceItemKey.TIMESTAMP]: 1768742585012,
+    // },
   ];
 
   /**
@@ -83,6 +134,13 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    * @public
    */
   @ViewChild('lineChart') public canvasElement: ElementRef<HTMLCanvasElement> | null = null;
+
+  constructor(...args: Array<unknown>);
+  constructor() {
+    this._dataSource = this._dataSource.sort(
+      (a, b) => a[DataSourceItemKey.VALUE] - b[DataSourceItemKey.VALUE]
+    );
+  }
 
   /**
    * @summary - Render initial canvas element, with basic configuration.
@@ -97,16 +155,15 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       throw Error('Canvas element not found!');
     }
 
-    CANVAS_ELEMENT.style.width = `${this._canvasStyling.width}px`;
-    CANVAS_ELEMENT.style.height = `${this._canvasStyling.height}px`;
+    CANVAS_ELEMENT.style.width = `${this._canvasStyle.width}px`;
+    CANVAS_ELEMENT.style.height = `${this._canvasStyle.height}px`;
 
-    CANVAS_ELEMENT.width = Math.floor(this._canvasStyling.width * this._devicePixelRatio);
-    CANVAS_ELEMENT.height = Math.floor(this._canvasStyling.height * this._devicePixelRatio);
+    CANVAS_ELEMENT.width = this._canvasStyle.width * this._devicePixelRatio;
+    CANVAS_ELEMENT.height = this._canvasStyle.height * this._devicePixelRatio;
 
     this._canvasContext.beginPath();
     this._canvasContext.rect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
     this._canvasContext.stroke(); // Remove stroke when ready.
-
     this._canvasContext.closePath();
   }
 
@@ -119,26 +176,62 @@ export class MoneyStatisticsComponent implements AfterViewInit {
   private _renderValues(): void {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
 
+    const formatNumber = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
     if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
 
-    let positionY = CANVAS_ELEMENT.height - this._canvasStyling.spacing;
+    const RENDERING_AREA = CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2;
+    const MAXIMUM_ITEMS_TO_RENDER = 6;
 
-    const MARGIN_PX = 16;
-    const DATA_SOURCE_VALUES = this._dataSource
+    let currentDataSource = this._dataSource;
+
+    if (currentDataSource.length > MAXIMUM_ITEMS_TO_RENDER) {
+      currentDataSource = [
+        ...this._dataSource.slice(0, MAXIMUM_ITEMS_TO_RENDER / 2),
+        ...this._dataSource.slice(this._dataSource.length - MAXIMUM_ITEMS_TO_RENDER / 2),
+      ];
+    }
+
+    // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
+    const DATA_SOURCE_VALUES = currentDataSource
       .map(item => item[DataSourceItemKey.VALUE])
-      .sort((a, b) => a - b);
+      .reverse();
 
-    for (let i = 0; i < DATA_SOURCE_VALUES.length; i++) {
-      const ITEM = DATA_SOURCE_VALUES[i].toString();
+    const DATA_LENGTH = DATA_SOURCE_VALUES.length;
+
+    // Total spaces between element.
+    const TOTAL_SPACES = DATA_LENGTH - 1;
+    const GAP = RENDERING_AREA / TOTAL_SPACES;
+
+    for (let i = 0; i < DATA_LENGTH; i++) {
+      const ITEM = DATA_SOURCE_VALUES[i];
+      const FORMATTED_ITEM = formatNumber.format(ITEM);
+
+      const POSITION_Y = GAP * i + this._canvasStyle.spacing;
 
       this._canvasContext.beginPath();
-      this._canvasContext.font = "0.9rem 'Roboto', sans-serif";
-      this._canvasContext.fillText(ITEM, this._canvasStyling.spacing, positionY);
-      this._canvasContext.closePath();
 
-      positionY -= this._canvasStyling.spacing + MARGIN_PX;
+      this._canvasContext.font = `${this._canvasStyle.textSize}px 'Roboto', sans-serif`;
+      this._canvasContext.textAlign = 'left';
+      this._canvasContext.textBaseline = 'middle';
+
+      this._canvasContext.fillText(FORMATTED_ITEM, 0, Math.abs(POSITION_Y));
+
+      this._canvasContext.closePath();
+    }
+  }
+
+  ngOnInit() {
+    const MINIMUM_ELEMENTS = 1;
+    const NOT_ENOUGH_ELEMENTS = this._dataSource.length <= MINIMUM_ELEMENTS;
+
+    if (NOT_ENOUGH_ELEMENTS) {
+      throw Error('Canvas dataSource requires more elements!');
     }
   }
 
