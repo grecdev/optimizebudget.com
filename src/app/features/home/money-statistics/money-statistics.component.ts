@@ -162,6 +162,8 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     CANVAS_ELEMENT.height = this._canvasStyle.height * this._devicePixelRatio;
 
     this._canvasContext.beginPath();
+    this._canvasContext.fillStyle = '#fff';
+    this._canvasContext.fillRect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
     this._canvasContext.rect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
     this._canvasContext.stroke(); // Remove stroke when ready.
     this._canvasContext.closePath();
@@ -170,10 +172,13 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   /**
    * @summary - Render dataSource values on the Y axis.
    *
+   * Basically render the text outside our canvas element, to get the width of the rendered pixels.
+   * And only after then, we add another set of text, which is visible in the canvas, with correct positions.
+   *
    * @private
    * @returns {void}
    */
-  private _renderValues(): void {
+  private _renderLegendY(): void {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
 
     const formatNumber = new Intl.NumberFormat('en-US', {
@@ -185,7 +190,9 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const RENDERING_AREA = CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2;
+    const TEXT_SIZES = [];
+    const CANVAS_FONT_STYLE = `${this._canvasStyle.textSize}px 'Roboto', sans-serif`;
+    const RENDERING_AREA_Y = CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2;
     const MAXIMUM_ITEMS_TO_RENDER = 6;
 
     let currentDataSource = this._dataSource;
@@ -197,30 +204,55 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
+    // I am reversing the array here, because we need to start the rendering from the canvas's bottom position
     const DATA_SOURCE_VALUES = currentDataSource
       .map(item => item[DataSourceItemKey.VALUE])
       .reverse();
 
     const DATA_LENGTH = DATA_SOURCE_VALUES.length;
-
-    // Total spaces between element.
+    // Total spaces between element
     const TOTAL_SPACES = DATA_LENGTH - 1;
-    const GAP = RENDERING_AREA / TOTAL_SPACES;
+    const GAP = RENDERING_AREA_Y / TOTAL_SPACES;
 
+    // The invisible text
     for (let i = 0; i < DATA_LENGTH; i++) {
       const ITEM = DATA_SOURCE_VALUES[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
 
+      this._canvasContext.font = CANVAS_FONT_STYLE;
+      this._canvasContext.fillText(FORMATTED_ITEM, -999, -999);
+
+      const ITEM_WIDTH_AFTER_RENDER = this._canvasContext.measureText(FORMATTED_ITEM).width;
+
+      TEXT_SIZES.push(ITEM_WIDTH_AFTER_RENDER);
+    }
+
+    const START_X_POS = Math.max(...TEXT_SIZES);
+
+    // Draw the visible text
+    for (let i = 0; i < DATA_LENGTH; i++) {
+      const ITEM = DATA_SOURCE_VALUES[i];
+      const FORMATTED_ITEM = formatNumber.format(ITEM);
+      const POSITION_Y = GAP * i + this._canvasStyle.spacing;
+
+      this._canvasContext.font = CANVAS_FONT_STYLE;
+      this._canvasContext.fillStyle = '#000';
+      this._canvasContext.textAlign = 'right';
+      this._canvasContext.textBaseline = 'middle';
+      this._canvasContext.fillText(FORMATTED_ITEM, START_X_POS, Math.abs(POSITION_Y));
+    }
+
+    // Draw the matching lines for these values
+    for (let i = 0; i < DATA_LENGTH; i++) {
       const POSITION_Y = GAP * i + this._canvasStyle.spacing;
 
       this._canvasContext.beginPath();
 
-      this._canvasContext.font = `${this._canvasStyle.textSize}px 'Roboto', sans-serif`;
-      this._canvasContext.textAlign = 'left';
-      this._canvasContext.textBaseline = 'middle';
-
-      this._canvasContext.fillText(FORMATTED_ITEM, 0, Math.abs(POSITION_Y));
+      this._canvasContext.moveTo(START_X_POS + this._canvasStyle.spacing, POSITION_Y);
+      this._canvasContext.lineTo(CANVAS_ELEMENT.width, POSITION_Y);
+      this._canvasContext.strokeStyle = '#c9c9c9';
+      this._canvasContext.lineWidth = 1;
+      this._canvasContext.stroke();
 
       this._canvasContext.closePath();
     }
@@ -237,7 +269,7 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
-    const CANVAS_CONTEXT = CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d');
+    const CANVAS_CONTEXT = CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
 
     if (!CANVAS_ELEMENT || !CANVAS_CONTEXT) {
       throw Error('Canvas element not queried!');
@@ -246,6 +278,6 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     this._canvasContext = CANVAS_CONTEXT;
 
     this._renderInitialCanvas();
-    this._renderValues();
+    this._renderLegendY();
   }
 }
