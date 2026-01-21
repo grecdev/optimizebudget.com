@@ -1,4 +1,6 @@
-import { type AfterViewInit, type ElementRef, Component, OnInit, ViewChild } from '@angular/core';
+import { type AfterViewInit, Component, type ElementRef, OnInit, ViewChild } from '@angular/core';
+
+import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
 
 import { type DataSourceItem, DataSourceItemKey } from './money-statistics.model';
 
@@ -55,7 +57,7 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   /**
    * @summary - The data we want to render in our pie chart.
    *
-   * @type {Array<CategoryExpenseItem>}
+   * @type {Array<DataSourceItem>}
    * @private
    */
   private readonly _dataSource: Array<DataSourceItem> = [
@@ -71,61 +73,79 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       [DataSourceItemKey.VALUE]: 20,
       [DataSourceItemKey.TIMESTAMP]: 1768051385012,
     },
-    // {
-    //   [DataSourceItemKey.ID]: 2,
-    //   [DataSourceItemKey.NAME]: 'Monthly gym membership',
-    //   [DataSourceItemKey.VALUE]: 45,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768137785012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 3,
-    //   [DataSourceItemKey.NAME]: 'Lamp',
-    //   [DataSourceItemKey.VALUE]: 5,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768052221606,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 4,
-    //   [DataSourceItemKey.NAME]: 'Electricity bill',
-    //   [DataSourceItemKey.VALUE]: 90,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768224185012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 5,
-    //   [DataSourceItemKey.NAME]: 'Cinema tickets',
-    //   [DataSourceItemKey.VALUE]: 25,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768310585012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 6,
-    //   [DataSourceItemKey.NAME]: 'Groceries',
-    //   [DataSourceItemKey.VALUE]: 110,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768396985012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 7,
-    //   [DataSourceItemKey.NAME]: 'Taxi ride',
-    //   [DataSourceItemKey.VALUE]: 18,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768483385012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 8,
-    //   [DataSourceItemKey.NAME]: 'Online course subscription',
-    //   [DataSourceItemKey.VALUE]: 60,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768569785012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 9,
-    //   [DataSourceItemKey.NAME]: 'Coffee with friends',
-    //   [DataSourceItemKey.VALUE]: 12,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768656185012,
-    // },
-    // {
-    //   [DataSourceItemKey.ID]: 10,
-    //   [DataSourceItemKey.NAME]: 'Book purchase',
-    //   [DataSourceItemKey.VALUE]: 15,
-    //   [DataSourceItemKey.TIMESTAMP]: 1768742585012,
-    // },
+    {
+      [DataSourceItemKey.ID]: 2,
+      [DataSourceItemKey.NAME]: 'Monthly gym membership',
+      [DataSourceItemKey.VALUE]: 45,
+      [DataSourceItemKey.TIMESTAMP]: 1768137785012,
+    },
+    {
+      [DataSourceItemKey.ID]: 3,
+      [DataSourceItemKey.NAME]: 'Lamp',
+      [DataSourceItemKey.VALUE]: 5,
+      [DataSourceItemKey.TIMESTAMP]: 1768052221606,
+    },
+    {
+      [DataSourceItemKey.ID]: 4,
+      [DataSourceItemKey.NAME]: 'Electricity bill',
+      [DataSourceItemKey.VALUE]: 90,
+      [DataSourceItemKey.TIMESTAMP]: 1768224185012,
+    },
+    {
+      [DataSourceItemKey.ID]: 5,
+      [DataSourceItemKey.NAME]: 'Cinema tickets',
+      [DataSourceItemKey.VALUE]: 25,
+      [DataSourceItemKey.TIMESTAMP]: 1768310585012,
+    },
+    {
+      [DataSourceItemKey.ID]: 6,
+      [DataSourceItemKey.NAME]: 'Groceries',
+      [DataSourceItemKey.VALUE]: 110,
+      [DataSourceItemKey.TIMESTAMP]: 1768396985012,
+    },
+    {
+      [DataSourceItemKey.ID]: 7,
+      [DataSourceItemKey.NAME]: 'Taxi ride',
+      [DataSourceItemKey.VALUE]: 18,
+      [DataSourceItemKey.TIMESTAMP]: 1768483385012,
+    },
+    {
+      [DataSourceItemKey.ID]: 8,
+      [DataSourceItemKey.NAME]: 'Online course subscription',
+      [DataSourceItemKey.VALUE]: 60,
+      [DataSourceItemKey.TIMESTAMP]: 1768569785012,
+    },
+    {
+      [DataSourceItemKey.ID]: 9,
+      [DataSourceItemKey.NAME]: 'Coffee with friends',
+      [DataSourceItemKey.VALUE]: 12,
+      [DataSourceItemKey.TIMESTAMP]: 1768656185012,
+    },
+    {
+      [DataSourceItemKey.ID]: 10,
+      [DataSourceItemKey.NAME]: 'Book purchase',
+      [DataSourceItemKey.VALUE]: 15,
+      [DataSourceItemKey.TIMESTAMP]: 1768742585012,
+    },
   ];
+
+  /**
+   * @summary - Data source limits to render.
+   *
+   * @type {{
+   *  minimumItems: number;
+   *  maximumItems: number;
+   * }}
+   *
+   * @private
+   */
+  private _canvasThreshold: {
+    minimumItems: number;
+    maximumItems: number;
+  } = {
+    minimumItems: 2,
+    maximumItems: 6,
+  };
 
   /**
    * @summary - Element reference to the HTML Canvas element.
@@ -181,42 +201,37 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   private _renderLegendY(): void {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
 
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+
+    const MAXIMUM_VALUE = Math.max(...this._dataSource.map(item => item[DataSourceItemKey.VALUE]));
+
+    let niceNumberValues = generateNiceNumbersArray(0, MAXIMUM_VALUE);
+
+    if (niceNumberValues.length > DEFAULT_TICKS) {
+      niceNumberValues = generateNiceNumbersArray(0, MAXIMUM_VALUE, DEFAULT_TICKS / 2);
+    }
+
+    // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
+    niceNumberValues.reverse();
+
     const formatNumber = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
 
-    if (!this._canvasContext || !CANVAS_ELEMENT) {
-      throw Error('Canvas context not found!');
-    }
+    const DATA_LENGTH = niceNumberValues.length;
 
     const TEXT_SIZES = [];
     const CANVAS_FONT_STYLE = `${this._canvasStyle.textSize}px 'Roboto', sans-serif`;
     const RENDERING_AREA_Y = CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2;
-    const MAXIMUM_ITEMS_TO_RENDER = 6;
 
-    let currentDataSource = this._dataSource;
-
-    if (currentDataSource.length > MAXIMUM_ITEMS_TO_RENDER) {
-      currentDataSource = [
-        ...this._dataSource.slice(0, MAXIMUM_ITEMS_TO_RENDER / 2),
-        ...this._dataSource.slice(this._dataSource.length - MAXIMUM_ITEMS_TO_RENDER / 2),
-      ];
-    }
-
-    // I am reversing the array here, because we need to start the rendering from the canvas's bottom position
-    const DATA_SOURCE_VALUES = currentDataSource
-      .map(item => item[DataSourceItemKey.VALUE])
-      .reverse();
-
-    const DATA_LENGTH = DATA_SOURCE_VALUES.length;
-    // Total spaces between element
-    const TOTAL_SPACES = DATA_LENGTH - 1;
-    const GAP = RENDERING_AREA_Y / TOTAL_SPACES;
+    const GAP = RENDERING_AREA_Y / (DATA_LENGTH - 1);
 
     // The invisible text
     for (let i = 0; i < DATA_LENGTH; i++) {
-      const ITEM = DATA_SOURCE_VALUES[i];
+      const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
 
       this._canvasContext.font = CANVAS_FONT_STYLE;
@@ -231,7 +246,7 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
 
     // Draw the visible text
     for (let i = 0; i < DATA_LENGTH; i++) {
-      const ITEM = DATA_SOURCE_VALUES[i];
+      const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
       const POSITION_Y = GAP * i + this._canvasStyle.spacing;
 
