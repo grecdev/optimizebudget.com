@@ -30,6 +30,7 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
    *     height: number;
    *     spacing: number;
    *     textSize: number;
+   *     font: string;
    *   }}
    * @private
    */
@@ -37,12 +38,14 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     width: number;
     height: number;
     spacing: number;
-    textSize: number;
+    fontSize: number;
+    font: string;
   } = {
     width: 800,
     height: 350,
     spacing: 16,
-    textSize: 16,
+    fontSize: 16,
+    font: "1rem 'Roboto', sans-serif",
   };
 
   /**
@@ -148,6 +151,15 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   };
 
   /**
+   * @summary - Get the starting position X based on label text width.
+   *
+   * @type {number}
+   *
+   * @private
+   */
+  private _startingPositionX: number = 0;
+
+  /**
    * @summary - Element reference to the HTML Canvas element.
    *
    * @type {ElementRef<HTMLCanvasElement> | null}
@@ -181,6 +193,8 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     CANVAS_ELEMENT.width = this._canvasStyle.width * this._devicePixelRatio;
     CANVAS_ELEMENT.height = this._canvasStyle.height * this._devicePixelRatio;
 
+    this._canvasContext.clearRect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
+
     this._canvasContext.beginPath();
     this._canvasContext.fillStyle = '#fff';
     this._canvasContext.fillRect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
@@ -192,7 +206,7 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   /**
    * @summary - Render dataSource values on the Y axis.
    *
-   * Basically render the text outside our canvas element, to get the width of the rendered pixels.
+   * Basically render an "invisible" text outside our canvas element, to get the width of the rendered pixels.
    * And only after then, we add another set of text, which is visible in the canvas, with correct positions.
    *
    * @private
@@ -224,17 +238,18 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     const DATA_LENGTH = niceNumberValues.length;
 
     const TEXT_SIZES = [];
-    const CANVAS_FONT_STYLE = `${this._canvasStyle.textSize}px 'Roboto', sans-serif`;
-    const RENDERING_AREA_Y = CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2;
 
-    const GAP = RENDERING_AREA_Y / (DATA_LENGTH - 1);
+    const RENDERING_AREA_Y =
+      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
+
+    const ROW_WIDTH = RENDERING_AREA_Y / (DATA_LENGTH - 1);
 
     // The invisible text
     for (let i = 0; i < DATA_LENGTH; i++) {
       const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
 
-      this._canvasContext.font = CANVAS_FONT_STYLE;
+      this._canvasContext.font = this._canvasStyle.font;
       this._canvasContext.fillText(FORMATTED_ITEM, -999, -999);
 
       const ITEM_WIDTH_AFTER_RENDER = this._canvasContext.measureText(FORMATTED_ITEM).width;
@@ -242,34 +257,103 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       TEXT_SIZES.push(ITEM_WIDTH_AFTER_RENDER);
     }
 
-    const START_X_POS = Math.max(...TEXT_SIZES);
+    this._startingPositionX = Math.max(...TEXT_SIZES);
 
     // Draw the visible text
     for (let i = 0; i < DATA_LENGTH; i++) {
       const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
-      const POSITION_Y = GAP * i + this._canvasStyle.spacing;
+      const POSITION_Y = ROW_WIDTH * i + this._canvasStyle.spacing;
 
-      this._canvasContext.font = CANVAS_FONT_STYLE;
+      this._canvasContext.font = this._canvasStyle.font;
       this._canvasContext.fillStyle = '#000';
       this._canvasContext.textAlign = 'right';
       this._canvasContext.textBaseline = 'middle';
-      this._canvasContext.fillText(FORMATTED_ITEM, START_X_POS, Math.abs(POSITION_Y));
+      this._canvasContext.fillText(FORMATTED_ITEM, this._startingPositionX, Math.abs(POSITION_Y));
     }
 
-    // Draw the matching lines for these values
-    for (let i = 0; i < DATA_LENGTH; i++) {
-      const POSITION_Y = GAP * i + this._canvasStyle.spacing;
+    this._renderBackgroundLines(DATA_LENGTH, ROW_WIDTH, CANVAS_ELEMENT.width);
+  }
+
+  /**
+   * @summary - Render lines that are aligned with the legend on y-axis.
+   *
+   * @param {number} dataLength - Total items rendered
+   * @param {number} rowWidth - Row width between ticks
+   * @param {number} canvasWidth - Canvas element width
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderBackgroundLines(dataLength: number, rowWidth: number, canvasWidth: number): void {
+    if (!this._canvasContext) {
+      throw Error('Canvas context not found!');
+    }
+
+    for (let i = 0; i < dataLength; i++) {
+      const POSITION_Y = rowWidth * i + this._canvasStyle.spacing;
 
       this._canvasContext.beginPath();
 
-      this._canvasContext.moveTo(START_X_POS + this._canvasStyle.spacing, POSITION_Y);
-      this._canvasContext.lineTo(CANVAS_ELEMENT.width, POSITION_Y);
+      this._canvasContext.moveTo(this._startingPositionX + this._canvasStyle.spacing, POSITION_Y);
+      this._canvasContext.lineTo(canvasWidth, POSITION_Y);
       this._canvasContext.strokeStyle = '#c9c9c9';
       this._canvasContext.lineWidth = 1;
       this._canvasContext.stroke();
 
       this._canvasContext.closePath();
+    }
+  }
+
+  /**
+   * @summary - Dynamically render legend values on x-axis.
+   *
+   * Calculate the total labels to draw on canvas,
+   * based on the render area's width and the maximum label's width.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderLegendX(): void {
+    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
+
+    const canvasContext = this._canvasContext;
+
+    if (!canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+
+    const ALL_MONTHS = Array.from({ length: 12 }, (_, index) => {
+      const date = new Date(0, index);
+
+      return date.toLocaleString('en-US', { month: 'long' });
+    });
+
+    const DATA_LENGTH = ALL_MONTHS.length;
+    const AREA_Y = this._startingPositionX + this._canvasStyle.spacing;
+    const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y;
+    const PADDING_X = this._canvasStyle.spacing * 2;
+
+    const TEXT_SIZES: Array<number> = ALL_MONTHS.map(
+      item => canvasContext.measureText(item).width + PADDING_X
+    );
+
+    const MAXIMUM_TEXT_SIZE = Math.max(...TEXT_SIZES.map(item => item));
+    const MAX_LABELS = Math.floor(RENDERING_AREA_X / MAXIMUM_TEXT_SIZE);
+    const STEP = Math.ceil(DATA_LENGTH / MAX_LABELS);
+    const FILTERED_MONTHS = ALL_MONTHS.filter((_, index) => index % STEP === 0);
+    const COLUMN_WIDTH = RENDERING_AREA_X / FILTERED_MONTHS.length;
+
+    for (let i = 0; i < FILTERED_MONTHS.length; i++) {
+      const ITEM = FILTERED_MONTHS[i];
+      const POSITION_X = AREA_Y + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
+
+      canvasContext.font = this._canvasStyle.font;
+      canvasContext.fillStyle = '#000';
+      canvasContext.textAlign = 'center';
+      canvasContext.textBaseline = 'bottom';
+
+      canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
     }
   }
 
@@ -294,5 +378,6 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
 
     this._renderInitialCanvas();
     this._renderLegendY();
+    this._renderLegendX();
   }
 }
