@@ -126,16 +126,36 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
         [DataSourceItemKey.NAME]: 'Online course subscription',
         [DataSourceItemKey.VALUE]: [100],
       },
-      {
-        [DataSourceItemKey.ID]: 9,
-        [DataSourceItemKey.NAME]: 'Coffee with friends',
-        [DataSourceItemKey.VALUE]: [50],
-      },
-      {
-        [DataSourceItemKey.ID]: 10,
-        [DataSourceItemKey.NAME]: 'Book purchase',
-        [DataSourceItemKey.VALUE]: [1],
-      },
+      // {
+      //   [DataSourceItemKey.ID]: 9,
+      //   [DataSourceItemKey.NAME]: 'Coffee with friends',
+      //   [DataSourceItemKey.VALUE]: [50],
+      // },
+      // {
+      //   [DataSourceItemKey.ID]: 10,
+      //   [DataSourceItemKey.NAME]: 'Book purchase',
+      //   [DataSourceItemKey.VALUE]: [1],
+      // },
+      // {
+      //   [DataSourceItemKey.ID]: 11,
+      //   [DataSourceItemKey.NAME]: 'Streaming subscription',
+      //   [DataSourceItemKey.VALUE]: [25],
+      // },
+      // {
+      //   [DataSourceItemKey.ID]: 12,
+      //   [DataSourceItemKey.NAME]: 'Mobile app purchase',
+      //   [DataSourceItemKey.VALUE]: [15],
+      // },
+      // {
+      //   [DataSourceItemKey.ID]: 13,
+      //   [DataSourceItemKey.NAME]: 'Snack',
+      //   [DataSourceItemKey.VALUE]: [5],
+      // },
+      // {
+      //   [DataSourceItemKey.ID]: 14,
+      //   [DataSourceItemKey.NAME]: 'Plastic bag',
+      //   [DataSourceItemKey.VALUE]: [1],
+      // },
     ],
   };
 
@@ -266,6 +286,52 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * @summary - Dynamically render legend values on x-axis.
+   *
+   * Calculate the total labels to draw on canvas,
+   * based on the render area's width and the maximum label's width.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderLegendX(): void {
+    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
+
+    const canvasContext = this._canvasContext;
+
+    if (!canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+
+    const DATA_SOURCE = this._dataSource.xAxis.data;
+    const DATA_LENGTH = DATA_SOURCE.length;
+    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
+    const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y_WIDTH;
+    const PADDING_X = this._canvasStyle.spacing * 2;
+
+    const TEXT_SIZES: Array<number> = DATA_SOURCE.map(
+      item => canvasContext.measureText(item).width + PADDING_X
+    );
+
+    const MAXIMUM_TEXT_SIZE = Math.max(...TEXT_SIZES.map(item => item));
+    const MAX_LABELS = Math.floor(RENDERING_AREA_X / MAXIMUM_TEXT_SIZE);
+    const STEP = Math.ceil(DATA_LENGTH / MAX_LABELS);
+    const COLUMN_WIDTH = RENDERING_AREA_X / DATA_LENGTH;
+
+    for (let i = 0; i < DATA_SOURCE.length; i++) {
+      const ITEM = DATA_SOURCE[i];
+      const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
+
+      canvasContext.font = this._canvasStyle.font;
+      canvasContext.fillStyle = '#000';
+      canvasContext.textAlign = 'center';
+      canvasContext.textBaseline = 'bottom';
+
+      canvasContext.fillText(ITEM, i % STEP === 0 ? POSITION_X : -999, CANVAS_ELEMENT.height);
+    }
+  }
+
+  /**
    * @summary - Render lines that are aligned with the legend on y-axis.
    *
    * @param {number} dataLength - Total items rendered
@@ -296,52 +362,6 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * @summary - Dynamically render legend values on x-axis.
-   *
-   * Calculate the total labels to draw on canvas,
-   * based on the render area's width and the maximum label's width.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _renderLegendX(): void {
-    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
-
-    const canvasContext = this._canvasContext;
-
-    if (!canvasContext || !CANVAS_ELEMENT) {
-      throw Error('Canvas context not found!');
-    }
-
-    const DATA_LENGTH = this._dataSource.xAxis.data.length;
-    const AREA_Y = this._startingPositionX + this._canvasStyle.spacing;
-    const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y;
-    const PADDING_X = this._canvasStyle.spacing * 2;
-
-    const TEXT_SIZES: Array<number> = this._dataSource.xAxis.data.map(
-      item => canvasContext.measureText(item).width + PADDING_X
-    );
-
-    const MAXIMUM_TEXT_SIZE = Math.max(...TEXT_SIZES.map(item => item));
-    const MAX_LABELS = Math.floor(RENDERING_AREA_X / MAXIMUM_TEXT_SIZE);
-    const STEP = Math.ceil(DATA_LENGTH / MAX_LABELS);
-    const FILTERED_MONTHS = this._dataSource.xAxis.data.filter((_, index) => index % STEP === 0);
-    const COLUMN_WIDTH = RENDERING_AREA_X / FILTERED_MONTHS.length;
-
-    for (let i = 0; i < FILTERED_MONTHS.length; i++) {
-      const ITEM = FILTERED_MONTHS[i];
-      const POSITION_X = AREA_Y + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
-
-      canvasContext.font = this._canvasStyle.font;
-      canvasContext.fillStyle = '#000';
-      canvasContext.textAlign = 'center';
-      canvasContext.textBaseline = 'bottom';
-
-      canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
-    }
-  }
-
-  /**
    * @private
    */
   private _renderData(): void {
@@ -355,25 +375,33 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
 
     const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
+    const DATA_SOURCE = this._dataSource.xAxis.data;
+    const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y_WIDTH;
+    
+    const ALL_VALUES = this._dataSource.series
+      .map(item => item[DataSourceItemKey.VALUE])
+      .flat()
+      .sort((a, b) => a - b);
 
-    const ALL_VALUES = this._dataSource.series.map(item => item[DataSourceItemKey.VALUE]).flat();
     const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
     const DATA_LENGTH = ALL_VALUES.length;
     const FULL_PERCENT = 100;
     const ARC_RADIUS = 4;
     const START_ANGLE = 0;
-    const END_ANGLE = Math.PI * 2; // 360 complete circle
+    const END_ANGLE = Math.PI * 2; // 360° means a complete circle
+    const COLUMN_WIDTH = RENDERING_AREA_X / DATA_SOURCE.length;
 
     for (let i = 0; i < DATA_LENGTH; i++) {
       const CURRENT_VALUE = ALL_VALUES[i];
       const PERCENT = (CURRENT_VALUE / MAXIMUM_VALUE) * FULL_PERCENT;
-      const POSITION_Y_PX = RENDERING_AREA_Y - (PERCENT / FULL_PERCENT) * RENDERING_AREA_Y;
+      const POSITION_Y = RENDERING_AREA_Y - (PERCENT / FULL_PERCENT) * RENDERING_AREA_Y;
+      const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
 
       this._canvasContext.beginPath();
 
       this._canvasContext.arc(
-        AREA_Y_WIDTH,
-        POSITION_Y_PX + this._canvasStyle.fontSize,
+        POSITION_X,
+        POSITION_Y + this._canvasStyle.fontSize,
         ARC_RADIUS,
         START_ANGLE,
         END_ANGLE
