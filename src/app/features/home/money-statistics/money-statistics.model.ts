@@ -2,15 +2,20 @@ enum DataSourceItemKey {
   ID = 'ID',
   NAME = 'NAME',
   VALUE = 'VALUE',
-  TIMESTAMP = 'TIMESTAMP',
 }
 
 interface DataSourceItem {
   [DataSourceItemKey.ID]: number;
   [DataSourceItemKey.NAME]: string;
-  [DataSourceItemKey.VALUE]: number;
-  [DataSourceItemKey.TIMESTAMP]: number;
+  [DataSourceItemKey.VALUE]: Array<number>;
 }
 
-export type { DataSourceItem };
+interface DataSourceOptions {
+  xAxis: {
+    data: Array<string>;
+  };
+  series: Array<DataSourceItem>;
+}
+
+export type { DataSourceItem, DataSourceOptions };
 export { DataSourceItemKey };

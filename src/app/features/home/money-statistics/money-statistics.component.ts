@@ -2,7 +2,7 @@ import { type AfterViewInit, Component, type ElementRef, OnInit, ViewChild } fro
 
 import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
 
-import { type DataSourceItem, DataSourceItemKey } from './money-statistics.model';
+import { DataSourceItemKey, type DataSourceOptions } from './money-statistics.model';
 
 @Component({
   selector: 'app-money-statistics',
@@ -58,96 +58,85 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
   private _canvasContext: CanvasRenderingContext2D | null = null;
 
   /**
-   * @summary - The data we want to render in our pie chart.
+   * @summary - The data we want to render in our line chart.
    *
-   * @type {Array<DataSourceItem>}
+   * @type {DataSourceOptions}
    * @private
    */
-  private readonly _dataSource: Array<DataSourceItem> = [
-    {
-      [DataSourceItemKey.ID]: 0,
-      [DataSourceItemKey.NAME]: 'Laptop for work',
-      [DataSourceItemKey.VALUE]: 2000,
-      [DataSourceItemKey.TIMESTAMP]: 1767853992492,
+  private readonly _dataSource: DataSourceOptions = {
+    xAxis: {
+      data: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ],
     },
-    {
-      [DataSourceItemKey.ID]: 1,
-      [DataSourceItemKey.NAME]: '1kg Shaorma',
-      [DataSourceItemKey.VALUE]: 20,
-      [DataSourceItemKey.TIMESTAMP]: 1768051385012,
-    },
-    {
-      [DataSourceItemKey.ID]: 2,
-      [DataSourceItemKey.NAME]: 'Monthly gym membership',
-      [DataSourceItemKey.VALUE]: 45,
-      [DataSourceItemKey.TIMESTAMP]: 1768137785012,
-    },
-    {
-      [DataSourceItemKey.ID]: 3,
-      [DataSourceItemKey.NAME]: 'Lamp',
-      [DataSourceItemKey.VALUE]: 5,
-      [DataSourceItemKey.TIMESTAMP]: 1768052221606,
-    },
-    {
-      [DataSourceItemKey.ID]: 4,
-      [DataSourceItemKey.NAME]: 'Electricity bill',
-      [DataSourceItemKey.VALUE]: 90,
-      [DataSourceItemKey.TIMESTAMP]: 1768224185012,
-    },
-    {
-      [DataSourceItemKey.ID]: 5,
-      [DataSourceItemKey.NAME]: 'Cinema tickets',
-      [DataSourceItemKey.VALUE]: 25,
-      [DataSourceItemKey.TIMESTAMP]: 1768310585012,
-    },
-    {
-      [DataSourceItemKey.ID]: 6,
-      [DataSourceItemKey.NAME]: 'Groceries',
-      [DataSourceItemKey.VALUE]: 110,
-      [DataSourceItemKey.TIMESTAMP]: 1768396985012,
-    },
-    {
-      [DataSourceItemKey.ID]: 7,
-      [DataSourceItemKey.NAME]: 'Taxi ride',
-      [DataSourceItemKey.VALUE]: 18,
-      [DataSourceItemKey.TIMESTAMP]: 1768483385012,
-    },
-    {
-      [DataSourceItemKey.ID]: 8,
-      [DataSourceItemKey.NAME]: 'Online course subscription',
-      [DataSourceItemKey.VALUE]: 60,
-      [DataSourceItemKey.TIMESTAMP]: 1768569785012,
-    },
-    {
-      [DataSourceItemKey.ID]: 9,
-      [DataSourceItemKey.NAME]: 'Coffee with friends',
-      [DataSourceItemKey.VALUE]: 12,
-      [DataSourceItemKey.TIMESTAMP]: 1768656185012,
-    },
-    {
-      [DataSourceItemKey.ID]: 10,
-      [DataSourceItemKey.NAME]: 'Book purchase',
-      [DataSourceItemKey.VALUE]: 15,
-      [DataSourceItemKey.TIMESTAMP]: 1768742585012,
-    },
-  ];
-
-  /**
-   * @summary - Data source limits to render.
-   *
-   * @type {{
-   *  minimumItems: number;
-   *  maximumItems: number;
-   * }}
-   *
-   * @private
-   */
-  private _canvasThreshold: {
-    minimumItems: number;
-    maximumItems: number;
-  } = {
-    minimumItems: 2,
-    maximumItems: 6,
+    series: [
+      {
+        [DataSourceItemKey.ID]: 0,
+        [DataSourceItemKey.NAME]: 'Laptop for work',
+        [DataSourceItemKey.VALUE]: [2000],
+      },
+      {
+        [DataSourceItemKey.ID]: 1,
+        [DataSourceItemKey.NAME]: '1kg Shaorma',
+        [DataSourceItemKey.VALUE]: [1750],
+      },
+      {
+        [DataSourceItemKey.ID]: 2,
+        [DataSourceItemKey.NAME]: 'Monthly gym membership',
+        [DataSourceItemKey.VALUE]: [1500],
+      },
+      {
+        [DataSourceItemKey.ID]: 3,
+        [DataSourceItemKey.NAME]: 'Lamp',
+        [DataSourceItemKey.VALUE]: [1250],
+      },
+      {
+        [DataSourceItemKey.ID]: 4,
+        [DataSourceItemKey.NAME]: 'Electricity bill',
+        [DataSourceItemKey.VALUE]: [1000],
+      },
+      {
+        [DataSourceItemKey.ID]: 5,
+        [DataSourceItemKey.NAME]: 'Cinema tickets',
+        [DataSourceItemKey.VALUE]: [750],
+      },
+      {
+        [DataSourceItemKey.ID]: 6,
+        [DataSourceItemKey.NAME]: 'Groceries',
+        [DataSourceItemKey.VALUE]: [500],
+      },
+      {
+        [DataSourceItemKey.ID]: 7,
+        [DataSourceItemKey.NAME]: 'Taxi ride',
+        [DataSourceItemKey.VALUE]: [250],
+      },
+      {
+        [DataSourceItemKey.ID]: 8,
+        [DataSourceItemKey.NAME]: 'Online course subscription',
+        [DataSourceItemKey.VALUE]: [100],
+      },
+      {
+        [DataSourceItemKey.ID]: 9,
+        [DataSourceItemKey.NAME]: 'Coffee with friends',
+        [DataSourceItemKey.VALUE]: [50],
+      },
+      {
+        [DataSourceItemKey.ID]: 10,
+        [DataSourceItemKey.NAME]: 'Book purchase',
+        [DataSourceItemKey.VALUE]: [1],
+      },
+    ],
   };
 
   /**
@@ -169,9 +158,9 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
 
   constructor(...args: Array<unknown>);
   constructor() {
-    this._dataSource = this._dataSource.sort(
-      (a, b) => a[DataSourceItemKey.VALUE] - b[DataSourceItemKey.VALUE]
-    );
+    this._dataSource.series.forEach(item => {
+      item[DataSourceItemKey.VALUE] = item[DataSourceItemKey.VALUE].sort((a, b) => a - b);
+    });
   }
 
   /**
@@ -219,7 +208,8 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const MAXIMUM_VALUE = Math.max(...this._dataSource.map(item => item[DataSourceItemKey.VALUE]));
+    const ALL_VALUES = this._dataSource.series.map(item => item[DataSourceItemKey.VALUE]).flat();
+    const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
 
     let niceNumberValues = generateNiceNumbersArray(0, MAXIMUM_VALUE);
 
@@ -323,25 +313,19 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const ALL_MONTHS = Array.from({ length: 12 }, (_, index) => {
-      const date = new Date(0, index);
-
-      return date.toLocaleString('en-US', { month: 'long' });
-    });
-
-    const DATA_LENGTH = ALL_MONTHS.length;
+    const DATA_LENGTH = this._dataSource.xAxis.data.length;
     const AREA_Y = this._startingPositionX + this._canvasStyle.spacing;
     const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y;
     const PADDING_X = this._canvasStyle.spacing * 2;
 
-    const TEXT_SIZES: Array<number> = ALL_MONTHS.map(
+    const TEXT_SIZES: Array<number> = this._dataSource.xAxis.data.map(
       item => canvasContext.measureText(item).width + PADDING_X
     );
 
     const MAXIMUM_TEXT_SIZE = Math.max(...TEXT_SIZES.map(item => item));
     const MAX_LABELS = Math.floor(RENDERING_AREA_X / MAXIMUM_TEXT_SIZE);
     const STEP = Math.ceil(DATA_LENGTH / MAX_LABELS);
-    const FILTERED_MONTHS = ALL_MONTHS.filter((_, index) => index % STEP === 0);
+    const FILTERED_MONTHS = this._dataSource.xAxis.data.filter((_, index) => index % STEP === 0);
     const COLUMN_WIDTH = RENDERING_AREA_X / FILTERED_MONTHS.length;
 
     for (let i = 0; i < FILTERED_MONTHS.length; i++) {
@@ -357,14 +341,56 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {
-    const MINIMUM_ELEMENTS = 1;
-    const NOT_ENOUGH_ELEMENTS = this._dataSource.length <= MINIMUM_ELEMENTS;
+  /**
+   * @private
+   */
+  private _renderData(): void {
+    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
 
-    if (NOT_ENOUGH_ELEMENTS) {
-      throw Error('Canvas dataSource requires more elements!');
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+
+    const RENDERING_AREA_Y =
+      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
+
+    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
+
+    const ALL_VALUES = this._dataSource.series.map(item => item[DataSourceItemKey.VALUE]).flat();
+    const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
+    const DATA_LENGTH = ALL_VALUES.length;
+    const FULL_PERCENT = 100;
+    const ARC_RADIUS = 4;
+    const START_ANGLE = 0;
+    const END_ANGLE = Math.PI * 2; // 360 complete circle
+
+    for (let i = 0; i < DATA_LENGTH; i++) {
+      const CURRENT_VALUE = ALL_VALUES[i];
+      const PERCENT = (CURRENT_VALUE / MAXIMUM_VALUE) * FULL_PERCENT;
+      const POSITION_Y_PX = RENDERING_AREA_Y - (PERCENT / FULL_PERCENT) * RENDERING_AREA_Y;
+
+      this._canvasContext.beginPath();
+
+      this._canvasContext.arc(
+        AREA_Y_WIDTH,
+        POSITION_Y_PX + this._canvasStyle.fontSize,
+        ARC_RADIUS,
+        START_ANGLE,
+        END_ANGLE
+      );
+
+      this._canvasContext.fillStyle = '#fff';
+      this._canvasContext.fill();
+
+      this._canvasContext.strokeStyle = '#008000';
+      this._canvasContext.lineWidth = ARC_RADIUS / 2;
+      this._canvasContext.stroke();
+
+      this._canvasContext.closePath();
     }
   }
+
+  ngOnInit() {}
 
   ngAfterViewInit() {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
@@ -379,5 +405,6 @@ export class MoneyStatisticsComponent implements OnInit, AfterViewInit {
     this._renderInitialCanvas();
     this._renderLegendY();
     this._renderLegendX();
+    this._renderData();
   }
 }
