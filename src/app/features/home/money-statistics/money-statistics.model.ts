@@ -17,5 +17,21 @@ interface DataSourceOptions {
   series: Array<DataSourceItem>;
 }
 
-export type { DataSourceItem, DataSourceOptions };
+interface GraphConfiguration {
+  DATA_SOURCE: Array<string>;
+  ALL_VALUES: Array<number>;
+  DATA_LENGTH: number;
+  MAXIMUM_VALUE: number;
+  RENDERING_AREA_X: number;
+  RENDERING_AREA_Y: number;
+  AREA_Y_WIDTH: number;
+  COLUMN_WIDTH: number;
+  PADDING_X: number;
+  FULL_PERCENT: number;
+  ARC_RADIUS: number;
+  START_ANGLE: number;
+  END_ANGLE: number;
+}
+
+export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
 export { DataSourceItemKey };
