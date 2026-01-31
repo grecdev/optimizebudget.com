@@ -1,0 +1,54 @@
+@use 'sass:map';
+
+@use 'color-palette' as *;
+@use 'variables' as *;
+@use 'shape' as *;
+@use 'spacing' as *;
+
+.app-pill-status {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  padding: 0.25rem map.get($spacing, 'sm');
+  border: $layout-border;
+  border-radius: map.get($border-radius, 'sm');
+  user-select: none;
+
+  & .app-icon {
+    $size: 16px;
+
+    width: $size;
+    height: $size;
+  }
+
+  &.success {
+    $color: map.get($color-palette, 'green', 'variant-3');
+    background: map.get($color-palette, 'green', 'variant-2');
+
+    color: $color;
+
+    & .app-icon svg {
+      fill: $color;
+    }
+  }
+
+  &.warning {
+    $color: map.get($color-palette, 'yellow', 'default');
+    background: map.get($color-palette, 'yellow', 'variant-2');
+    color: $color;
+
+    & .app-icon svg {
+      fill: $color;
+    }
+  }
+
+  &.error {
+    $color: map.get($color-palette, 'red', 'default');
+    background: map.get($color-palette, 'red', 'variant-3');
+    color: $color;
+
+    & .app-icon svg {
+      fill: $color;
+    }
+  }
+}

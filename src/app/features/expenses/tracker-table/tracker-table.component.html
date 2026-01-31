@@ -1,0 +1,51 @@
+<app-widget-box>
+  <h4 app-widget-box-title>Expenses tracker</h4>
+
+  <table app-table [dataSource]="dataSource">
+    <ng-container [appColumnDef]="ExpenseItemKey.TIMESTAMP">
+      <th app-header-cell *appHeaderCellDef>Date added</th>
+
+      <td app-cell *appCellDef="let item" class="date">
+        {{ item[ExpenseItemKey.TIMESTAMP] | date: 'mediumDate' }}
+      </td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="ExpenseItemKey.STATUS">
+      <th app-header-cell *appHeaderCellDef>Status</th>
+      <td app-cell *appCellDef="let item" [ngSwitch]="item[ExpenseItemKey.STATUS]">
+        <app-pill-status *ngSwitchCase="ExpenseStatus.PAID" [type]="StatusType.SUCCESS">
+          Paid
+        </app-pill-status>
+
+        <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
+          Pending
+        </app-pill-status>
+
+        <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
+          Cancelled
+        </app-pill-status>
+
+        <app-pill-status *ngSwitchDefault [type]="StatusType.DEFAULT">
+          {{ item[ExpenseItemKey.STATUS] }}
+        </app-pill-status>
+      </td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="ExpenseItemKey.DESCRIPTION">
+      <th app-header-cell *appHeaderCellDef>Description</th>
+
+      <td app-cell *appCellDef="let item">
+        <p class="description">{{ item[ExpenseItemKey.DESCRIPTION] }}</p>
+        <p class="category">{{ item[ExpenseItemKey.CATEGORY] }}</p>
+      </td>
+    </ng-container>
+
+    <ng-container [appColumnDef]="ExpenseItemKey.TOTAL">
+      <th app-header-cell *appHeaderCellDef>Total</th>
+      <td app-cell *appCellDef="let item">{{ item[ExpenseItemKey.TOTAL] | currency: 'USD' }}</td>
+    </ng-container>
+
+    <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
+    <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</app-widget-box>

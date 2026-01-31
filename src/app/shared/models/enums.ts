@@ -4,4 +4,10 @@ enum CategoryType {
   HOME = 'Home',
 }
 
-export { CategoryType };
+enum ExpenseStatus {
+  PAID = 'PAID',
+  CANCELLED = 'CANCELLED',
+  PENDING = 'PENDING',
+}
+
+export { CategoryType, ExpenseStatus };

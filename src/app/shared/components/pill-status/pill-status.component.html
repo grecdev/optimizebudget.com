@@ -1,0 +1,5 @@
+<app-icon [svgIcon]="icons[type]" *ngIf="type !== StatusType.DEFAULT" />
+
+<ng-container *ngIf="type !== StatusType.DEFAULT">&nbsp;</ng-container>
+
+<ng-content></ng-content>
