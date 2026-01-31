@@ -23,6 +23,11 @@ const routes: Routes = [
         module => module.ForgotPasswordModule
       ),
   },
+  {
+    path: 'expenses',
+    loadChildren: () =>
+      import('./features/expenses/expenses.module').then(module => module.ExpensesModule),
+  },
   // {
   //   path: '**',
   //   loadChildren: () =>
