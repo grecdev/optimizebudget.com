@@ -1,0 +1,18 @@
+@use 'sass:map';
+
+@use 'color-palette' as *;
+@use 'typography' as *;
+
+@mixin faded {
+  color: map.get($color-palette, 'gray', 'variant-4');
+}
+
+.date {
+  @include faded;
+}
+
+.category {
+  @include faded;
+  
+  font-size: map.get($font-size, 'body-sm');
+}

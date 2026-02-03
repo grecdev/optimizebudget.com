@@ -5,10 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
-  showMoreContent: boolean = false;
-
-  handleShowMoreContent() {
-    this.showMoreContent = !this.showMoreContent;
-  }
-}
+export class HomeComponent {}

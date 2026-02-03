@@ -25,6 +25,12 @@ const allRoutes: Record<RoutesName, Route> = {
     path: 'forgot-password',
     ariaLabel: 'Forgot password page path',
   },
+  expenses: {
+    id: 4,
+    path: 'expenses',
+    textContent: 'Expenses',
+    ariaLabel: 'Expenses page path',
+  },
 };
 
 const adminData = {

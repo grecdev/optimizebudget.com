@@ -21,6 +21,7 @@
   & tbody tr td {
     text-align: left;
     padding: map.get($spacing, 'sm');
+    vertical-align: middle;
   }
 
   & tbody tr {
