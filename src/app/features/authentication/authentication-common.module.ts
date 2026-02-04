@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { AppFormFieldModule } from '@shared/components/form/form-field/form-field.module';
 import { AppInputModule } from '@shared/components/form/input/input.module';
-import { ButtonModule } from '@shared/components/button/button.module';
+import { AppButtonModule } from '@shared/components/button/button.module';
 
 import { AuthenticationLogoContainerComponent } from './components/authentication-logo-container/authentication-logo-container.component';
 import { AgreeInfoComponent } from './components/agree-info/agree-info.component';
@@ -16,12 +16,12 @@ import { AppFormDelimiterComponent } from './components/form-delimiter/form-deli
     AgreeInfoComponent,
     AppFormDelimiterComponent,
   ],
-  imports: [CommonModule, AppFormFieldModule, AppInputModule, RouterLink, ButtonModule],
+  imports: [CommonModule, AppFormFieldModule, AppInputModule, RouterLink, AppButtonModule],
   exports: [
     CommonModule,
     AppFormFieldModule,
     AppInputModule,
-    ButtonModule,
+    AppButtonModule,
     //
     AuthenticationLogoContainerComponent,
     AgreeInfoComponent,

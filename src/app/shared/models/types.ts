@@ -1,7 +1,7 @@
 type RoutesName = 'overview' | 'login' | 'register' | 'forgotPassword' | 'expenses';
 
 // Make sure these values match $theme-variant and vice versa
-type ThemeVariant = null | 'basic' | 'contained' | 'outlined';
+type ThemeVariant = 'basic' | 'contained' | 'outlined';
 
 // Make sure these values match $spacing and vice versa
 type ThemeSpacing = 'sm' | 'default' | 'md' | 'lg';
