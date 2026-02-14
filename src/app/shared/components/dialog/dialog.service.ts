@@ -15,6 +15,8 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
+import { type ComponentReferenceReturn } from './dialog.model';
+
 import { DialogComponent } from './dialog.component';
 
 @Injectable({
@@ -50,20 +52,17 @@ export class DialogService<T> {
    * @returns {void}
    */
   public open(component: T): void {
-    // this._componentReference = this._componentFactoryResolver
-    //   .resolveComponentFactory<T>(component as Type<T>)
-    //   .create(this._injector);
-    // const HOST_VIEW = this._componentReference.hostView as EmbeddedViewRef<T>;
-    // this._applicationReference.attachView(HOST_VIEW);
-    // if (HOST_VIEW.rootNodes.length === 0) {
-    //   throw Error('Nodes not found!');
-    // }
-    // const COMPONENT_TEMPLATE: HTMLElement = HOST_VIEW.rootNodes[0];
-    // this._document.body.append(COMPONENT_TEMPLATE);
-    // Here create a subscriber, accessing the onCloseDialog method from component's reference.
-    // And execute the cleanup function in that subscriber.
+    const {
+      COMPONENT_REFERENCE: contentComponentReference,
+      ROOT_NODES: contentRootNodes,
+    } = this._getDialogContentReference(component);
 
-    const DIALOG_OVERLAY_REFERENCE = this._createDialogOverlay();
+    const {
+      COMPONENT_REFERENCE: overlayComponentReference,
+      ROOT_NODES: overlayRootNodes,
+    } = this._createDialogOverlay(contentRootNodes);
+
+    this._document.body.append(overlayRootNodes[0]);
   }
 
   /**
@@ -72,10 +71,12 @@ export class DialogService<T> {
    * @private
    * @returns {ComponentRef<DialogComponent>}
    */
-  private _createDialogOverlay(): ComponentRef<DialogComponent> {
+  private _createDialogOverlay(
+    projectableNodes: EmbeddedViewRef<T>['rootNodes']
+  ): ComponentReferenceReturn<DialogComponent> {
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(DialogComponent)
-      .create(this._injector);
+      .create(this._injector, [projectableNodes]);
 
     const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<DialogComponent>;
 
@@ -83,12 +84,43 @@ export class DialogService<T> {
       throw Error('Root nodes not found in DialogComponent!');
     }
 
-    const COMPONENT_TEMPLATE: HTMLElement = HOST_VIEW.rootNodes[0];
+    const ROOT_NODES = HOST_VIEW.rootNodes;
 
     this._applicationReference.attachView(HOST_VIEW);
-    this._document.body.append(COMPONENT_TEMPLATE);
 
-    return COMPONENT_REFERENCE;
+    return {
+      COMPONENT_REFERENCE,
+      ROOT_NODES,
+    };
+  }
+
+  /**
+   * @summary - Get the dialog's content reference.
+   *
+   * @param {T} component - The component we want to project.
+   *
+   * @private
+   * @returns {ComponentReferenceReturn<T>}
+   */
+  private _getDialogContentReference(component: T): ComponentReferenceReturn<T> {
+    const COMPONENT_REFERENCE = this._componentFactoryResolver
+      .resolveComponentFactory<T>(component as Type<T>)
+      .create(this._injector);
+
+    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<T>;
+
+    this._applicationReference.attachView(HOST_VIEW);
+
+    if (HOST_VIEW.rootNodes.length === 0) {
+      throw Error('Nodes not found!');
+    }
+
+    const ROOT_NODES = HOST_VIEW.rootNodes;
+
+    return {
+      COMPONENT_REFERENCE,
+      ROOT_NODES,
+    };
   }
 
   /**
