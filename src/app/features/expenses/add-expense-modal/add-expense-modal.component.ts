@@ -27,6 +27,8 @@ export class AddExpenseModalComponent {
   public openModalExpense(event: Event): void {
     event.stopPropagation();
 
-    this._dialogService.open(ModalBodyComponent);
+    this._dialogService.open(ModalBodyComponent, {
+      title: 'Add expense',
+    });
   }
 }

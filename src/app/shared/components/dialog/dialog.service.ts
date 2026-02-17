@@ -15,7 +15,7 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
-import { type ComponentReferenceReturn } from './dialog.model';
+import { type ComponentReferenceReturn, type DialogOptions } from './dialog.model';
 
 import { DialogComponent } from './dialog.component';
 
@@ -44,78 +44,63 @@ export class DialogService<T> {
   }
 
   /**
-   * @summary - Open a modal component.
+   * @summary - Open a dialog component.
    *
-   * @param {T} component - Component we want to inject into the modal.
+   * @param {T} component - Component we want to inject into the dialog.
+   * @param {DialogOptions} options - Options for our dialog.
    *
    * @public
    * @returns {void}
    */
-  public open(component: T): void {
+  public open(component: T, options: DialogOptions): void {
     const {
       COMPONENT_REFERENCE: contentComponentReference,
       ROOT_NODES: contentRootNodes,
-    } = this._getDialogContentReference(component);
+    } = this._createComponentReference<T>(component);
 
     const {
       COMPONENT_REFERENCE: overlayComponentReference,
       ROOT_NODES: overlayRootNodes,
-    } = this._createDialogOverlay(contentRootNodes);
+    } = this._createComponentReference<DialogComponent>(
+      DialogComponent,
+      contentRootNodes
+    );
+
+    if (options.title) {
+      overlayComponentReference.instance.title = options.title;
+    }
 
     this._document.body.append(overlayRootNodes[0]);
   }
 
   /**
-   * @summary - Create the dialog's overlay, where we will project our content.
+   * @summary - Create a component reference and add it to the Angular's tree.
+   *
+   * Used further to append it to the body, or whatever you want to do with it.
+   *
+   * @param {K} component - The component we want to project.
+   * @param {EmbeddedViewRef<K>['rootNodes']} [projectableNodes = []] - External components included into the dialog.
    *
    * @private
-   * @returns {ComponentRef<DialogComponent>}
+   * @returns {ComponentReferenceReturn<K>}
    */
-  private _createDialogOverlay(
-    projectableNodes: EmbeddedViewRef<T>['rootNodes']
-  ): ComponentReferenceReturn<DialogComponent> {
+  private _createComponentReference<K>(
+    component: Type<K> | K,
+    projectableNodes: EmbeddedViewRef<K>['rootNodes'] = []
+  ): ComponentReferenceReturn<K> {
     const COMPONENT_REFERENCE = this._componentFactoryResolver
-      .resolveComponentFactory(DialogComponent)
+      .resolveComponentFactory<K>(component as Type<K>)
       .create(this._injector, [projectableNodes]);
 
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<DialogComponent>;
-
-    if (HOST_VIEW.rootNodes.length === 0) {
-      throw Error('Root nodes not found in DialogComponent!');
-    }
-
-    const ROOT_NODES = HOST_VIEW.rootNodes;
-
-    this._applicationReference.attachView(HOST_VIEW);
-
-    return {
-      COMPONENT_REFERENCE,
-      ROOT_NODES,
-    };
-  }
-
-  /**
-   * @summary - Get the dialog's content reference.
-   *
-   * @param {T} component - The component we want to project.
-   *
-   * @private
-   * @returns {ComponentReferenceReturn<T>}
-   */
-  private _getDialogContentReference(component: T): ComponentReferenceReturn<T> {
-    const COMPONENT_REFERENCE = this._componentFactoryResolver
-      .resolveComponentFactory<T>(component as Type<T>)
-      .create(this._injector);
-
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<T>;
-
-    this._applicationReference.attachView(HOST_VIEW);
+    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<K>;
 
     if (HOST_VIEW.rootNodes.length === 0) {
       throw Error('Nodes not found!');
     }
 
     const ROOT_NODES = HOST_VIEW.rootNodes;
+
+    this._applicationReference.attachView(HOST_VIEW);
 
     return {
       COMPONENT_REFERENCE,

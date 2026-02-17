@@ -6,4 +6,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogComponent {}
+export class DialogComponent {
+  public title: string = 'Please add your title!';
+}
