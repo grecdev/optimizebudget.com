@@ -1,6 +1,9 @@
 @use 'sass:map';
 @use 'variables' as *;
 @use 'color-palette' as *;
+@use 'spacing' as *;
+@use 'shape' as *;
+@use 'breakpoints' as *;
 
 :host {
   position: fixed;
@@ -14,4 +17,38 @@
 
   display: grid;
   place-content: center;
+  grid-template-columns: minmax(auto, 500px);
+}
+
+#dialog-overlay-content {
+  display: grid;
+
+  background: map.get($color-palette, 'common', 'white');
+
+  padding: map.get($spacing, 'default');
+  border-radius: map.get($border-radius, 'default');
+  max-height: 400px;
+
+  & .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  & #body {
+    overflow-y: auto;
+    height: 100%;
+  }
+}
+
+@media screen and (max-width: map.get($breakpoints, 'md')) {
+  #dialog-overlay-content {
+    max-height: 300px;
+  }
+}
+
+@media screen and (max-width: map.get($breakpoints, 'sm')) {
+  #dialog-overlay-content {
+    max-height: 200px;
+  }
 }

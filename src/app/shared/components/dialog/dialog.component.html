@@ -1,9 +1,11 @@
-<div id="dialog-overlay">
+<div id="dialog-overlay-content">
   <div class="header">
     <h2>{{ title }}</h2>
 
-    <button type="button"></button>
+    <button type="button">CLOSE BUTTON</button>
   </div>
 
-  <ng-content></ng-content>
+  <div id="body">
+    <ng-content></ng-content>
+  </div>
 </div>
