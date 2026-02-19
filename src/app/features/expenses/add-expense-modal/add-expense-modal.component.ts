@@ -29,6 +29,7 @@ export class AddExpenseModalComponent {
 
     this._dialogService.open(ModalBodyComponent, {
       title: 'Add expense',
+      closeButton: true,
     });
   }
 }

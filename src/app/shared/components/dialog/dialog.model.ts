@@ -12,7 +12,7 @@ interface ComponentReferenceReturn<T> {
  */
 interface DialogOptions {
   title: string;
-  closeButton?: boolean;
+  closeButton: boolean;
 }
 
 export type { ComponentReferenceReturn, DialogOptions };
