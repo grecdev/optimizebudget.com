@@ -1,9 +1,5 @@
 import { type ComponentRef, type EmbeddedViewRef } from '@angular/core';
-
-interface ComponentReferenceReturn<T> {
-  COMPONENT_REFERENCE: ComponentRef<T>;
-  ROOT_NODES: EmbeddedViewRef<T>['rootNodes'];
-}
+import { DialogComponent } from '@shared/components/dialog/dialog.component';
 
 /**
  * @summary - Options assigned to dialog's component ref.
@@ -15,4 +11,9 @@ interface DialogOptions {
   closeButton: boolean;
 }
 
-export type { ComponentReferenceReturn, DialogOptions };
+interface ComponentReferenceState<T> {
+  content: ComponentRef<T> | null;
+  dialog: ComponentRef<DialogComponent> | null;
+}
+
+export type { ComponentReferenceState, DialogOptions };
