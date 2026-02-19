@@ -7,6 +7,10 @@ import {
   Output,
 } from '@angular/core';
 
+import { DomSanitizer } from '@angular/platform-browser';
+
+import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
+
 import { type DialogOptions } from './dialog.model';
 
 @Component({
@@ -17,28 +21,36 @@ import { type DialogOptions } from './dialog.model';
 })
 export class DialogComponent implements DialogOptions {
   private readonly _elementRef: ElementRef<DialogComponent>;
+  private readonly _iconRegistryService: IconRegistryService;
+  private readonly _domSanitizer: DomSanitizer;
+
+  /**
+   * @summary - Icons state.
+   *
+   * @type {Record<string, string>}
+   * @public
+   */
+  public readonly icons: {
+    [key: string]: string;
+  } = {
+    xmark: 'xmark',
+  };
 
   public title: string = 'Please add your title!';
   public closeButton: boolean = true;
 
   @Output() closeDialog: EventEmitter<null> = new EventEmitter();
 
-  constructor(elementRef: ElementRef<DialogComponent>) {
+  constructor(
+    elementRef: ElementRef<DialogComponent>,
+    iconRegistryService: IconRegistryService,
+    domSanitizer: DomSanitizer
+  ) {
     this._elementRef = elementRef;
-  }
+    this._iconRegistryService = iconRegistryService;
+    this._domSanitizer = domSanitizer;
 
-  /**
-   * @summary - Clicking on the dynamically rendered button.
-   *
-   * @param {Event} event - Event object.
-   *
-   * @public
-   * @returns {void}
-   */
-  handleButtonCloseClick(event: MouseEvent): void {
-    event.stopPropagation();
-
-    this.closeDialog.emit(null);
+    this._initIconRegistry();
   }
 
   /**
@@ -86,5 +98,36 @@ export class DialogComponent implements DialogOptions {
     }
 
     this.closeDialog.emit(null);
+  }
+
+  /**
+   * @summary - Clicking on the dynamically rendered button.
+   *
+   * @param {Event} event - Event object.
+   *
+   * @public
+   * @returns {void}
+   */
+  handleButtonCloseClick(event: MouseEvent): void {
+    event.stopPropagation();
+
+    this.closeDialog.emit(null);
+  }
+
+  /**
+   * @summary - Registry icons used in this component.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initIconRegistry(): void {
+    Object.values(this.icons).forEach(item => {
+      this._iconRegistryService.addSvgIconConfig({
+        name: item,
+        url: this._domSanitizer.bypassSecurityTrustResourceUrl(
+          `assets/icons/${item}.svg`
+        ),
+      });
+    });
   }
 }

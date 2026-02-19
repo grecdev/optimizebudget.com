@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { DialogService } from './dialog.service';
 
 describe('DialogService', () => {
-  let service: DialogService;
+  let service: DialogService<any>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
