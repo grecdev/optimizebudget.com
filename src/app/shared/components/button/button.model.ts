@@ -5,9 +5,9 @@ type IconPosition = 'left' | 'right';
 type ButtonColor = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
 
 interface ButtonInputs {
-  variant: ThemeVariant;
+  variant: ThemeVariant | null;
   color: ButtonColor;
-  icon?: IconPosition | undefined;
+  icon?: IconPosition | null;
 }
 
 export type { ButtonInputs, IconPosition, ButtonColor };

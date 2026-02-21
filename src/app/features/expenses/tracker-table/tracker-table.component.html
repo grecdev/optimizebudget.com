@@ -1,5 +1,9 @@
 <app-widget-box>
-  <h4 app-widget-box-title>Expenses tracker</h4>
+  <div class="header">
+    <h4 app-widget-box-title>Expenses tracker</h4>
+
+    <app-add-expense-modal />
+  </div>
 
   <table app-table [dataSource]="dataSource">
     <ng-container [appColumnDef]="ExpenseItemKey.TIMESTAMP">

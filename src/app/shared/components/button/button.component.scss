@@ -7,7 +7,7 @@
 @use 'spacing' as *;
 @use 'shape' as *;
 
-$colorMap: (
+$colorMapContained: (
   'primary': (
     'text': map.get($color-palette, 'common', 'white'),
     'base': map.get($color-palette, 'primary', 'default'),
@@ -22,12 +22,27 @@ $colorMap: (
   )
 );
 
+$colorMapOutlined: (
+  'primary': (
+    'text': map.get($color-palette, 'primary', 'default'),
+    'base': map.get($color-palette, 'primary', 'default'),
+    'light': map.get($color-palette, 'primary', 'variant-2'),
+    'dark': map.get($color-palette, 'primary', 'variant-3'),
+  ),
+  'secondary': (
+    'text': map.get($color-palette, 'secondary', 'default'),
+    'base': map.get($color-palette, 'secondary', 'default'),
+    'light': map.get($color-palette, 'secondary', 'variant-2'),
+    'dark': map.get($color-palette, 'secondary', 'variant-3')
+  )
+);
+
 .app-button {
   display: inline-block;
   padding: map.get($spacing, sm);
   border-radius: map.get($border-radius, 'default');
   text-transform: capitalize;
-  transition: background 100ms ease-in-out;
+  transition: all 150ms ease-in-out;
   line-height: 1;
   cursor: pointer;
   text-align: center;
@@ -41,13 +56,28 @@ $colorMap: (
 }
 
 .app-button.app-button-variant-contained {
-  @each $key, $value in $colorMap {
+  @each $key, $value in $colorMapContained {
     &.app-button-color-#{$key} {
       background: map.get($value, 'base');
       color: map.get($value, 'text');
 
       &:hover {
         background: map.get($value, 'light');
+      }
+    }
+  }
+}
+
+.app-button.app-button-variant-outlined {
+  @each $key, $value in $colorMapOutlined {
+    &.app-button-color-#{$key} {
+      background: transparent;
+      color: map.get($value, 'text');
+      border: 2px solid map.get($value, 'base');
+
+      &:hover {
+        color: map.get($value, 'dark');
+        border-color: map.get($value, 'dark');
       }
     }
   }

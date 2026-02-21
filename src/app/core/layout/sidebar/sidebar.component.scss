@@ -3,6 +3,7 @@
 @use 'variables' as *;
 @use 'spacing' as *;
 @use 'color-palette' as *;
+@use 'breakpoints' as *;
 
 @mixin links-container {
   display: flex;

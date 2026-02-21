@@ -42,21 +42,21 @@ import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
     '[class.app-button-variant-contained]': 'variant === "contained"',
   },
 })
-export class ButtonComponent implements ButtonInputs {
-  @Input() variant: ThemeVariant = null;
-  @Input() icon: IconPosition | undefined = undefined;
+export class AppButtonComponent implements ButtonInputs {
+  @Input() variant: ButtonInputs['variant'] = null;
+  @Input() icon: ButtonInputs['icon'] = null;
 
-  get color(): ButtonColor {
+  get color(): ButtonInputs['color'] {
     return this._color;
   }
 
-  @Input() set color(value: ButtonColor) {
+  @Input() set color(value: ButtonInputs['color']) {
     this.className = `app-button-color-${value}`;
 
     this._color = value;
   }
 
-  private _color: ButtonColor = 'primary';
+  private _color: ButtonInputs['color'] = 'primary';
 
   get className(): string {
     return this._className.join(' ');
