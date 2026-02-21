@@ -24,8 +24,12 @@ export class AddExpenseModalComponent {
    * @public
    * @returns {void}
    */
-  public openModalExpense(event: Event): void {
+  public openModalExpense(event: MouseEvent): void {
     event.stopPropagation();
+
+    const CURRENT_TARGET = event.currentTarget as HTMLButtonElement;
+
+    CURRENT_TARGET.blur();
 
     this._dialogService.open(ModalBodyComponent, {
       title: 'Add expense',
