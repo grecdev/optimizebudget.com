@@ -5,13 +5,14 @@
 import {
   type Type,
   type EmbeddedViewRef,
-  type ComponentRef,
+  ComponentRef,
   ComponentFactoryResolver,
   Injector,
   ApplicationRef,
   Injectable,
   Inject,
   createNgModule,
+  TemplateRef,
 } from '@angular/core';
 
 import { DOCUMENT } from '@angular/common';
@@ -76,22 +77,32 @@ export class DialogService<T> {
   private _createContentComponent(
     component: Type<T> | T
   ): EmbeddedViewRef<T>['rootNodes'] {
-    const COMPONENT_REFERENCE = this._componentFactoryResolver
-      .resolveComponentFactory<T>(component as Type<T>)
-      .create(this._injector);
+    if (component instanceof TemplateRef) {
+      const VIEW = component.createEmbeddedView({});
 
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<T>;
-    const ROOT_NODES = HOST_VIEW.rootNodes.length > 0 && HOST_VIEW.rootNodes;
+      this._applicationReference.attachView(VIEW);
 
-    if (!ROOT_NODES) {
-      throw Error('Nodes not found!');
+      this._componentReference.content = VIEW;
+
+      return VIEW.rootNodes;
+    } else {
+      const COMPONENT_REFERENCE = this._componentFactoryResolver
+        .resolveComponentFactory<T>(component as Type<T>)
+        .create(this._injector);
+
+      const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<T>;
+      const HAS_ROOT_NODES = HOST_VIEW.rootNodes && HOST_VIEW.rootNodes.length > 0;
+
+      if (!HAS_ROOT_NODES) {
+        throw Error('Nodes not found!');
+      }
+
+      this._applicationReference.attachView(HOST_VIEW);
+
+      this._componentReference.content = COMPONENT_REFERENCE;
+
+      return HOST_VIEW.rootNodes;
     }
-
-    this._applicationReference.attachView(HOST_VIEW);
-
-    this._componentReference.content = COMPONENT_REFERENCE;
-
-    return ROOT_NODES;
   }
 
   /**
@@ -132,17 +143,24 @@ export class DialogService<T> {
   /**
    * @summary - Remove component from Angular's tree and from DOM.
    *
-   * @param {ComponentRef<K>} componentReference - The component reference we want removed.
+   * @param {ComponentRef<K> | EmbeddedViewRef<T> | null} componentReference - The component reference we want removed.
    *
    * @private
    * @returns {void}
    */
-  private _removeComponent<K>(componentReference: ComponentRef<K> | null): void {
+  private _removeComponent<K>(
+    componentReference: ComponentRef<K> | EmbeddedViewRef<T> | null
+  ): void {
     if (!componentReference) {
       throw Error('Component reference not found in _removeComponent!');
     }
 
-    this._applicationReference.detachView(componentReference.hostView);
+    if (componentReference instanceof ComponentRef) {
+      this._applicationReference.detachView(componentReference.hostView);
+    } else {
+      this._applicationReference.detachView(componentReference);
+    }
+
     componentReference.destroy();
   }
 

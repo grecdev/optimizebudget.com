@@ -12,7 +12,7 @@ interface DialogOptions {
 }
 
 interface ComponentReferenceState<T> {
-  content: ComponentRef<T> | null;
+  content: ComponentRef<T> | EmbeddedViewRef<T> | null;
   dialog: ComponentRef<DialogComponent> | null;
 }
 
