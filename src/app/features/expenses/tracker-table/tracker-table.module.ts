@@ -6,11 +6,17 @@ import { PillStatusModule } from '@shared/components/pill-status/pill-status.mod
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
 import { TrackerTableComponent } from './tracker-table.component';
-import { AddExpenseModalModule } from '../add-expense-modal/add-expense-modal.module';
+import { AddExpenseDialogModule } from '../add-expense-dialog/add-expense-dialog.module';
 
 @NgModule({
   declarations: [TrackerTableComponent],
-  imports: [CommonModule, AppTableModule, WidgetBoxModule, PillStatusModule, AddExpenseModalModule],
+  imports: [
+    CommonModule,
+    AppTableModule,
+    WidgetBoxModule,
+    PillStatusModule,
+    AddExpenseDialogModule,
+  ],
   exports: [TrackerTableComponent],
 })
 export class TrackerTableModule {}

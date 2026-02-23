@@ -2,7 +2,7 @@
   <div class="header">
     <h4 app-widget-box-title>Expenses tracker</h4>
 
-    <app-add-expense-modal />
+    <app-add-expense-dialog />
   </div>
 
   <table app-table [dataSource]="dataSource">
@@ -21,11 +21,17 @@
           Paid
         </app-pill-status>
 
-        <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
+        <app-pill-status
+          *ngSwitchCase="ExpenseStatus.PENDING"
+          [type]="StatusType.WARNING"
+        >
           Pending
         </app-pill-status>
 
-        <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
+        <app-pill-status
+          *ngSwitchCase="ExpenseStatus.CANCELLED"
+          [type]="StatusType.ERROR"
+        >
           Cancelled
         </app-pill-status>
 
@@ -46,7 +52,9 @@
 
     <ng-container [appColumnDef]="ExpenseItemKey.TOTAL">
       <th app-header-cell *appHeaderCellDef>Total</th>
-      <td app-cell *appCellDef="let item">{{ item[ExpenseItemKey.TOTAL] | currency: 'USD' }}</td>
+      <td app-cell *appCellDef="let item">
+        {{ item[ExpenseItemKey.TOTAL] | currency: 'USD' }}
+      </td>
     </ng-container>
 
     <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
