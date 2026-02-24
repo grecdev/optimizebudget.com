@@ -1,6 +1,7 @@
 @use 'sass:color';
 @use 'sass:map';
 @use 'sass:list';
+@use 'sass:math';
 
 @use 'variables' as *;
 @use 'color-palette' as *;
@@ -12,6 +13,7 @@ $buttons-color-palette: (
   'primary': map.get($color-palette, 'primary', 'default'),
   'secondary': map.get($color-palette, 'secondary', 'default'),
   'success': map.get($color-palette, 'green', 'variant-3'),
+  'danger': map.get($color-palette, 'red', 'default')
 );
 
 .app-button {
@@ -38,12 +40,13 @@ $buttons-color-palette: (
       $base-color: $value;
       $text-color: map.get($color-palette, 'common', 'white');
       $base-lightness: color.lightness($base-color);
+      //
+      background: $base-color;
 
       @if ($base-lightness >= 50%) {
         $text-color: map.get($color-palette, 'common', 'black');
       }
 
-      background: $base-color;
       color: $text-color;
 
       &:hover {
@@ -57,21 +60,22 @@ $buttons-color-palette: (
   @each $key, $value in $buttons-color-palette {
     &.app-button-color-#{$key} {
       $base-color: $value;
-      $base-lightness: color.lightness($base-color);
-      $hover-base-color: color.scale($base-color, $lightness: 10%);
-
-
+      $base-color-lightness: math.floor(color.lightness($base-color));
+      $text-color: $value;
+      //
       background: transparent;
-      color: $base-color;
+      color: $text-color;
       border: 2px solid $base-color;
 
-      @if ($base-lightness >= 50%) {
-        $hover-base-color: color.scale($base-color, $blackness: 10%);
+      @debug $key $base-color-lightness;
+
+      @if ($base-color-lightness <= 55%) {
+        $text-color: map.get($color-palette, 'common', 'white');
       }
 
       &:hover {
-        color: $hover-base-color;
-        border-color: $hover-base-color;
+        color: $text-color;
+        background: $base-color;
       }
     }
   }

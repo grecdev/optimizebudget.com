@@ -1,47 +1,79 @@
-<p>first item</p>
+<form>
+  <div class="form-inputs-container">
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Expense name</app-input-label>
 
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
-<p>modal-body works!</p>
+      <input
+        appInput
+        id="expense-name"
+        type="text"
+        name="expense-name"
+        placeholder="Expense name"
+      />
+    </app-form-field>
 
-<p>last item</p>
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Vendor name</app-input-label>
+
+      <input
+        appInput
+        id="vendor-name"
+        type="text"
+        name="vendor-name"
+        placeholder="Vendor name"
+      />
+    </app-form-field>
+
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      class="mb-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-input-label>Category</app-input-label>
+
+      <input appInput id="category" type="text" name="category" placeholder="Category" />
+    </app-form-field>
+  </div>
+
+  <app-form-field
+    variant="outlined"
+    color="primary-default"
+    class="mb-default"
+    [labelOptions]="{
+      position: 'top',
+    }"
+  >
+    <app-input-label>Total</app-input-label>
+
+    <input
+      appInput
+      id="expense-total"
+      type="number"
+      name="expense-total"
+      placeholder="Total"
+      min="0"
+    />
+  </app-form-field>
+</form>
+
+<div id="footer">
+  <button type="button" appButton variant="outlined" color="danger">Cancel</button>
+  <button type="button" appButton variant="contained" color="success">Add</button>
+</div>

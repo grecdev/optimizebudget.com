@@ -1,0 +1,15 @@
+@use 'sass:map';
+@use 'spacing' as *;
+
+.form-inputs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
+  gap: map.get($spacing, 'default');
+}
+
+#footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: map.get($spacing, 'default');
+}

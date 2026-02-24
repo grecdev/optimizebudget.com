@@ -22,6 +22,7 @@
 
 #dialog-overlay-content {
   display: grid;
+  gap: map.get($spacing, 'default');
 
   background: map.get($color-palette, 'common', 'white');
 
