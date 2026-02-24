@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { type ThemeVariant } from '@shared/models/types';
 
@@ -43,7 +48,7 @@ import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
   },
 })
 export class AppButtonComponent implements ButtonInputs {
-  @Input() variant: ButtonInputs['variant'] = null;
+  @Input() variant: ButtonInputs['variant'] = 'basic';
   @Input() icon: ButtonInputs['icon'] = null;
 
   get color(): ButtonInputs['color'] {
@@ -56,7 +61,7 @@ export class AppButtonComponent implements ButtonInputs {
     this._color = value;
   }
 
-  private _color: ButtonInputs['color'] = 'primary';
+  private _color: ButtonInputs['color'] = null;
 
   get className(): string {
     return this._className.join(' ');

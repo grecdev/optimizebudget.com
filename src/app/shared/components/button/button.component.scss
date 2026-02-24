@@ -7,34 +7,11 @@
 @use 'spacing' as *;
 @use 'shape' as *;
 
-$colorMapContained: (
-  'primary': (
-    'text': map.get($color-palette, 'common', 'white'),
-    'base': map.get($color-palette, 'primary', 'default'),
-    'light': map.get($color-palette, 'primary', 'variant-2'),
-    'dark': map.get($color-palette, 'primary', 'variant-3'),
-  ),
-  'secondary': (
-    'text': map.get($color-palette, 'common', 'white'),
-    'base': map.get($color-palette, 'secondary', 'default'),
-    'light': map.get($color-palette, 'secondary', 'variant-2'),
-    'dark': map.get($color-palette, 'secondary', 'variant-3')
-  )
-);
-
-$colorMapOutlined: (
-  'primary': (
-    'text': map.get($color-palette, 'primary', 'default'),
-    'base': map.get($color-palette, 'primary', 'default'),
-    'light': map.get($color-palette, 'primary', 'variant-2'),
-    'dark': map.get($color-palette, 'primary', 'variant-3'),
-  ),
-  'secondary': (
-    'text': map.get($color-palette, 'secondary', 'default'),
-    'base': map.get($color-palette, 'secondary', 'default'),
-    'light': map.get($color-palette, 'secondary', 'variant-2'),
-    'dark': map.get($color-palette, 'secondary', 'variant-3')
-  )
+// I don't use the $color-palette directly, because maybe I don't need all colors to be generated...
+$buttons-color-palette: (
+  'primary': map.get($color-palette, 'primary', 'default'),
+  'secondary': map.get($color-palette, 'secondary', 'default'),
+  'success': map.get($color-palette, 'green', 'variant-3'),
 );
 
 .app-button {
@@ -56,28 +33,45 @@ $colorMapOutlined: (
 }
 
 .app-button.app-button-variant-contained {
-  @each $key, $value in $colorMapContained {
+  @each $key, $value in $buttons-color-palette {
     &.app-button-color-#{$key} {
-      background: map.get($value, 'base');
-      color: map.get($value, 'text');
+      $base-color: $value;
+      $text-color: map.get($color-palette, 'common', 'white');
+      $base-lightness: color.lightness($base-color);
+
+      @if ($base-lightness >= 50%) {
+        $text-color: map.get($color-palette, 'common', 'black');
+      }
+
+      background: $base-color;
+      color: $text-color;
 
       &:hover {
-        background: map.get($value, 'light');
+        background: color.scale($base-color, $lightness: 7.5%);
       }
     }
   }
 }
 
 .app-button.app-button-variant-outlined {
-  @each $key, $value in $colorMapOutlined {
+  @each $key, $value in $buttons-color-palette {
     &.app-button-color-#{$key} {
+      $base-color: $value;
+      $base-lightness: color.lightness($base-color);
+      $hover-base-color: color.scale($base-color, $lightness: 10%);
+
+
       background: transparent;
-      color: map.get($value, 'text');
-      border: 2px solid map.get($value, 'base');
+      color: $base-color;
+      border: 2px solid $base-color;
+
+      @if ($base-lightness >= 50%) {
+        $hover-base-color: color.scale($base-color, $blackness: 10%);
+      }
 
       &:hover {
-        color: map.get($value, 'dark');
-        border-color: map.get($value, 'dark');
+        color: $hover-base-color;
+        border-color: $hover-base-color;
       }
     }
   }

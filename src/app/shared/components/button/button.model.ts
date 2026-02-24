@@ -6,7 +6,7 @@ type ButtonColor = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | '
 
 interface ButtonInputs {
   variant: ThemeVariant | null;
-  color: ButtonColor;
+  color: ButtonColor | null;
   icon?: IconPosition | null;
 }
 
