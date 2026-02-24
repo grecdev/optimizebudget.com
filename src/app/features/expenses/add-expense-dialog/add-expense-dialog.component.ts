@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { DialogService } from '@shared/components/dialog/dialog.service';
 
-import { DialogBodyComponent } from './dialog-body/dialog-body.component';
+import {
+  ADD_EXPENSE_DIALOG_BODY_REFERENCE,
+  DialogBodyModule,
+} from './dialog-body/dialog-body.module';
 
 @Component({
   selector: 'app-add-expense-dialog',
@@ -11,9 +14,17 @@ import { DialogBodyComponent } from './dialog-body/dialog-body.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddExpenseDialogComponent {
-  private readonly _dialogService: DialogService<DialogBodyComponent>;
+  private readonly _dialogService: DialogService<
+    DialogBodyModule,
+    typeof ADD_EXPENSE_DIALOG_BODY_REFERENCE
+  >;
 
-  constructor(dialogService: DialogService<DialogBodyComponent>) {
+  constructor(
+    dialogService: DialogService<
+      DialogBodyModule,
+      typeof ADD_EXPENSE_DIALOG_BODY_REFERENCE
+    >
+  ) {
     this._dialogService = dialogService;
   }
 
@@ -31,9 +42,15 @@ export class AddExpenseDialogComponent {
 
     CURRENT_TARGET.blur();
 
-    this._dialogService.open(DialogBodyComponent, {
+    const OPTIONS = {
       title: 'Add expense',
       closeButton: true,
-    });
+    };
+
+    this._dialogService.open(
+      DialogBodyModule,
+      OPTIONS,
+      ADD_EXPENSE_DIALOG_BODY_REFERENCE
+    );
   }
 }

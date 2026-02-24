@@ -25,7 +25,7 @@ import { DialogComponent } from './dialog.component';
 @Injectable({
   providedIn: 'root',
 })
-export class DialogService<T> {
+export class DialogService<T, Entry> {
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
   private readonly _injector: Injector;
   private readonly _applicationReference: ApplicationRef;
@@ -58,8 +58,8 @@ export class DialogService<T> {
    * @public
    * @returns {void}
    */
-  public open(component: T, options: DialogOptions): void {
-    const contentRootNodes = this._createContentComponent(component);
+  public open(component: T, options: DialogOptions, entry?: Entry): void {
+    const contentRootNodes = this._createContentComponent(component, entry);
 
     this._appendDialogOverlay(options, contentRootNodes);
     this._initCloseSubscription();
@@ -70,22 +70,25 @@ export class DialogService<T> {
    * and add it to the Angular's tree.
    *
    * @param {Type<T> | T} component - The component we want to project.
+   * @param {Entry} [entry] - If we are using a module, we need to pass the exported component reference via `InjectionToken` API.
    *
    * @private
    * @returns {EmbeddedViewRef<T>['rootNodes']}
    */
   private _createContentComponent(
-    component: Type<T> | T
+    component: Type<T> | T,
+    entry?: Entry
   ): EmbeddedViewRef<T>['rootNodes'] {
     if (component instanceof TemplateRef) {
       const VIEW = component.createEmbeddedView({});
 
       this._applicationReference.attachView(VIEW);
-
       this._componentReference.content = VIEW;
 
       return VIEW.rootNodes;
-    } else {
+    }
+
+    if (component instanceof ComponentRef) {
       const COMPONENT_REFERENCE = this._componentFactoryResolver
         .resolveComponentFactory<T>(component as Type<T>)
         .create(this._injector);
@@ -98,11 +101,34 @@ export class DialogService<T> {
       }
 
       this._applicationReference.attachView(HOST_VIEW);
-
       this._componentReference.content = COMPONENT_REFERENCE;
 
       return HOST_VIEW.rootNodes;
     }
+
+    if (entry) {
+      const MODULE = component as Type<T>;
+      const moduleRef = createNgModule(MODULE, this._injector);
+
+      const COMPONENT_TYPE = moduleRef.injector.get(entry);
+      const COMPONENT_REFERENCE = moduleRef.componentFactoryResolver
+        .resolveComponentFactory(COMPONENT_TYPE as Type<T>)
+        .create(moduleRef.injector);
+
+      const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<Entry>;
+      const ROOT_NODES = HOST_VIEW.rootNodes.length > 0 && HOST_VIEW.rootNodes;
+
+      if (!ROOT_NODES) {
+        throw Error('Root nodes are not found in _appendDialogOverlay!');
+      }
+
+      this._applicationReference.attachView(HOST_VIEW);
+      this._componentReference.content = COMPONENT_REFERENCE;
+
+      return HOST_VIEW.rootNodes;
+    }
+
+    return [];
   }
 
   /**
