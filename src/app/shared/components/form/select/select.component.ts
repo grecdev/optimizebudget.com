@@ -1,7 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
   Input,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
 
@@ -43,6 +47,11 @@ export class AppSelectComponent implements AppFormFieldControl {
    */
   private readonly _domSanitizer: DomSanitizer;
 
+  private readonly _viewContainerRef: ViewContainerRef;
+
+  @ViewChild('selectOptionsContainer')
+  private readonly _selectOptionsContainer: TemplateRef<HTMLDivElement> | null = null;
+
   public focused: boolean = false;
 
   @Input()
@@ -66,9 +75,14 @@ export class AppSelectComponent implements AppFormFieldControl {
     'caret-down': 'caret-down',
   };
 
-  constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
+  constructor(
+    iconRegistryService: IconRegistryService,
+    domSanitizer: DomSanitizer,
+    viewContainerRef: ViewContainerRef
+  ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
+    this._viewContainerRef = viewContainerRef;
 
     this._initIconRegistry();
   }
@@ -79,7 +93,7 @@ export class AppSelectComponent implements AppFormFieldControl {
    * @private
    * @returns {void}
    */
-  private _initIconRegistry() {
+  private _initIconRegistry(): void {
     Object.values(this.icons).forEach(item => {
       this._iconRegistryService.addSvgIconConfig({
         name: item,
@@ -88,5 +102,15 @@ export class AppSelectComponent implements AppFormFieldControl {
         ),
       });
     });
+  }
+
+  @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
+    if (!this._selectOptionsContainer) {
+      throw Error('_selectOptionsContainer not found!');
+    }
+
+    this.focused = true;
+
+    this._viewContainerRef.createEmbeddedView(this._selectOptionsContainer);
   }
 }
