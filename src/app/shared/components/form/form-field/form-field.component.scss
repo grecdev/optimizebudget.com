@@ -14,16 +14,20 @@ $input-spacing-default: map.get($spacing, 'sm');
   cursor: text;
 
   &,
-  & .app-input {
+  & .app-input,
+  & .app-select {
     width: 100%;
   }
 
   & .app-label,
-  & .app-input {
+  & .app-input,
+  & .app-select {
+    display: block;
     font-size: map.get($font-size, 'body');
   }
 
-  & .app-input {
+  & .app-input,
+  & .app-select {
     padding: $input-spacing-default;
     border-radius: map.get($spacing, 'sm');
   }
@@ -33,14 +37,20 @@ $input-spacing-default: map.get($spacing, 'sm');
     margin-bottom: map.get($spacing, 'sm');
   }
 
-  &-variant-outline .app-input {
-    background: transparent;
-    border: 1px solid map.get($color-palette, 'gray', 'variant-3');
+  &-variant-outline {
+    & .app-input,
+    & .app-select {
+      background: transparent;
+      border: 1px solid map.get($color-palette, 'gray', 'variant-3');
+    }
   }
 
-  &-focused.app-form-field-variant-outline .app-input {
-    box-shadow: 0px 0px 0px 2px map.get($color-palette, 'gray', 'variant-5');
-    border-color: map.get($color-palette, 'gray', 'variant-4');
+  &-focused.app-form-field-variant-outline {
+    & .app-input,
+    .app-select {
+      box-shadow: 0px 0px 0px 2px map.get($color-palette, 'gray', 'variant-5');
+      border-color: map.get($color-palette, 'gray', 'variant-4');
+    }
   }
 
   //@each $key, $variant in $color-palette {

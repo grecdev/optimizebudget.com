@@ -1,0 +1,27 @@
+@use 'sass:map';
+
+@use 'color-palette' as *;
+
+.app-form-field {
+  & .app-select {
+    cursor: pointer;
+
+    & .select-current-value {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: map.get($color-palette, 'gray', 'variant-4');
+
+      & app-icon {
+        $size: 15px;
+
+        width: $size;
+        height: $size;
+      }
+    }
+  }
+
+  &:not(&.app-form-field-has-value) .app-select:hover {
+    background: map.get($color-palette, 'gray', 'default');
+  }
+}

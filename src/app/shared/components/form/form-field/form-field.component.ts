@@ -50,6 +50,7 @@ import { AppFormFieldControl } from './form-field-control';
     class: 'app-form-field',
     '[class.app-form-field-variant-outline]': 'variant === "outlined"',
     '[class.app-form-field-focused]': '_formFieldControl.focused',
+    '[class.app-form-field-has-value]': '_formFieldControl.hasValue',
   },
 })
 export class AppFormField {

@@ -67,7 +67,7 @@ export class IconComponent implements OnDestroy {
    * @private
    * @returns {void}
    */
-  private _renderSvg(svg: SVGElement) {
+  private _renderSvg(svg: SVGElement): void {
     const elementRef = this._elementRef && this._elementRef.nativeElement;
 
     if (!elementRef) {
