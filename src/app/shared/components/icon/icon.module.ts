@@ -6,4 +6,4 @@ import { IconComponent } from './icon.component';
   declarations: [IconComponent],
   exports: [IconComponent],
 })
-export class IconModule {}
+export class AppIconModule {}
