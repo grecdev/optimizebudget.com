@@ -1,19 +1,25 @@
-import { type ComponentRef, type EmbeddedViewRef } from '@angular/core';
-import { DialogComponent } from '@shared/components/dialog/dialog.component';
+import { ComponentRef, EmbeddedViewRef } from '@angular/core';
+
+import { AppOverlayInstances } from '../overlay/overlay.model';
+
+import { AppDialogComponent } from './dialog.component';
 
 /**
  * @summary - Options assigned to dialog's component ref.
  *
- * These properties must be included into the @Component also.
+ * Component that's using these interface needs to implement it.
  */
-interface DialogOptions {
+interface AppDialogOptions {
   title: string;
   closeButton: boolean;
 }
 
 interface ComponentReferenceState<T> {
-  content: ComponentRef<T> | EmbeddedViewRef<T> | null;
-  dialog: ComponentRef<DialogComponent> | null;
+  dialogProjectedContent:
+    | ComponentRef<T & AppOverlayInstances>
+    | EmbeddedViewRef<T>
+    | null;
+  dialogRootComponent: ComponentRef<AppDialogComponent> | null;
 }
 
-export type { ComponentReferenceState, DialogOptions };
+export type { AppDialogOptions, ComponentReferenceState };

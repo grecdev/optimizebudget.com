@@ -6,14 +6,14 @@ import { AppInputModule } from '@shared/components/form/input/input.module';
 import { AppButtonModule } from '@shared/components/button/button.module';
 import { AppSelectModule } from '@shared/components/form/select/select.module';
 
-import { DialogBodyComponent } from './dialog-body.component';
+import { ExpenseDialogBodyComponent } from './expense-dialog-body.component';
 
 export const ADD_EXPENSE_DIALOG_BODY_REFERENCE = new InjectionToken<
-  Type<DialogBodyComponent>
+  Type<ExpenseDialogBodyComponent>
 >('ADD_EXPENSE_DIALOG_BODY_REFERENCE');
 
 @NgModule({
-  declarations: [DialogBodyComponent],
+  declarations: [ExpenseDialogBodyComponent],
   imports: [
     CommonModule,
     AppFormFieldModule,
@@ -24,8 +24,8 @@ export const ADD_EXPENSE_DIALOG_BODY_REFERENCE = new InjectionToken<
   providers: [
     {
       provide: ADD_EXPENSE_DIALOG_BODY_REFERENCE,
-      useValue: DialogBodyComponent,
+      useValue: ExpenseDialogBodyComponent,
     },
   ],
 })
-export class DialogBodyModule {}
+export class ExpenseDialogBodyModule {}
