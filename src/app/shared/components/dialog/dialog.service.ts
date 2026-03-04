@@ -60,15 +60,13 @@ export class AppDialogService {
    * @public
    * @returns {void}
    */
-  public open<C, O, E>(component: C, options?: O, entry?: E): void {
-    const CONTENT_ROOT_NODES = this._createContentComponent<C, O, E>(
-      component,
-      options,
-      entry
-    );
+  public open<C, O, E>(component: C, options: O, entry?: E): void {
+    const CONTENT_ROOT_NODES = this._createContentComponent<C, O, E>(component, entry);
 
-    const DIALOG_ROOT_NODES =
-      this._createDialogComponent<typeof component>(CONTENT_ROOT_NODES);
+    const DIALOG_ROOT_NODES = this._createDialogComponent<typeof component, O>(
+      CONTENT_ROOT_NODES,
+      options
+    );
 
     const REMOVABLE_NODES = [
       this._componentReference.dialogRootComponent,
@@ -90,7 +88,6 @@ export class AppDialogService {
    */
   private _createContentComponent<C, O, E>(
     component: C | Type<C>,
-    options?: O,
     entry?: E
   ): EmbeddedViewRef<C>['rootNodes'] {
     let rootNodes: EmbeddedViewRef<C>['rootNodes'] = [];
@@ -150,15 +147,6 @@ export class AppDialogService {
       rootNodes = hostView.rootNodes;
     }
 
-    if (
-      options &&
-      dialogProjectedContent &&
-      dialogProjectedContent instanceof ComponentRef &&
-      dialogProjectedContent.instance
-    ) {
-      Object.assign(dialogProjectedContent.instance, options);
-    }
-
     if (dialogProjectedContent) {
       this._componentReference.dialogProjectedContent = dialogProjectedContent;
     }
@@ -178,11 +166,13 @@ export class AppDialogService {
    * @private
    * @returns {EmbeddedViewRef<AppDialogComponent>['rootNodes']}
    */
-  private _createDialogComponent<C>(
-    projectableNodes: EmbeddedViewRef<C>['rootNodes']
+  private _createDialogComponent<C, O>(
+    projectableNodes: EmbeddedViewRef<C>['rootNodes'],
+    options: O
   ): EmbeddedViewRef<AppDialogComponent>['rootNodes'] {
     const moduleReference = createNgModule(AppDialogModule, this._injector);
 
+    // I already know the module's entry here. No need for `injector.get(entry)`.
     const COMPONENT_REFERENCE = moduleReference.componentFactoryResolver
       .resolveComponentFactory(AppDialogComponent)
       .create(moduleReference.injector, [projectableNodes]);
@@ -193,6 +183,10 @@ export class AppDialogService {
 
     if (ROOT_NODES.length === 0) {
       throw Error('Root nodes empty!');
+    }
+
+    if (Object.hasOwn(COMPONENT_REFERENCE, 'instance')) {
+      Object.assign(COMPONENT_REFERENCE.instance, options);
     }
 
     this._componentReference.dialogRootComponent = COMPONENT_REFERENCE;

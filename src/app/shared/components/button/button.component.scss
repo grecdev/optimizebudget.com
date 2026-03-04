@@ -21,7 +21,7 @@ $buttons-color-palette: (
   padding: map.get($spacing, sm);
   border-radius: map.get($border-radius, 'default');
   text-transform: capitalize;
-  transition: all 150ms ease-in-out;
+  transition: background 150ms ease-in-out, color 150ms ease-in-out;
   line-height: 1;
   cursor: pointer;
   text-align: center;
