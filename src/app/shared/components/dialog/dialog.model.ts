@@ -14,7 +14,7 @@ interface AppDialogOptions {
   closeButton: boolean;
 }
 
-interface ComponentReferenceState<T> {
+interface ComponentReferencesState<T> {
   dialogProjectedContent:
     | ComponentRef<T & AppOverlayInstances>
     | EmbeddedViewRef<T>
@@ -22,4 +22,4 @@ interface ComponentReferenceState<T> {
   dialogRootComponent: ComponentRef<AppDialogComponent> | null;
 }
 
-export type { AppDialogOptions, ComponentReferenceState };
+export type { AppDialogOptions, ComponentReferencesState };

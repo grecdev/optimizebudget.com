@@ -12,6 +12,7 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
+import { type ComponentReferencesState, type AppOverlayInstances } from './overlay.model';
 import { AppOverlayComponent } from './overlay.component';
 
 @Injectable({
@@ -19,14 +20,13 @@ import { AppOverlayComponent } from './overlay.component';
 })
 export class AppOverlayService {
   /**
-   * @summary - We need the overlay's component reference
-   * in order to remove it from within its projected content.
+   * @summary - To remove the reference afterward.
    *
-   * @type {ComponentRef<AppOverlayComponent> | null}
+   * @type {ComponentReferencesState}
    *
-   * @public
+   * @private
    */
-  public overlayComponentReference: ComponentRef<AppOverlayComponent> | null = null;
+  private _componentReferences: ComponentReferencesState = [];
 
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
   private readonly _injector: Injector;
@@ -57,11 +57,15 @@ export class AppOverlayService {
    * 3. @NgModule
    *
    * @param {EmbeddedViewRef<C>['rootNodes']} projectableNodes - External components included into the overlay.
+   * @param {Array<unknown>} removableNodesReferences - Nodes we want to remove whenever init close event from the overlay component.
    *
    * @public
    * @returns {void}
    */
-  public appendOverlay<C>(projectableNodes: EmbeddedViewRef<C>['rootNodes']): void {
+  public appendOverlay<C>(
+    projectableNodes: EmbeddedViewRef<C>['rootNodes'],
+    removableNodesReferences: ComponentReferencesState
+  ): void {
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
       .create(this._injector, [projectableNodes]);
@@ -75,9 +79,83 @@ export class AppOverlayService {
       throw Error('Root nodes are not found in _appendOverlay!');
     }
 
-    this.overlayComponentReference = COMPONENT_REFERENCE;
+    this._componentReferences.push(COMPONENT_REFERENCE, ...removableNodesReferences);
 
     this._applicationReference.attachView(HOST_VIEW);
     this._document.body.append(ROOT_NODES[0]);
+
+    this._initCloseSubscription();
+  }
+
+  /**
+   * @summary - Remove component from Angular's tree and from DOM.
+   *
+   * @param {ComponentRef<K> | EmbeddedViewRef<T> | null} componentReference - The component reference we want removed.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _removeComponent<C>(
+    componentReference: ComponentRef<C> | EmbeddedViewRef<C> | null
+  ): void {
+    if (!componentReference) {
+      throw Error('Component reference not found in _removeComponent!');
+    }
+
+    const IS_COMPONENT_REF = componentReference instanceof ComponentRef;
+
+    this._applicationReference.detachView(
+      IS_COMPONENT_REF ? componentReference.hostView : componentReference
+    );
+
+    componentReference.destroy();
+  }
+
+  /**
+   * @summary - Subscription for closing the rendered elements.
+   *
+   * @param {EmbeddedViewRef<AppDialogComponent>['rootNodes']} closeInstance - Event emitter from within the component
+   *
+   * @private
+   * @returns {void}
+   */
+  private _subscribeCloseEvent(closeInstance: AppOverlayInstances['close']): void {
+    const SUBSCRIPTION = closeInstance.subscribe(() => {
+      const MISSING_REFERENCES = this._componentReferences.some(item => !item);
+
+      if (MISSING_REFERENCES) {
+        throw Error('Component references not found in _subscribeCloseEvent!');
+      }
+
+      this._componentReferences.forEach(item => {
+        this._removeComponent(item);
+      });
+
+      SUBSCRIPTION.unsubscribe();
+    });
+  }
+
+  /**
+   * @summary - Initialize our closing subscription.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCloseSubscription(): void {
+    const MISSING_REFERENCES = this._componentReferences.some(item => !item);
+
+    if (MISSING_REFERENCES) {
+      throw Error('Component references not found in _initCloseSubscription!');
+    }
+
+    this._componentReferences.forEach(item => {
+      if (
+        item instanceof ComponentRef &&
+        item.instance &&
+        Object.hasOwn(item.instance, 'close')
+      ) {
+        this._subscribeCloseEvent(item.instance.close);
+      }
+    });
   }
 }

@@ -10,10 +10,9 @@ import {
   ComponentFactoryResolver,
 } from '@angular/core';
 
-import { type AppOverlayInstances } from '../overlay/overlay.model';
 import { AppOverlayService } from '../overlay/overlay.service';
 
-import { type ComponentReferenceState } from './dialog.model';
+import { type ComponentReferencesState } from './dialog.model';
 import { AppDialogModule } from './dialog.module';
 import { AppDialogComponent } from './dialog.component';
 
@@ -29,11 +28,11 @@ export class AppDialogService {
   /**
    * @summary - Component references used for different embedding.
    *
-   * @type {ComponentReferenceState<unknown>}
+   * @type {ComponentReferencesState<unknown>}
    *
    * @private
    */
-  private _componentReference: ComponentReferenceState<unknown> = {
+  private _componentReference: ComponentReferencesState<unknown> = {
     dialogProjectedContent: null,
     dialogRootComponent: null,
   };
@@ -62,17 +61,21 @@ export class AppDialogService {
    * @returns {void}
    */
   public open<C, O, E>(component: C, options?: O, entry?: E): void {
-    const contentRootNodes = this._createContentComponent<C, O, E>(
+    const CONTENT_ROOT_NODES = this._createContentComponent<C, O, E>(
       component,
       options,
       entry
     );
 
-    const dialogRootNodes =
-      this._createDialogComponent<typeof component>(contentRootNodes);
+    const DIALOG_ROOT_NODES =
+      this._createDialogComponent<typeof component>(CONTENT_ROOT_NODES);
 
-    this._overlayService.appendOverlay(dialogRootNodes);
-    this._initCloseSubscription();
+    const REMOVABLE_NODES = [
+      this._componentReference.dialogRootComponent,
+      this._componentReference.dialogProjectedContent,
+    ];
+
+    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, REMOVABLE_NODES);
   }
 
   /**
@@ -120,7 +123,7 @@ export class AppDialogService {
       }
 
       dialogProjectedContent =
-        COMPONENT_REFERENCE as ComponentReferenceState<C>['dialogProjectedContent'];
+        COMPONENT_REFERENCE as ComponentReferencesState<C>['dialogProjectedContent'];
 
       rootNodes = hostView.rootNodes;
     }
@@ -142,7 +145,7 @@ export class AppDialogService {
       }
 
       dialogProjectedContent =
-        COMPONENT_REFERENCE as ComponentReferenceState<C>['dialogProjectedContent'];
+        COMPONENT_REFERENCE as ComponentReferencesState<C>['dialogProjectedContent'];
 
       rootNodes = hostView.rootNodes;
     }
@@ -196,93 +199,5 @@ export class AppDialogService {
     this._applicationReference.attachView(HOST_VIEW);
 
     return ROOT_NODES;
-  }
-
-  /**
-   * @summary - Remove component from Angular's tree and from DOM.
-   *
-   * @param {ComponentRef<K> | EmbeddedViewRef<T> | null} componentReference - The component reference we want removed.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _removeComponent<C>(
-    componentReference: ComponentRef<C> | EmbeddedViewRef<C> | null
-  ): void {
-    if (!componentReference) {
-      throw Error('Component reference not found in _removeComponent!');
-    }
-
-    if (componentReference instanceof ComponentRef) {
-      this._applicationReference.detachView(componentReference.hostView);
-    } else {
-      this._applicationReference.detachView(componentReference);
-    }
-
-    componentReference.destroy();
-  }
-
-  /**
-   * @summary - Subscription for closing the rendered elements.
-   *
-   * @param {EmbeddedViewRef<AppDialogComponent>['rootNodes']} closeInstance - Event emitter from within the component
-   *
-   * @private
-   * @returns {void}
-   */
-  private _subscribeCloseEvent(closeInstance: AppOverlayInstances['close']): void {
-    const SUBSCRIPTION = closeInstance.subscribe(() => {
-      const REFERENCES = this._getReferences();
-
-      REFERENCES.forEach(item => {
-        this._removeComponent(item);
-      });
-
-      SUBSCRIPTION.unsubscribe();
-    });
-  }
-
-  /**
-   * @summary - Initialize our closing subscription.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _initCloseSubscription(): void {
-    const REFERENCES = this._getReferences();
-
-    REFERENCES.forEach(item => {
-      if (
-        item instanceof ComponentRef &&
-        item.instance &&
-        Object.hasOwn(item.instance, 'close')
-      ) {
-        this._subscribeCloseEvent(item.instance.close);
-      }
-    });
-  }
-
-  /**
-   * @summary - Get component references, usually to remove them.
-   *
-   * @private
-   * @returns {Array<ComponentRef<AppOverlayInstances> | EmbeddedViewRef<unknown> | null>}
-   */
-  private _getReferences(): Array<
-    ComponentRef<AppOverlayInstances> | EmbeddedViewRef<unknown> | null
-  > {
-    const REFERENCES = [
-      this._componentReference.dialogProjectedContent,
-      this._componentReference.dialogRootComponent,
-      this._overlayService.overlayComponentReference,
-    ];
-
-    const MISSING_REFERENCES = REFERENCES.some(item => !item);
-
-    if (MISSING_REFERENCES) {
-      throw Error('Component references not found in _initCloseSubscription!');
-    }
-
-    return REFERENCES;
   }
 }
