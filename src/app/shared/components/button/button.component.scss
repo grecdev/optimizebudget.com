@@ -67,8 +67,6 @@ $buttons-color-palette: (
       color: $text-color;
       border: 2px solid $base-color;
 
-      @debug $key $base-color-lightness;
-
       @if ($base-color-lightness <= 55%) {
         $text-color: map.get($color-palette, 'common', 'white');
       }

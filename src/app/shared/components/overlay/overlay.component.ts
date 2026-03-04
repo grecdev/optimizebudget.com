@@ -7,9 +7,13 @@ import {
   HostListener,
   EventEmitter,
   Output,
+  HostBinding,
 } from '@angular/core';
 
-import { type AppOverlayInstances } from './overlay.model';
+import {
+  type AppOverlayContentInstances,
+  type AppOverlayComponentInstances,
+} from './overlay.model';
 
 @Component({
   selector: 'app-overlay',
@@ -17,8 +21,20 @@ import { type AppOverlayInstances } from './overlay.model';
   styleUrls: ['./overlay.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppOverlayComponent implements AppOverlayInstances {
+export class AppOverlayComponent
+  implements AppOverlayContentInstances, AppOverlayComponentInstances
+{
   private readonly _elementRef: ElementRef<AppOverlayComponent>;
+
+  /**
+   * @summary - Options assigned from outside the component.
+   *
+   * @type {AppOverlayComponentInstances['options']}
+   * @public
+   */
+  public options: AppOverlayComponentInstances['options'] = {
+    noBackground: false,
+  };
 
   @Output() close: EventEmitter<null> = new EventEmitter();
 
@@ -66,10 +82,14 @@ export class AppOverlayComponent implements AppOverlayInstances {
 
     const ALLOWED_KEYS = ['Escape'];
 
-    if (!ALLOWED_KEYS.includes(event.code)) {
+    if (!ALLOWED_KEYS.includes(event.code) || event.altKey) {
       return;
     }
 
     this.close.emit(null);
+  }
+
+  @HostBinding('class.no-background') get hostNoBackground(): boolean {
+    return this.options.noBackground;
   }
 }

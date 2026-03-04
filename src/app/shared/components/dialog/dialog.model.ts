@@ -1,6 +1,6 @@
-import { ComponentRef, EmbeddedViewRef } from '@angular/core';
+import { type ComponentRef, type EmbeddedViewRef, type NgModuleRef } from '@angular/core';
 
-import { AppOverlayInstances } from '../overlay/overlay.model';
+import { type AppOverlayContentInstances } from '../overlay/overlay.model';
 
 import { AppDialogComponent } from './dialog.component';
 
@@ -16,10 +16,12 @@ interface AppDialogOptions {
 
 interface ComponentReferencesState<T> {
   dialogProjectedContent:
-    | ComponentRef<T & AppOverlayInstances>
+    | ComponentRef<T & AppOverlayContentInstances>
     | EmbeddedViewRef<T>
     | null;
   dialogRootComponent: ComponentRef<AppDialogComponent> | null;
+  contentModuleRef: NgModuleRef<T> | null;
+  dialogModuleRef: NgModuleRef<T> | null;
 }
 
 export type { AppDialogOptions, ComponentReferencesState };

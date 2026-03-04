@@ -41,7 +41,6 @@ export class AddExpenseDialogComponent {
 
     this._dialogService.open<
       ExpenseDialogBodyModule,
-      typeof OPTIONS,
       typeof ADD_EXPENSE_DIALOG_BODY_REFERENCE
     >(ExpenseDialogBodyModule, OPTIONS, ADD_EXPENSE_DIALOG_BODY_REFERENCE);
   }

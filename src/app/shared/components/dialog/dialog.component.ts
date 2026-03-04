@@ -9,7 +9,7 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
 
-import { type AppOverlayInstances } from '../overlay/overlay.model';
+import { type AppOverlayContentInstances } from '../overlay/overlay.model';
 import { type AppDialogOptions } from './dialog.model';
 
 @Component({
@@ -19,7 +19,7 @@ import { type AppDialogOptions } from './dialog.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class AppDialogComponent implements AppDialogOptions, AppOverlayInstances {
+export class AppDialogComponent implements AppDialogOptions, AppOverlayContentInstances {
   private readonly _iconRegistryService: IconRegistryService;
   private readonly _domSanitizer: DomSanitizer;
 

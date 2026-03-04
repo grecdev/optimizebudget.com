@@ -8,11 +8,18 @@ import {
   Injectable,
   Inject,
   ComponentRef,
+  NgModuleRef,
 } from '@angular/core';
 
 import { DOCUMENT } from '@angular/common';
 
-import { type ComponentReferencesState, type AppOverlayInstances } from './overlay.model';
+import {
+  type ComponentReferencesState,
+  type AppOverlayContentInstances,
+  type AppOverlayComponentInstances,
+  type ComponentReference,
+} from './overlay.model';
+
 import { AppOverlayComponent } from './overlay.component';
 
 @Injectable({
@@ -57,14 +64,17 @@ export class AppOverlayService {
    * 3. @NgModule
    *
    * @param {EmbeddedViewRef<C>['rootNodes']} projectableNodes - External components included into the overlay.
-   * @param {Array<unknown>} removableNodesReferences - Nodes we want to remove whenever init close event from the overlay component.
+   * @param {Array<unknown>} removableNodesReferences - Nodes we want to remove
+   * whenever we trigger the close event from the overlay component.
+   * @param {AppOverlayComponentOptions} [options] - Options assigned to the overlay's component
    *
    * @public
    * @returns {void}
    */
   public appendOverlay<C>(
     projectableNodes: EmbeddedViewRef<C>['rootNodes'],
-    removableNodesReferences: ComponentReferencesState
+    removableNodesReferences: ComponentReferencesState,
+    options?: AppOverlayComponentInstances['options']
   ): void {
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
@@ -77,6 +87,14 @@ export class AppOverlayService {
 
     if (!ROOT_NODES) {
       throw Error('Root nodes are not found in _appendOverlay!');
+    }
+
+    if (
+      options &&
+      Object.hasOwn(COMPONENT_REFERENCE, 'instance') &&
+      Object.hasOwn(COMPONENT_REFERENCE.instance, 'options')
+    ) {
+      Object.assign(COMPONENT_REFERENCE.instance.options, options);
     }
 
     this._componentReferences.push(COMPONENT_REFERENCE, ...removableNodesReferences);
@@ -95,18 +113,19 @@ export class AppOverlayService {
    * @private
    * @returns {void}
    */
-  private _removeComponent<C>(
-    componentReference: ComponentRef<C> | EmbeddedViewRef<C> | null
-  ): void {
+  private _removeComponent(componentReference: ComponentReference): void {
     if (!componentReference) {
       throw Error('Component reference not found in _removeComponent!');
     }
 
     const IS_COMPONENT_REF = componentReference instanceof ComponentRef;
+    const IS_NG_MODULE_REF = componentReference instanceof NgModuleRef;
 
-    this._applicationReference.detachView(
-      IS_COMPONENT_REF ? componentReference.hostView : componentReference
-    );
+    if (!IS_NG_MODULE_REF) {
+      this._applicationReference.detachView(
+        IS_COMPONENT_REF ? componentReference.hostView : componentReference
+      );
+    }
 
     componentReference.destroy();
   }
@@ -119,7 +138,7 @@ export class AppOverlayService {
    * @private
    * @returns {void}
    */
-  private _subscribeCloseEvent(closeInstance: AppOverlayInstances['close']): void {
+  private _subscribeCloseEvent(closeInstance: AppOverlayContentInstances['close']): void {
     const SUBSCRIPTION = closeInstance.subscribe(() => {
       const MISSING_REFERENCES = this._componentReferences.some(item => !item);
 
@@ -132,6 +151,8 @@ export class AppOverlayService {
       });
 
       SUBSCRIPTION.unsubscribe();
+
+      this._cleanup();
     });
   }
 
@@ -157,5 +178,17 @@ export class AppOverlayService {
         this._subscribeCloseEvent(item.instance.close);
       }
     });
+  }
+
+  /**
+   * @summary - Cleanup whatever I don't need anymore, to avoid leaks.
+   *
+   * This usually it's called after you successfully triggered the close events.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _cleanup(): void {
+    this._componentReferences = [];
   }
 }

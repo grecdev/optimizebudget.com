@@ -12,9 +12,9 @@ import {
 
 import { AppOverlayService } from '../overlay/overlay.service';
 
-import { type ComponentReferencesState } from './dialog.model';
-import { AppDialogModule } from './dialog.module';
-import { AppDialogComponent } from './dialog.component';
+import { type AppDialogOptions, type ComponentReferencesState } from './dialog.model';
+
+import { AppDialogModule, APP_DIALOG_COMPONENT_REFERENCE } from './dialog.module';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +35,8 @@ export class AppDialogService {
   private _componentReference: ComponentReferencesState<unknown> = {
     dialogProjectedContent: null,
     dialogRootComponent: null,
+    contentModuleRef: null,
+    dialogModuleRef: null,
   };
 
   constructor(...args: Array<unknown>);
@@ -54,16 +56,16 @@ export class AppDialogService {
    * @summary - Open an overlay component.
    *
    * @param {C} component - Component we want to inject into the overlay.
-   * @param {O} [options] - Maybe our component needs dynamic data, we can change its properties with this parameter.
+   * @param {AppDialogOptions} options - Maybe our component needs dynamic data, we can change its properties with this parameter.
    * @param {E} [entry] - If we are using a module, we need to pass the exported component reference via `InjectionToken` API.
    *
    * @public
    * @returns {void}
    */
-  public open<C, O, E>(component: C, options: O, entry?: E): void {
-    const CONTENT_ROOT_NODES = this._createContentComponent<C, O, E>(component, entry);
+  public open<C, E>(component: C, options: AppDialogOptions, entry?: E): void {
+    const CONTENT_ROOT_NODES = this._createContentComponent<C, E>(component, entry);
 
-    const DIALOG_ROOT_NODES = this._createDialogComponent<typeof component, O>(
+    const DIALOG_ROOT_NODES = this._createDialogComponent<typeof component>(
       CONTENT_ROOT_NODES,
       options
     );
@@ -71,22 +73,27 @@ export class AppDialogService {
     const REMOVABLE_NODES = [
       this._componentReference.dialogRootComponent,
       this._componentReference.dialogProjectedContent,
+      this._componentReference.dialogModuleRef,
+      this._componentReference.contentModuleRef,
     ];
 
-    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, REMOVABLE_NODES);
+    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, REMOVABLE_NODES, {
+      noBackground: true,
+    });
+
+    this._cleanup();
   }
 
   /**
    * @summary - Create the overlay's content component and add it to the Angular's tree.
    *
-   * @param {Type<T> | T} component - The component we want to project.
-   * @param {O} [options] - Maybe we want to pass whatever data to our projected content.
+   * @param {C | Type<C>,} component - The component we want to project.
    * @param {E} [entry] - If we are using a module, we need to pass the exported component reference via `InjectionToken` API.
    *
    * @private
-   * @returns {EmbeddedViewRef<T>['rootNodes']}
+   * @returns {EmbeddedViewRef<C>['rootNodes']}
    */
-  private _createContentComponent<C, O, E>(
+  private _createContentComponent<C, E>(
     component: C | Type<C>,
     entry?: E
   ): EmbeddedViewRef<C>['rootNodes'] {
@@ -127,19 +134,23 @@ export class AppDialogService {
 
     if (entry) {
       const MODULE = component as Type<C>;
-      const moduleRef = createNgModule(MODULE, this._injector);
+      const moduleReference = createNgModule(MODULE, this._injector);
 
-      const COMPONENT_TYPE = moduleRef.injector.get(entry);
-      const COMPONENT_REFERENCE = moduleRef.componentFactoryResolver
+      const COMPONENT_TYPE = moduleReference.injector.get(entry);
+
+      const COMPONENT_REFERENCE = moduleReference.componentFactoryResolver
         .resolveComponentFactory(COMPONENT_TYPE as Type<C>)
-        .create(moduleRef.injector);
+        .create(moduleReference.injector);
 
       hostView = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<E>;
+
       const ROOT_NODES = hostView.rootNodes.length > 0 && hostView.rootNodes;
 
       if (!ROOT_NODES) {
         throw Error('Root nodes are not found in _appendOverlay!');
       }
+
+      this._componentReference.contentModuleRef = moduleReference;
 
       dialogProjectedContent =
         COMPONENT_REFERENCE as ComponentReferencesState<C>['dialogProjectedContent'];
@@ -162,22 +173,27 @@ export class AppDialogService {
    * @summary - Create the component that contains projected content
    *
    * @param {EmbeddedViewRef<C>['rootNodes']} projectableNodes - Children
+   * @param {AppDialogOptions} options - Various options for our dialog.
    *
    * @private
    * @returns {EmbeddedViewRef<AppDialogComponent>['rootNodes']}
    */
-  private _createDialogComponent<C, O>(
+  private _createDialogComponent<C>(
     projectableNodes: EmbeddedViewRef<C>['rootNodes'],
-    options: O
-  ): EmbeddedViewRef<AppDialogComponent>['rootNodes'] {
+    options: AppDialogOptions
+  ): EmbeddedViewRef<typeof APP_DIALOG_COMPONENT_REFERENCE>['rootNodes'] {
     const moduleReference = createNgModule(AppDialogModule, this._injector);
+
+    const COMPONENT_TYPE = moduleReference.injector.get(APP_DIALOG_COMPONENT_REFERENCE);
 
     // I already know the module's entry here. No need for `injector.get(entry)`.
     const COMPONENT_REFERENCE = moduleReference.componentFactoryResolver
-      .resolveComponentFactory(AppDialogComponent)
+      .resolveComponentFactory(COMPONENT_TYPE)
       .create(moduleReference.injector, [projectableNodes]);
 
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppDialogComponent>;
+    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<
+      typeof COMPONENT_TYPE
+    >;
 
     const ROOT_NODES = HOST_VIEW.rootNodes;
 
@@ -189,9 +205,24 @@ export class AppDialogService {
       Object.assign(COMPONENT_REFERENCE.instance, options);
     }
 
+    this._componentReference.dialogModuleRef = moduleReference;
     this._componentReference.dialogRootComponent = COMPONENT_REFERENCE;
     this._applicationReference.attachView(HOST_VIEW);
 
     return ROOT_NODES;
+  }
+
+  /**
+   * @summary - Cleanup whatever I don't need anymore, to avoid leaks.
+   *
+   * This usually it's called after you successfully appended the overlay.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _cleanup(): void {
+    Object.keys(this._componentReference).forEach(key => {
+      this._componentReference[key as keyof typeof this._componentReference] = null;
+    });
   }
 }
