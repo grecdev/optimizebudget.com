@@ -5,15 +5,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
-  EventEmitter,
-  Output,
   HostBinding,
 } from '@angular/core';
 
-import {
-  type AppOverlayContentInstances,
-  type AppOverlayComponentInstances,
-} from './overlay.model';
+import { type AppOverlayComponentInstances } from './overlay.model';
+
+import { OverlayReference } from './overlay-reference';
 
 @Component({
   selector: 'app-overlay',
@@ -21,10 +18,11 @@ import {
   styleUrls: ['./overlay.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppOverlayComponent
-  implements AppOverlayContentInstances, AppOverlayComponentInstances
-{
+export class AppOverlayComponent {
   private readonly _elementRef: ElementRef<AppOverlayComponent>;
+
+  // Added via instance upon creation
+  public overlayReference: OverlayReference | null = null;
 
   /**
    * @summary - Options assigned from outside the component.
@@ -35,8 +33,6 @@ export class AppOverlayComponent
   public options: AppOverlayComponentInstances['options'] = {
     noBackground: false,
   };
-
-  @Output() close: EventEmitter<null> = new EventEmitter();
 
   constructor(elementRef: ElementRef<AppOverlayComponent>) {
     this._elementRef = elementRef;
@@ -60,13 +56,17 @@ export class AppOverlayComponent
     }
 
     const TARGET = event.target as HTMLElement | AppOverlayComponent;
-    const OVERLAY_CLICKED = TARGET === NATIVE_ELEMENT;
+    const CURRENT_TARGET_CLICKED = TARGET === NATIVE_ELEMENT;
 
-    if (!OVERLAY_CLICKED) {
+    if (!CURRENT_TARGET_CLICKED) {
       return;
     }
 
-    this.close.emit(null);
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.overlayReference.close();
   }
 
   /**
@@ -77,16 +77,16 @@ export class AppOverlayComponent
    * @private
    * @returns {void}
    */
-  @HostListener('window:keydown', ['$event']) onEscapeKey(event: KeyboardEvent): void {
+  @HostListener('document:keydown.escape', ['$event']) onEscapeKey(
+    event: KeyboardEvent
+  ): void {
     event.stopPropagation();
 
-    const ALLOWED_KEYS = ['Escape'];
-
-    if (!ALLOWED_KEYS.includes(event.code) || event.altKey) {
-      return;
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
     }
 
-    this.close.emit(null);
+    this.overlayReference.closeLastOverlay();
   }
 
   @HostBinding('class.no-background') get hostNoBackground(): boolean {

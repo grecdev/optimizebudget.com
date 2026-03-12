@@ -9,7 +9,6 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
 
-import { type AppOverlayContentInstances } from '../overlay/overlay.model';
 import { type AppDialogOptions } from './dialog.model';
 
 @Component({
@@ -19,7 +18,7 @@ import { type AppDialogOptions } from './dialog.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class AppDialogComponent implements AppDialogOptions, AppOverlayContentInstances {
+export class AppDialogComponent implements AppDialogOptions {
   private readonly _iconRegistryService: IconRegistryService;
   private readonly _domSanitizer: DomSanitizer;
 
@@ -38,8 +37,6 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
   public title: string = 'Please add your title!';
   public closeButton: boolean = true;
 
-  @Output() close: EventEmitter<null> = new EventEmitter();
-
   constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
@@ -57,8 +54,6 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
    */
   handleButtonCloseClick(event: MouseEvent): void {
     event.stopPropagation();
-
-    this.close.emit(null);
   }
 
   /**

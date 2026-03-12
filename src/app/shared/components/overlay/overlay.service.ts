@@ -15,30 +15,57 @@ import { DOCUMENT } from '@angular/common';
 
 import {
   type ComponentReferencesState,
-  type AppOverlayContentInstances,
   type AppOverlayComponentInstances,
+  type OverlayReferenceOptions,
   type ComponentReference,
+  type OverlayReferenceMapKey,
 } from './overlay.model';
 
 import { AppOverlayComponent } from './overlay.component';
+import { OverlayReference } from './overlay-reference';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppOverlayService {
-  /**
-   * @summary - To remove the reference afterward.
-   *
-   * @type {ComponentReferencesState}
-   *
-   * @private
-   */
-  private _componentReferences: ComponentReferencesState = [];
-
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
   private readonly _injector: Injector;
   private readonly _applicationReference: ApplicationRef;
   private readonly _document: Document;
+
+  /**
+   * @summary - We need to check if the current ID has reached its threshold right?
+   *
+   * @type {number}
+   *
+   * @private
+   */
+  private readonly _idDefaultValue: number = 0;
+
+  /**
+   * @summary - Used whenever we remove the last overlay added to the DOM.
+   *
+   * Start value from 0, because it needs to be the same count as `new Map().size`.
+   *
+   * @type {OverlayReferenceOptions['currentID']}
+   *
+   * @private
+   */
+  private _currentID: OverlayReferenceOptions['currentID'] = this._idDefaultValue;
+
+  /**
+   * @summary - This store it's used in order to render multiple overlay at the same time.
+   *
+   * And properly remove them, even with garbage collection.
+   *
+   * @type {Map<OverlayReferenceOptions['currentID'], ComponentReferencesState>}
+   *
+   * @private
+   */
+  private _overlayReferenceStore: Map<
+    OverlayReferenceOptions['currentID'],
+    ComponentReferencesState
+  > = new Map<OverlayReferenceOptions['currentID'], ComponentReferencesState>();
 
   constructor(...args: Array<unknown>);
   constructor(
@@ -75,40 +102,114 @@ export class AppOverlayService {
     projectableNodes: EmbeddedViewRef<C>['rootNodes'],
     removableNodesReferences: ComponentReferencesState,
     options?: AppOverlayComponentInstances['options']
-  ): void {
+  ): OverlayReference<ComponentRef<AppOverlayComponent>> {
+    this._currentID++;
+
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
       .create(this._injector, [projectableNodes]);
 
-    const HOST_VIEW =
-      COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>;
+    const REMOVABLE_NODES = [COMPONENT_REFERENCE, ...removableNodesReferences];
 
-    const ROOT_NODES = HOST_VIEW.rootNodes.length > 0 && HOST_VIEW.rootNodes;
+    const LAST_OVERLAY_REFERENCE = new OverlayReference<typeof COMPONENT_REFERENCE>({
+      currentID: this._currentID,
+    });
+
+    if (options) {
+      this._setReferenceOptions({
+        componentReference: COMPONENT_REFERENCE,
+        instanceOptions: options,
+        lastOverlayReference: LAST_OVERLAY_REFERENCE,
+      });
+    }
+
+    this._saveOverlayReference({
+      removableNodes: REMOVABLE_NODES,
+    });
+
+    this._appendToDOM(
+      COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>
+    );
+
+    this._initCloseSubscription({
+      lastOverlayReference: LAST_OVERLAY_REFERENCE,
+    });
+
+    this._initCloseLastOverlaySubscription({
+      lastOverlayReference: LAST_OVERLAY_REFERENCE,
+    });
+
+    return LAST_OVERLAY_REFERENCE;
+  }
+
+  /**
+   * @summary - Set instances for component reference.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setReferenceOptions(options: {
+    componentReference: ComponentRef<AppOverlayComponent>;
+    instanceOptions: AppOverlayComponentInstances['options'];
+    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
+  }): void {
+    const { componentReference, instanceOptions, lastOverlayReference } = options;
+
+    if (
+      Object.hasOwn(componentReference, 'instance') &&
+      Object.hasOwn(componentReference.instance, 'options')
+    ) {
+      Object.assign(componentReference.instance.options, instanceOptions);
+    }
+    if (Object.hasOwn(componentReference.instance, 'overlayReference')) {
+      componentReference.instance.overlayReference = lastOverlayReference;
+    }
+  }
+
+  /**
+   * @summary - Append our newly created overlay to the DOM (both HTML and Virtual)
+   *
+   * @private
+   * @returns {void}
+   */
+  private _appendToDOM(hostView: EmbeddedViewRef<AppOverlayComponent>): void {
+    const ROOT_NODES = hostView.rootNodes.length > 0 && hostView.rootNodes;
 
     if (!ROOT_NODES) {
       throw Error('Root nodes are not found in _appendOverlay!');
     }
 
+    this._applicationReference.attachView(hostView);
+    this._document.body.append(ROOT_NODES[0]);
+  }
+
+  /**
+   * @summary - Save unique overlay references.
+   *
+   * @param {OverlayReference<AppOverlayComponent>} options.overlayReference - Nodes to remove whenever we close the overlay.
+   * @param {ComponentReferencesState} options.removableNodes - Nodes to remove whenever we close the overlay.
+   *
+   * @returns {void}
+   */
+  private _saveOverlayReference(options: {
+    removableNodes: ComponentReferencesState;
+  }): void {
+    const { removableNodes } = options;
+
     if (
-      options &&
-      Object.hasOwn(COMPONENT_REFERENCE, 'instance') &&
-      Object.hasOwn(COMPONENT_REFERENCE.instance, 'options')
+      this._currentID === this._idDefaultValue ||
+      this._overlayReferenceStore.has(this._currentID)
     ) {
-      Object.assign(COMPONENT_REFERENCE.instance.options, options);
+      return;
     }
 
-    this._componentReferences.push(COMPONENT_REFERENCE, ...removableNodesReferences);
-
-    this._applicationReference.attachView(HOST_VIEW);
-    this._document.body.append(ROOT_NODES[0]);
-
-    this._initCloseSubscription();
+    this._overlayReferenceStore.set(this._currentID, removableNodes);
   }
 
   /**
    * @summary - Remove component from Angular's tree and from DOM.
    *
-   * @param {ComponentRef<K> | EmbeddedViewRef<T> | null} componentReference - The component reference we want removed.
+   * @param {ComponentReference} componentReference - The component reference we want removed.
    *
    * @private
    * @returns {void}
@@ -131,64 +232,69 @@ export class AppOverlayService {
   }
 
   /**
-   * @summary - Subscription for closing the rendered elements.
-   *
-   * @param {EmbeddedViewRef<AppDialogComponent>['rootNodes']} closeInstance - Event emitter from within the component
-   *
-   * @private
-   * @returns {void}
-   */
-  private _subscribeCloseEvent(closeInstance: AppOverlayContentInstances['close']): void {
-    const SUBSCRIPTION = closeInstance.subscribe(() => {
-      const MISSING_REFERENCES = this._componentReferences.some(item => !item);
-
-      if (MISSING_REFERENCES) {
-        throw Error('Component references not found in _subscribeCloseEvent!');
-      }
-
-      this._componentReferences.forEach(item => {
-        this._removeComponent(item);
-      });
-
-      SUBSCRIPTION.unsubscribe();
-
-      this._cleanup();
-    });
-  }
-
-  /**
    * @summary - Initialize our closing subscription.
    *
+   * @param {OverlayReferenceMapKey<AppOverlayComponent>} options.lastOverlayReference - Last overlay reference.
+   *
    * @private
    * @returns {void}
    */
-  private _initCloseSubscription(): void {
-    const MISSING_REFERENCES = this._componentReferences.some(item => !item);
+  private _initCloseSubscription(options: {
+    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
+  }): void {
+    const { lastOverlayReference } = options;
 
-    if (MISSING_REFERENCES) {
-      throw Error('Component references not found in _initCloseSubscription!');
-    }
+    lastOverlayReference.closingOverlay$.subscribe({
+      next: data => {
+        const COMPONENT_REFERENCES =
+          this._overlayReferenceStore.has(data) && this._overlayReferenceStore.get(data);
 
-    this._componentReferences.forEach(item => {
-      if (
-        item instanceof ComponentRef &&
-        item.instance &&
-        Object.hasOwn(item.instance, 'close')
-      ) {
-        this._subscribeCloseEvent(item.instance.close);
-      }
+        if (!COMPONENT_REFERENCES) {
+          return;
+        }
+
+        COMPONENT_REFERENCES.forEach(item => {
+          this._removeComponent(item);
+        });
+
+        this._overlayReferenceStore.delete(data);
+      },
     });
   }
 
   /**
-   * @summary - Cleanup whatever I don't need anymore, to avoid leaks.
+   * @summary - Remove the last rendered overlay.
    *
-   * This usually it's called after you successfully triggered the close events.
+   * This is triggered only on the document:keydown.escape event.
    *
-   * @private
    * @returns {void}
+   * @private
    */
-  private _cleanup(): void {
-    this._componentReferences = [];
+  private _initCloseLastOverlaySubscription(options: {
+    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
+  }): void {
+    const { lastOverlayReference } = options;
+
+    lastOverlayReference.closingLastOverlay$.subscribe({
+      next: () => {
+        const COMPONENT_REFERENCES =
+          this._overlayReferenceStore.has(this._overlayReferenceStore.size) &&
+          this._overlayReferenceStore.get(this._overlayReferenceStore.size);
+
+        if (!COMPONENT_REFERENCES) {
+          return;
+        }
+
+        COMPONENT_REFERENCES.forEach(item => {
+          this._removeComponent(item);
+        });
+
+        this._overlayReferenceStore.delete(this._overlayReferenceStore.size);
+
+        if (this._currentID > this._idDefaultValue) {
+          this._currentID--;
+        }
+      },
+    });
   }
 }

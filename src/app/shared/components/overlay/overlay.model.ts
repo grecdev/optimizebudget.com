@@ -1,16 +1,6 @@
-import {
-  type ComponentRef,
-  type EmbeddedViewRef,
-  type EventEmitter,
-  type NgModuleRef,
-} from '@angular/core';
+import { type ComponentRef, type EmbeddedViewRef, type NgModuleRef } from '@angular/core';
 
-/**
- * @summary - Whatever instances we need to declare in our content components.
- */
-interface AppOverlayContentInstances {
-  close: EventEmitter<null>;
-}
+import { type OverlayReference } from './overlay-reference';
 
 interface AppOverlayComponentOptions {
   noBackground: boolean;
@@ -23,17 +13,24 @@ interface AppOverlayComponentInstances {
   options: AppOverlayComponentOptions;
 }
 
+interface OverlayReferenceOptions {
+  currentID: number;
+}
+
 type ComponentReference =
-  | ComponentRef<unknown & AppOverlayContentInstances>
+  | ComponentRef<unknown>
   | EmbeddedViewRef<unknown>
   | NgModuleRef<unknown>
   | null;
 
 type ComponentReferencesState = Array<ComponentReference>;
 
+type OverlayReferenceMapKey<C> = OverlayReference<ComponentRef<C>>;
+
 export type {
-  AppOverlayContentInstances,
   ComponentReferencesState,
   AppOverlayComponentInstances,
   ComponentReference,
+  OverlayReferenceMapKey,
+  OverlayReferenceOptions,
 };
