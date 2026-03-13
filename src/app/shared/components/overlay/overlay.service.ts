@@ -16,7 +16,6 @@ import { DOCUMENT } from '@angular/common';
 import {
   type ComponentReferencesState,
   type AppOverlayComponentInstances,
-  type OverlayReferenceOptions,
   type ComponentReference,
   type OverlayReferenceMapKey,
 } from './overlay.model';
@@ -40,32 +39,30 @@ export class AppOverlayService {
    *
    * @private
    */
-  private readonly _idDefaultValue: number = 0;
+  private readonly _defaultValueID: number = 0;
 
   /**
    * @summary - Used whenever we remove the last overlay added to the DOM.
    *
    * Start value from 0, because it needs to be the same count as `new Map().size`.
    *
-   * @type {OverlayReferenceOptions['currentID']}
+   * @type {number}
    *
    * @private
    */
-  private _currentID: OverlayReferenceOptions['currentID'] = this._idDefaultValue;
+  private _currentID: number = this._defaultValueID;
 
   /**
    * @summary - This store it's used in order to render multiple overlay at the same time.
    *
-   * And properly remove them, even with garbage collection.
+   * LIFO.
    *
-   * @type {Map<OverlayReferenceOptions['currentID'], ComponentReferencesState>}
+   * @type {Map<typeof this._currentID, ComponentReferencesState>}
    *
    * @private
    */
-  private _overlayReferenceStore: Map<
-    OverlayReferenceOptions['currentID'],
-    ComponentReferencesState
-  > = new Map<OverlayReferenceOptions['currentID'], ComponentReferencesState>();
+  private _overlayReferenceStack: Map<typeof this._currentID, ComponentReferencesState> =
+    new Map<typeof this._currentID, ComponentReferencesState>();
 
   constructor(...args: Array<unknown>);
   constructor(
@@ -111,9 +108,7 @@ export class AppOverlayService {
 
     const REMOVABLE_NODES = [COMPONENT_REFERENCE, ...removableNodesReferences];
 
-    const LAST_OVERLAY_REFERENCE = new OverlayReference<typeof COMPONENT_REFERENCE>({
-      currentID: this._currentID,
-    });
+    const LAST_OVERLAY_REFERENCE = new OverlayReference<typeof COMPONENT_REFERENCE>();
 
     if (options) {
       this._setReferenceOptions({
@@ -132,10 +127,6 @@ export class AppOverlayService {
     );
 
     this._initCloseSubscription({
-      lastOverlayReference: LAST_OVERLAY_REFERENCE,
-    });
-
-    this._initCloseLastOverlaySubscription({
       lastOverlayReference: LAST_OVERLAY_REFERENCE,
     });
 
@@ -197,13 +188,13 @@ export class AppOverlayService {
     const { removableNodes } = options;
 
     if (
-      this._currentID === this._idDefaultValue ||
-      this._overlayReferenceStore.has(this._currentID)
+      this._currentID === this._defaultValueID ||
+      this._overlayReferenceStack.has(this._currentID)
     ) {
       return;
     }
 
-    this._overlayReferenceStore.set(this._currentID, removableNodes);
+    this._overlayReferenceStack.set(this._currentID, removableNodes);
   }
 
   /**
@@ -245,41 +236,10 @@ export class AppOverlayService {
     const { lastOverlayReference } = options;
 
     lastOverlayReference.closingOverlay$.subscribe({
-      next: data => {
-        const COMPONENT_REFERENCES =
-          this._overlayReferenceStore.has(data) && this._overlayReferenceStore.get(data);
-
-        if (!COMPONENT_REFERENCES) {
-          return;
-        }
-
-        COMPONENT_REFERENCES.forEach(item => {
-          this._removeComponent(item);
-        });
-
-        this._overlayReferenceStore.delete(data);
-      },
-    });
-  }
-
-  /**
-   * @summary - Remove the last rendered overlay.
-   *
-   * This is triggered only on the document:keydown.escape event.
-   *
-   * @returns {void}
-   * @private
-   */
-  private _initCloseLastOverlaySubscription(options: {
-    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
-  }): void {
-    const { lastOverlayReference } = options;
-
-    lastOverlayReference.closingLastOverlay$.subscribe({
       next: () => {
         const COMPONENT_REFERENCES =
-          this._overlayReferenceStore.has(this._overlayReferenceStore.size) &&
-          this._overlayReferenceStore.get(this._overlayReferenceStore.size);
+          this._overlayReferenceStack.has(this._overlayReferenceStack.size) &&
+          this._overlayReferenceStack.get(this._overlayReferenceStack.size);
 
         if (!COMPONENT_REFERENCES) {
           return;
@@ -289,9 +249,9 @@ export class AppOverlayService {
           this._removeComponent(item);
         });
 
-        this._overlayReferenceStore.delete(this._overlayReferenceStore.size);
+        this._overlayReferenceStack.delete(this._overlayReferenceStack.size);
 
-        if (this._currentID > this._idDefaultValue) {
+        if (this._currentID > this._defaultValueID) {
           this._currentID--;
         }
       },

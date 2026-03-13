@@ -13,10 +13,6 @@ interface AppOverlayComponentInstances {
   options: AppOverlayComponentOptions;
 }
 
-interface OverlayReferenceOptions {
-  currentID: number;
-}
-
 type ComponentReference =
   | ComponentRef<unknown>
   | EmbeddedViewRef<unknown>
@@ -32,5 +28,4 @@ export type {
   AppOverlayComponentInstances,
   ComponentReference,
   OverlayReferenceMapKey,
-  OverlayReferenceOptions,
 };

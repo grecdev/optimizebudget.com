@@ -86,7 +86,7 @@ export class AppOverlayComponent {
       throw Error('Overlay reference not found!');
     }
 
-    this.overlayReference.closeLastOverlay();
+    this.overlayReference.close();
   }
 
   @HostBinding('class.no-background') get hostNoBackground(): boolean {
