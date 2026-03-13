@@ -88,7 +88,7 @@ export class AppOverlayService {
    * 3. @NgModule
    *
    * @param {EmbeddedViewRef<C>['rootNodes']} projectableNodes - External components included into the overlay.
-   * @param {Array<unknown>} removableNodesReferences - Nodes we want to remove
+   * @param {Array<unknown>} contentReferences - Nodes we want to remove
    * whenever we trigger the close event from the overlay component.
    * @param {AppOverlayComponentOptions} [options] - Options assigned to the overlay's component
    *
@@ -97,29 +97,26 @@ export class AppOverlayService {
    */
   public appendOverlay<C>(
     projectableNodes: EmbeddedViewRef<C>['rootNodes'],
-    removableNodesReferences: ComponentReferencesState,
+    contentReferences: ComponentReferencesState,
     options?: AppOverlayComponentInstances['options']
   ): OverlayReference<ComponentRef<AppOverlayComponent>> {
-    this._currentID++;
-
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
       .create(this._injector, [projectableNodes]);
 
-    const REMOVABLE_NODES = [COMPONENT_REFERENCE, ...removableNodesReferences];
+    const CONTENT_REFERENCES = [COMPONENT_REFERENCE, ...contentReferences];
 
     const LAST_OVERLAY_REFERENCE = new OverlayReference<typeof COMPONENT_REFERENCE>();
 
-    if (options) {
-      this._setReferenceOptions({
-        componentReference: COMPONENT_REFERENCE,
-        instanceOptions: options,
-        lastOverlayReference: LAST_OVERLAY_REFERENCE,
-      });
-    }
+    this._setReferenceInstances({
+      overlayComponentReference: COMPONENT_REFERENCE,
+      contentReferences: CONTENT_REFERENCES,
+      instanceOptions: options,
+      lastOverlayReference: LAST_OVERLAY_REFERENCE,
+    });
 
     this._saveOverlayReference({
-      removableNodes: REMOVABLE_NODES,
+      contentReferences: CONTENT_REFERENCES,
     });
 
     this._appendToDOM(
@@ -139,21 +136,35 @@ export class AppOverlayService {
    * @private
    * @returns {void}
    */
-  private _setReferenceOptions(options: {
-    componentReference: ComponentRef<AppOverlayComponent>;
-    instanceOptions: AppOverlayComponentInstances['options'];
+  private _setReferenceInstances(options: {
+    overlayComponentReference: ComponentRef<AppOverlayComponent>;
+    contentReferences: ComponentReferencesState;
     lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
+    instanceOptions?: AppOverlayComponentInstances['options'];
   }): void {
-    const { componentReference, instanceOptions, lastOverlayReference } = options;
+    const {
+      contentReferences,
+      instanceOptions,
+      lastOverlayReference,
+      overlayComponentReference,
+    } = options;
+
+    contentReferences.forEach(item => {
+      if (
+        item &&
+        item instanceof ComponentRef &&
+        Object.hasOwn(item.instance, 'overlayReference')
+      ) {
+        item.instance.overlayReference = lastOverlayReference;
+      }
+    });
 
     if (
-      Object.hasOwn(componentReference, 'instance') &&
-      Object.hasOwn(componentReference.instance, 'options')
+      instanceOptions &&
+      Object.hasOwn(overlayComponentReference, 'instance') &&
+      Object.hasOwn(overlayComponentReference.instance, 'options')
     ) {
-      Object.assign(componentReference.instance.options, instanceOptions);
-    }
-    if (Object.hasOwn(componentReference.instance, 'overlayReference')) {
-      componentReference.instance.overlayReference = lastOverlayReference;
+      Object.assign(overlayComponentReference.instance.options, instanceOptions);
     }
   }
 
@@ -178,14 +189,16 @@ export class AppOverlayService {
    * @summary - Save unique overlay references.
    *
    * @param {OverlayReference<AppOverlayComponent>} options.overlayReference - Nodes to remove whenever we close the overlay.
-   * @param {ComponentReferencesState} options.removableNodes - Nodes to remove whenever we close the overlay.
+   * @param {ComponentReferencesState} options.contentReferences - Nodes to remove whenever we close the overlay.
    *
    * @returns {void}
    */
   private _saveOverlayReference(options: {
-    removableNodes: ComponentReferencesState;
+    contentReferences: ComponentReferencesState;
   }): void {
-    const { removableNodes } = options;
+    const { contentReferences } = options;
+
+    this._currentID++;
 
     if (
       this._currentID === this._defaultValueID ||
@@ -194,7 +207,7 @@ export class AppOverlayService {
       return;
     }
 
-    this._overlayReferenceStack.set(this._currentID, removableNodes);
+    this._overlayReferenceStack.set(this._currentID, contentReferences);
   }
 
   /**

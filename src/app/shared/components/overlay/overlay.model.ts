@@ -13,8 +13,16 @@ interface AppOverlayComponentInstances {
   options: AppOverlayComponentOptions;
 }
 
+/**
+ * @summary - Whatever instances we need to declare in our content components.
+ */
+class AppOverlayContentInstances {
+  // Added via overlay service upon creation, for all components that requires the OverlyReference behaviour class.
+  overlayReference: OverlayReference | null = null;
+}
+
 type ComponentReference =
-  | ComponentRef<unknown>
+  | ComponentRef<unknown & AppOverlayContentInstances>
   | EmbeddedViewRef<unknown>
   | NgModuleRef<unknown>
   | null;
@@ -29,3 +37,5 @@ export type {
   ComponentReference,
   OverlayReferenceMapKey,
 };
+
+export { AppOverlayContentInstances };

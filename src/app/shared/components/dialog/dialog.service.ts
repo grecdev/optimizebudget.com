@@ -70,14 +70,14 @@ export class AppDialogService {
       options
     );
 
-    const REMOVABLE_NODES = [
+    const CONTENT_REFERENCES = [
       this._componentReference.dialogRootComponent,
       this._componentReference.dialogProjectedContent,
       this._componentReference.dialogModuleRef,
       this._componentReference.contentModuleRef,
     ];
 
-    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, REMOVABLE_NODES, {
+    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, CONTENT_REFERENCES, {
       noBackground: true,
     });
 

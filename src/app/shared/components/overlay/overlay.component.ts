@@ -8,9 +8,10 @@ import {
   HostBinding,
 } from '@angular/core';
 
-import { type AppOverlayComponentInstances } from './overlay.model';
-
-import { OverlayReference } from './overlay-reference';
+import {
+  type AppOverlayComponentInstances,
+  type AppOverlayContentInstances,
+} from './overlay.model';
 
 @Component({
   selector: 'app-overlay',
@@ -18,16 +19,25 @@ import { OverlayReference } from './overlay-reference';
   styleUrls: ['./overlay.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppOverlayComponent {
+export class AppOverlayComponent
+  implements AppOverlayContentInstances, AppOverlayComponentInstances
+{
   private readonly _elementRef: ElementRef<AppOverlayComponent>;
 
-  // Added via instance upon creation
-  public overlayReference: OverlayReference | null = null;
+  /**
+   * @summary - Assigned from the OverlayService.
+   *
+   * @type {AppOverlayContentInstances['overlayReference']}
+   *
+   * @public
+   */
+  public overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   /**
-   * @summary - Options assigned from outside the component.
+   * @summary - Assigned from the OverlayService.
    *
    * @type {AppOverlayComponentInstances['options']}
+   *
    * @public
    */
   public options: AppOverlayComponentInstances['options'] = {
@@ -62,11 +72,7 @@ export class AppOverlayComponent {
       return;
     }
 
-    if (!this.overlayReference) {
-      throw Error('Overlay reference not found!');
-    }
-
-    this.overlayReference.close();
+    this._triggerOverlayClose();
   }
 
   /**
@@ -82,14 +88,24 @@ export class AppOverlayComponent {
   ): void {
     event.stopPropagation();
 
+    this._triggerOverlayClose();
+  }
+
+  @HostBinding('class.no-background') get hostNoBackground(): boolean {
+    return this.options.noBackground;
+  }
+
+  /**
+   * @summary - Trigger overlay reference subscription event.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _triggerOverlayClose(): void {
     if (!this.overlayReference) {
       throw Error('Overlay reference not found!');
     }
 
     this.overlayReference.close();
-  }
-
-  @HostBinding('class.no-background') get hostNoBackground(): boolean {
-    return this.options.noBackground;
   }
 }

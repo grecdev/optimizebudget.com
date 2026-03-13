@@ -8,6 +8,7 @@ import {
 
 import { DomSanitizer } from '@angular/platform-browser';
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
+import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { type AppDialogOptions } from './dialog.model';
 
@@ -18,9 +19,18 @@ import { type AppDialogOptions } from './dialog.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class AppDialogComponent implements AppDialogOptions {
+export class AppDialogComponent implements AppDialogOptions, AppOverlayContentInstances {
   private readonly _iconRegistryService: IconRegistryService;
   private readonly _domSanitizer: DomSanitizer;
+
+  /**
+   * @summary - Assigned from the OverlayService.
+   *
+   * @type {AppOverlayContentInstances['overlayReference']}
+   *
+   * @public
+   */
+  public overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   /**
    * @summary - Icons state.
@@ -54,6 +64,8 @@ export class AppDialogComponent implements AppDialogOptions {
    */
   handleButtonCloseClick(event: MouseEvent): void {
     event.stopPropagation();
+
+    this._triggerOverlayClose();
   }
 
   /**
@@ -71,5 +83,19 @@ export class AppDialogComponent implements AppDialogOptions {
         ),
       });
     });
+  }
+
+  /**
+   * @summary - Trigger overlay reference subscription event.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _triggerOverlayClose(): void {
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.overlayReference.close();
   }
 }

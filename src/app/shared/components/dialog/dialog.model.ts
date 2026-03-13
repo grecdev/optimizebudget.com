@@ -2,6 +2,8 @@ import { type ComponentRef, type EmbeddedViewRef, type NgModuleRef } from '@angu
 
 import { AppDialogComponent } from './dialog.component';
 
+import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
+
 /**
  * @summary - Options assigned to dialog's component ref.
  *
@@ -13,8 +15,13 @@ interface AppDialogOptions {
 }
 
 interface ComponentReferencesState<T> {
-  dialogProjectedContent: ComponentRef<T> | EmbeddedViewRef<T> | null;
-  dialogRootComponent: ComponentRef<AppDialogComponent> | null;
+  dialogProjectedContent:
+    | ComponentRef<T & AppOverlayContentInstances>
+    | EmbeddedViewRef<T>
+    | null;
+  dialogRootComponent: ComponentRef<
+    AppDialogComponent & AppOverlayContentInstances
+  > | null;
   contentModuleRef: NgModuleRef<T> | null;
   dialogModuleRef: NgModuleRef<T> | null;
 }
