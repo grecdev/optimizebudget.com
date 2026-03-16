@@ -10,7 +10,9 @@ import {
   ComponentFactoryResolver,
 } from '@angular/core';
 
-import { AppOverlayService } from '../overlay/overlay.service';
+import { AppOverlayService } from '@shared/components/overlay/overlay.service';
+
+import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { type AppDialogOptions, type ComponentReferencesState } from './dialog.model';
 
@@ -19,7 +21,7 @@ import { AppDialogModule, APP_DIALOG_COMPONENT_REFERENCE } from './dialog.module
 @Injectable({
   providedIn: 'root',
 })
-export class AppDialogService {
+export class AppDialogService implements AppOverlayContentInstances {
   private readonly _injector: Injector;
   private readonly _overlayService: AppOverlayService;
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
@@ -38,6 +40,15 @@ export class AppDialogService {
     contentModuleRef: null,
     dialogModuleRef: null,
   };
+
+  /**
+   * @summary - Assigned from the OverlayService's subscriber.
+   *
+   * @type {AppOverlayContentInstances['overlayReference']}
+   *
+   * @public
+   */
+  public overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   constructor(...args: Array<unknown>);
   constructor(
@@ -77,9 +88,13 @@ export class AppDialogService {
       this._componentReference.contentModuleRef,
     ];
 
-    this._overlayService.appendOverlay(DIALOG_ROOT_NODES, CONTENT_REFERENCES, {
-      noBackground: true,
-    });
+    this.overlayReference = this._overlayService.appendOverlay(
+      DIALOG_ROOT_NODES,
+      CONTENT_REFERENCES,
+      {
+        noBackground: true,
+      }
+    );
 
     this._cleanup();
   }
@@ -223,6 +238,16 @@ export class AppDialogService {
   private _cleanup(): void {
     Object.keys(this._componentReference).forEach(key => {
       this._componentReference[key as keyof typeof this._componentReference] = null;
+    });
+
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.overlayReference.closingOverlay$.subscribe({
+      next: () => {
+        this.overlayReference = null;
+      },
     });
   }
 }

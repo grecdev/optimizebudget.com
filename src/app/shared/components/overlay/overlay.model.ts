@@ -16,9 +16,9 @@ interface AppOverlayComponentInstances {
 /**
  * @summary - Whatever instances we need to declare in our content components.
  */
-class AppOverlayContentInstances {
+interface AppOverlayContentInstances {
   // Added via overlay service upon creation, for all components that requires the OverlyReference behaviour class.
-  overlayReference: OverlayReference | null = null;
+  overlayReference: OverlayReference | null;
 }
 
 type ComponentReference =
@@ -36,6 +36,5 @@ export type {
   AppOverlayComponentInstances,
   ComponentReference,
   OverlayReferenceMapKey,
+  AppOverlayContentInstances,
 };
-
-export { AppOverlayContentInstances };

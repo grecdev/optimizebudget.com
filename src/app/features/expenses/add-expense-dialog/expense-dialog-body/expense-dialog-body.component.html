@@ -74,6 +74,15 @@
 </form>
 
 <div id="footer">
-  <button type="button" appButton variant="outlined" color="danger">Cancel</button>
+  <button
+    type="button"
+    appButton
+    variant="outlined"
+    color="danger"
+    (click)="closeExpenseDialog($event)"
+  >
+    Cancel
+  </button>
+
   <button type="button" appButton variant="contained" color="success">Add</button>
 </div>

@@ -75,22 +75,6 @@ export class AppOverlayComponent
     this._triggerOverlayClose();
   }
 
-  /**
-   * @summary - Pressing ESCAPE key to close the overlay.
-   *
-   * @param {Event} event - Event object.
-   *
-   * @private
-   * @returns {void}
-   */
-  @HostListener('document:keydown.escape', ['$event']) onEscapeKey(
-    event: KeyboardEvent
-  ): void {
-    event.stopPropagation();
-
-    this._triggerOverlayClose();
-  }
-
   @HostBinding('class.no-background') get hostNoBackground(): boolean {
     return this.options.noBackground;
   }
@@ -103,7 +87,7 @@ export class AppOverlayComponent
    */
   private _triggerOverlayClose(): void {
     if (!this.overlayReference) {
-      throw Error('Overlay reference not found!');
+      throw Error('Overlay options not found!');
     }
 
     this.overlayReference.close();

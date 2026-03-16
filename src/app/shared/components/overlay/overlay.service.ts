@@ -13,6 +13,8 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
+import { filter, fromEvent, type Subscription } from 'rxjs';
+
 import {
   type ComponentReferencesState,
   type AppOverlayComponentInstances,
@@ -33,13 +35,39 @@ export class AppOverlayService {
   private readonly _document: Document;
 
   /**
+   * @summary - Overlay reference used throughout the service.
+   *
+   * @type {OverlayReferenceMapKey<AppOverlayComponent> | null}
+   *
+   * @private
+   */
+  private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null =
+    null;
+
+  /**
+   * @summary - Rxjs subscription.
+   *
+   * @type {Subscription | null} this._rxjsSubscriptions.keydown
+   * @type {Subscription | null} this._rxjsSubscriptions.closingOverlay
+   *
+   * @private
+   */
+  private readonly _rxjsSubscriptions: {
+    keydown: Subscription | null;
+    closingOverlay: Subscription | null;
+  } = {
+    keydown: null,
+    closingOverlay: null,
+  };
+
+  /**
    * @summary - We need to check if the current ID has reached its threshold right?
    *
    * @type {number}
    *
    * @private
    */
-  private readonly _defaultValueID: number = 0;
+  private readonly _stackMinimumThreshold: number = 0;
 
   /**
    * @summary - Used whenever we remove the last overlay added to the DOM.
@@ -50,7 +78,7 @@ export class AppOverlayService {
    *
    * @private
    */
-  private _currentID: number = this._defaultValueID;
+  private _currentID: number = this._stackMinimumThreshold;
 
   /**
    * @summary - This store it's used in order to render multiple overlay at the same time.
@@ -99,20 +127,19 @@ export class AppOverlayService {
     projectableNodes: EmbeddedViewRef<C>['rootNodes'],
     contentReferences: ComponentReferencesState,
     options?: AppOverlayComponentInstances['options']
-  ): OverlayReference<ComponentRef<AppOverlayComponent>> {
+  ): OverlayReferenceMapKey<AppOverlayComponent> {
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
       .create(this._injector, [projectableNodes]);
 
     const CONTENT_REFERENCES = [COMPONENT_REFERENCE, ...contentReferences];
 
-    const LAST_OVERLAY_REFERENCE = new OverlayReference<typeof COMPONENT_REFERENCE>();
+    this._lastOverlayReference = new OverlayReference<typeof COMPONENT_REFERENCE>();
 
     this._setReferenceInstances({
       overlayComponentReference: COMPONENT_REFERENCE,
       contentReferences: CONTENT_REFERENCES,
       instanceOptions: options,
-      lastOverlayReference: LAST_OVERLAY_REFERENCE,
     });
 
     this._saveOverlayReference({
@@ -123,15 +150,19 @@ export class AppOverlayService {
       COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>
     );
 
-    this._initCloseSubscription({
-      lastOverlayReference: LAST_OVERLAY_REFERENCE,
-    });
+    this._initCloseOverlayReferenceSubscription();
 
-    return LAST_OVERLAY_REFERENCE;
+    if (this._overlayReferenceStack.size === 1) {
+      this._initEscapeEvent();
+    }
+
+    return this._lastOverlayReference;
   }
 
   /**
    * @summary - Set instances for component reference.
+   *
+   * Whenever we want to access properties from children components.
    *
    * @private
    * @returns {void}
@@ -139,15 +170,13 @@ export class AppOverlayService {
   private _setReferenceInstances(options: {
     overlayComponentReference: ComponentRef<AppOverlayComponent>;
     contentReferences: ComponentReferencesState;
-    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
     instanceOptions?: AppOverlayComponentInstances['options'];
   }): void {
-    const {
-      contentReferences,
-      instanceOptions,
-      lastOverlayReference,
-      overlayComponentReference,
-    } = options;
+    if (!this._lastOverlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    const { contentReferences, instanceOptions, overlayComponentReference } = options;
 
     contentReferences.forEach(item => {
       if (
@@ -155,7 +184,7 @@ export class AppOverlayService {
         item instanceof ComponentRef &&
         Object.hasOwn(item.instance, 'overlayReference')
       ) {
-        item.instance.overlayReference = lastOverlayReference;
+        item.instance.overlayReference = this._lastOverlayReference;
       }
     });
 
@@ -169,7 +198,9 @@ export class AppOverlayService {
   }
 
   /**
-   * @summary - Append our newly created overlay to the DOM (both HTML and Virtual)
+   * @summary - Append our newly created overlay to the DOM
+   *
+   * (both HTML and Virtual)
    *
    * @private
    * @returns {void}
@@ -201,7 +232,7 @@ export class AppOverlayService {
     this._currentID++;
 
     if (
-      this._currentID === this._defaultValueID ||
+      this._currentID === this._stackMinimumThreshold ||
       this._overlayReferenceStack.has(this._currentID)
     ) {
       return;
@@ -236,38 +267,85 @@ export class AppOverlayService {
   }
 
   /**
-   * @summary - Initialize our closing subscription.
+   * @summary - Initialize our closing subscription, for individual overlay refernce.
    *
-   * @param {OverlayReferenceMapKey<AppOverlayComponent>} options.lastOverlayReference - Last overlay reference.
+   * Hence, executing this whenever we append a new overlay.
    *
    * @private
    * @returns {void}
    */
-  private _initCloseSubscription(options: {
-    lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent>;
-  }): void {
-    const { lastOverlayReference } = options;
+  private _initCloseOverlayReferenceSubscription(): void {
+    if (!this._lastOverlayReference) {
+      throw Error('Overlay reference not found!');
+    }
 
-    lastOverlayReference.closingOverlay$.subscribe({
-      next: () => {
-        const COMPONENT_REFERENCES =
-          this._overlayReferenceStack.has(this._overlayReferenceStack.size) &&
-          this._overlayReferenceStack.get(this._overlayReferenceStack.size);
+    this._rxjsSubscriptions.closingOverlay =
+      this._lastOverlayReference.closingOverlay$.subscribe({
+        next: () => {
+          const COMPONENT_REFERENCES =
+            this._overlayReferenceStack.has(this._overlayReferenceStack.size) &&
+            this._overlayReferenceStack.get(this._overlayReferenceStack.size);
 
-        if (!COMPONENT_REFERENCES) {
-          return;
-        }
+          if (!COMPONENT_REFERENCES) {
+            return;
+          }
 
-        COMPONENT_REFERENCES.forEach(item => {
-          this._removeComponent(item);
-        });
+          COMPONENT_REFERENCES.forEach(item => {
+            this._removeComponent(item);
+          });
 
-        this._overlayReferenceStack.delete(this._overlayReferenceStack.size);
+          this._overlayReferenceStack.delete(this._overlayReferenceStack.size);
 
-        if (this._currentID > this._defaultValueID) {
-          this._currentID--;
-        }
-      },
+          if (this._currentID > this._stackMinimumThreshold) {
+            this._currentID--;
+          }
+
+          if (this._overlayReferenceStack.size <= this._stackMinimumThreshold) {
+            this._cleanup();
+          }
+        },
+      });
+  }
+
+  /**
+   * @summary - Subscription for pressing the ESCAPE key to close the overlay.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initEscapeEvent(): void {
+    this._rxjsSubscriptions.keydown = fromEvent<KeyboardEvent>(document, 'keydown')
+      .pipe(
+        filter(event => {
+          const ALLOWED_KEYS = ['Escape'];
+
+          return ALLOWED_KEYS.includes(event.key);
+        })
+      )
+      .subscribe({
+        next: () => {
+          if (!this._lastOverlayReference) {
+            throw Error('Overlay reference not found!');
+          }
+
+          this._lastOverlayReference.close();
+        },
+      });
+  }
+
+  /**
+   * @summary - Cleanup everything when there are no overlays rendered anymore.
+   *
+   * @private
+   */
+  private _cleanup(): void {
+    Object.keys(this._rxjsSubscriptions).forEach(key => {
+      const SUBSCRIPTION =
+        this._rxjsSubscriptions[key as keyof typeof this._rxjsSubscriptions];
+
+      if (SUBSCRIPTION) {
+        SUBSCRIPTION.unsubscribe();
+      }
     });
   }
 }
