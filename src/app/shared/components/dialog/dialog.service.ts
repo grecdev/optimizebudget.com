@@ -88,13 +88,10 @@ export class AppDialogService implements AppOverlayContentInstances {
       this._componentReference.contentModuleRef,
     ];
 
-    this.overlayReference = this._overlayService.appendOverlay(
-      DIALOG_ROOT_NODES,
-      CONTENT_REFERENCES,
-      {
-        noBackground: true,
-      }
-    );
+    this.overlayReference = this._overlayService.appendOverlay({
+      contentReferences: CONTENT_REFERENCES,
+      projectableNodes: DIALOG_ROOT_NODES,
+    });
 
     this._cleanup();
   }

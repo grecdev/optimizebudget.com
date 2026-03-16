@@ -115,19 +115,20 @@ export class AppOverlayService {
    * 2. @Component
    * 3. @NgModule
    *
-   * @param {EmbeddedViewRef<C>['rootNodes']} projectableNodes - External components included into the overlay.
-   * @param {Array<unknown>} contentReferences - Nodes we want to remove
-   * whenever we trigger the close event from the overlay component.
-   * @param {AppOverlayComponentOptions} [options] - Options assigned to the overlay's component
+   * @param {EmbeddedViewRef<C>['rootNodes']} options.projectableNodes - Components projected to the AppOverlayComponent.
+   * @param {Array<unknown>} options.contentReferences - Nodes to set options to or to remove them afterward.
+   * @param {AppOverlayComponentOptions} [options.instanceOptions] - Options assigned to the overlay's component
    *
    * @public
-   * @returns {void}
+   * @returns {OverlayReferenceMapKey<AppOverlayComponent>}
    */
-  public appendOverlay<C>(
-    projectableNodes: EmbeddedViewRef<C>['rootNodes'],
-    contentReferences: ComponentReferencesState,
-    options?: AppOverlayComponentInstances['options']
-  ): OverlayReferenceMapKey<AppOverlayComponent> {
+  public appendOverlay<C>(options: {
+    projectableNodes: EmbeddedViewRef<C>['rootNodes'];
+    contentReferences: ComponentReferencesState;
+    instanceOptions?: AppOverlayComponentInstances['options'];
+  }): OverlayReferenceMapKey<AppOverlayComponent> {
+    const { projectableNodes, contentReferences, instanceOptions } = options;
+
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
       .create(this._injector, [projectableNodes]);
@@ -139,7 +140,7 @@ export class AppOverlayService {
     this._setReferenceInstances({
       overlayComponentReference: COMPONENT_REFERENCE,
       contentReferences: CONTENT_REFERENCES,
-      instanceOptions: options,
+      instanceOptions,
     });
 
     this._saveOverlayReference({
@@ -163,6 +164,10 @@ export class AppOverlayService {
    * @summary - Set instances for component reference.
    *
    * Whenever we want to access properties from children components.
+   *
+   * @param {ComponentRef<AppOverlayComponent>} options.overlayComponentReference - Overlay component.
+   * @param {ComponentReferencesState} options.contentReferences - All the projected content used.
+   * @param {AppOverlayComponentInstances['options']} [options.instanceOptions] - Options assigned to whatever content we have.
    *
    * @private
    * @returns {void}
@@ -202,6 +207,8 @@ export class AppOverlayService {
    *
    * (both HTML and Virtual)
    *
+   * @param {EmbeddedViewRef<AppOverlayComponent>} hostView - Host view.
+   *
    * @private
    * @returns {void}
    */
@@ -219,7 +226,6 @@ export class AppOverlayService {
   /**
    * @summary - Save unique overlay references.
    *
-   * @param {OverlayReference<AppOverlayComponent>} options.overlayReference - Nodes to remove whenever we close the overlay.
    * @param {ComponentReferencesState} options.contentReferences - Nodes to remove whenever we close the overlay.
    *
    * @returns {void}
