@@ -2,7 +2,7 @@
 @use 'variables' as *;
 @use 'color-palette' as *;
 
-:host {
+.app-overlay {
   position: fixed;
   top: 0;
   right: 0;
@@ -10,9 +10,11 @@
   left: 0;
   z-index: $overlap-index-everything;
 
-  background: rgba(map.get($color-palette, 'common', 'black'), 0.25);
-
   display: grid;
   place-content: center;
   grid-template-columns: minmax(auto, 500px);
+
+  &:not(.no-background) {
+    background: rgba(map.get($color-palette, 'common', 'black'), 0.25);
+  }
 }

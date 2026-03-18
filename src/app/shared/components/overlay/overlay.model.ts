@@ -1,6 +1,7 @@
 import { type ComponentRef, type EmbeddedViewRef, type NgModuleRef } from '@angular/core';
 
 import { type OverlayReference } from './overlay-reference';
+import { type AppOverlayComponent } from './overlay.component';
 
 interface AppOverlayComponentOptions {
   noBackground: boolean;
@@ -21,6 +22,27 @@ interface AppOverlayContentInstances {
   overlayReference: OverlayReference | null;
 }
 
+interface AppendOverlayOptions<C> extends Pick<AppendToDOMOptions, 'targetDOM'> {
+  projectableNodes: EmbeddedViewRef<C>['rootNodes'];
+  contentReferences: ComponentReferencesState;
+  instanceOptions?: AppOverlayComponentInstances['options'];
+}
+
+interface SetReferenceInstancesOptions {
+  overlayComponentReference: ComponentRef<AppOverlayComponent>;
+  contentReferences: ComponentReferencesState;
+  instanceOptions?: AppOverlayComponentInstances['options'];
+}
+
+interface SaveOverlayReferenceOptions {
+  contentReferences: ComponentReferencesState;
+}
+
+interface AppendToDOMOptions {
+  hostView: EmbeddedViewRef<AppOverlayComponent>;
+  targetDOM?: HTMLElement;
+}
+
 type ComponentReference =
   | ComponentRef<unknown & AppOverlayContentInstances>
   | EmbeddedViewRef<unknown>
@@ -37,4 +59,8 @@ export type {
   ComponentReference,
   OverlayReferenceMapKey,
   AppOverlayContentInstances,
+  SetReferenceInstancesOptions,
+  AppendOverlayOptions,
+  SaveOverlayReferenceOptions,
+  AppendToDOMOptions,
 };

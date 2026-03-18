@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
-
-import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
+import { type AppOverlayComponent } from '@shared/components/overlay/overlay.component';
+import { type OverlayReferenceMapKey } from '@shared/components/overlay/overlay.model';
 
 import { type AppDialogOptions, type ComponentReferencesState } from './dialog.model';
 
@@ -21,7 +21,7 @@ import { AppDialogModule, APP_DIALOG_COMPONENT_REFERENCE } from './dialog.module
 @Injectable({
   providedIn: 'root',
 })
-export class AppDialogService implements AppOverlayContentInstances {
+export class AppDialogService {
   private readonly _injector: Injector;
   private readonly _overlayService: AppOverlayService;
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
@@ -40,15 +40,6 @@ export class AppDialogService implements AppOverlayContentInstances {
     contentModuleRef: null,
     dialogModuleRef: null,
   };
-
-  /**
-   * @summary - Assigned from the OverlayService's subscriber.
-   *
-   * @type {AppOverlayContentInstances['overlayReference']}
-   *
-   * @public
-   */
-  public overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   constructor(...args: Array<unknown>);
   constructor(
@@ -73,7 +64,11 @@ export class AppDialogService implements AppOverlayContentInstances {
    * @public
    * @returns {void}
    */
-  public open<C, E>(component: C, options: AppDialogOptions, entry?: E): void {
+  public open<C, E>(
+    component: C,
+    options: AppDialogOptions,
+    entry?: E
+  ): OverlayReferenceMapKey<AppOverlayComponent> {
     const CONTENT_ROOT_NODES = this._createContentComponent<C, E>(component, entry);
 
     const DIALOG_ROOT_NODES = this._createDialogComponent<typeof component>(
@@ -88,12 +83,14 @@ export class AppDialogService implements AppOverlayContentInstances {
       this._componentReference.contentModuleRef,
     ];
 
-    this.overlayReference = this._overlayService.appendOverlay({
+    const OVERLAY_REFERENCE = this._overlayService.appendOverlay({
       contentReferences: CONTENT_REFERENCES,
       projectableNodes: DIALOG_ROOT_NODES,
     });
 
     this._cleanup();
+
+    return OVERLAY_REFERENCE;
   }
 
   /**
@@ -235,16 +232,6 @@ export class AppDialogService implements AppOverlayContentInstances {
   private _cleanup(): void {
     Object.keys(this._componentReference).forEach(key => {
       this._componentReference[key as keyof typeof this._componentReference] = null;
-    });
-
-    if (!this.overlayReference) {
-      throw Error('Overlay reference not found!');
-    }
-
-    this.overlayReference.closingOverlay$.subscribe({
-      next: () => {
-        this.overlayReference = null;
-      },
     });
   }
 }

@@ -49,8 +49,8 @@ import { AppFormFieldControl } from './form-field-control';
   host: {
     class: 'app-form-field',
     '[class.app-form-field-variant-outline]': 'variant === "outlined"',
-    '[class.app-form-field-focused]': '_formFieldControl.focused',
-    '[class.app-form-field-has-value]': '_formFieldControl.hasValue',
+    '[class.app-form-field-focused]': 'formFieldControl.focused',
+    '[class.app-form-field-has-value]': 'formFieldControl.hasValue',
   },
 })
 export class AppFormField {
@@ -59,12 +59,10 @@ export class AppFormField {
   @Input({ required: true }) labelOptions!: TextFieldLabelOptions;
   @Input() error!: string;
 
-  @ViewChild('appLabel') appLabel: ElementRef<HTMLElement> | undefined;
-
   @ContentChild(AppFormFieldControl)
-  _formFieldControl!: AppFormFieldControl;
+  public formFieldControl!: AppFormFieldControl;
 
-  get _control(): AppFormFieldControl {
-    return this._formFieldControl;
+  public get control(): AppFormFieldControl {
+    return this.formFieldControl;
   }
 }

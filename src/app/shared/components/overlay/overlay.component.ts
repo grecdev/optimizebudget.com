@@ -1,11 +1,12 @@
 // Future note: Please use newer syntax and features
 
 import {
-  ElementRef,
   ChangeDetectionStrategy,
   Component,
-  HostListener,
+  ElementRef,
   HostBinding,
+  HostListener,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import {
@@ -18,6 +19,10 @@ import {
   templateUrl: './overlay.component.html',
   styleUrls: ['./overlay.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'app-overlay',
+  },
 })
 export class AppOverlayComponent
   implements AppOverlayContentInstances, AppOverlayComponentInstances

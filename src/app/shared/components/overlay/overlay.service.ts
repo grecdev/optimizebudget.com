@@ -13,13 +13,16 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
-import { filter, fromEvent, type Subscription } from 'rxjs';
+import { filter, fromEvent, takeUntil } from 'rxjs';
 
 import {
   type ComponentReferencesState,
-  type AppOverlayComponentInstances,
   type ComponentReference,
   type OverlayReferenceMapKey,
+  type SetReferenceInstancesOptions,
+  type AppendOverlayOptions,
+  type SaveOverlayReferenceOptions,
+  type AppendToDOMOptions,
 } from './overlay.model';
 
 import { AppOverlayComponent } from './overlay.component';
@@ -43,22 +46,6 @@ export class AppOverlayService {
    */
   private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null =
     null;
-
-  /**
-   * @summary - Rxjs subscription.
-   *
-   * @type {Subscription | null} this._rxjsSubscriptions.keydown
-   * @type {Subscription | null} this._rxjsSubscriptions.closingOverlay
-   *
-   * @private
-   */
-  private readonly _rxjsSubscriptions: {
-    keydown: Subscription | null;
-    closingOverlay: Subscription | null;
-  } = {
-    keydown: null,
-    closingOverlay: null,
-  };
 
   /**
    * @summary - We need to check if the current ID has reached its threshold right?
@@ -115,19 +102,17 @@ export class AppOverlayService {
    * 2. @Component
    * 3. @NgModule
    *
-   * @param {EmbeddedViewRef<C>['rootNodes']} options.projectableNodes - Components projected to the AppOverlayComponent.
-   * @param {Array<unknown>} options.contentReferences - Nodes to set options to or to remove them afterward.
-   * @param {AppOverlayComponentOptions} [options.instanceOptions] - Options assigned to the overlay's component
+   * @param {AppendOverlayOptions['projectableNodes']} options.projectableNodes - Components projected to the AppOverlayComponent.
+   * @param {AppendOverlayOptions['contentReferences']} options.contentReferences - Nodes to set options to or to remove them afterward.
+   * @param {AppendOverlayOptions['instanceOptions']} [options.instanceOptions] - Options assigned to the overlay's component
    *
    * @public
    * @returns {OverlayReferenceMapKey<AppOverlayComponent>}
    */
-  public appendOverlay<C>(options: {
-    projectableNodes: EmbeddedViewRef<C>['rootNodes'];
-    contentReferences: ComponentReferencesState;
-    instanceOptions?: AppOverlayComponentInstances['options'];
-  }): OverlayReferenceMapKey<AppOverlayComponent> {
-    const { projectableNodes, contentReferences, instanceOptions } = options;
+  public appendOverlay<C>(
+    options: AppendOverlayOptions<C>
+  ): OverlayReferenceMapKey<AppOverlayComponent> {
+    const { projectableNodes, contentReferences, instanceOptions, targetDOM } = options;
 
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
@@ -147,9 +132,10 @@ export class AppOverlayService {
       contentReferences: CONTENT_REFERENCES,
     });
 
-    this._appendToDOM(
-      COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>
-    );
+    this._appendToDOM({
+      hostView: COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>,
+      targetDOM,
+    });
 
     this._initCloseOverlayReferenceSubscription();
 
@@ -165,18 +151,14 @@ export class AppOverlayService {
    *
    * Whenever we want to access properties from children components.
    *
-   * @param {ComponentRef<AppOverlayComponent>} options.overlayComponentReference - Overlay component.
-   * @param {ComponentReferencesState} options.contentReferences - All the projected content used.
-   * @param {AppOverlayComponentInstances['options']} [options.instanceOptions] - Options assigned to whatever content we have.
+   * @param {SetReferenceInstancesOptions['overlayComponentReference']} options.overlayComponentReference - Overlay component.
+   * @param {SetReferenceInstancesOptions['contentReferences']} options.contentReferences - All the projected content used.
+   * @param {SetReferenceInstancesOptions['instanceOptions']} [options.instanceOptions] - Options assigned to whatever content we have.
    *
    * @private
    * @returns {void}
    */
-  private _setReferenceInstances(options: {
-    overlayComponentReference: ComponentRef<AppOverlayComponent>;
-    contentReferences: ComponentReferencesState;
-    instanceOptions?: AppOverlayComponentInstances['options'];
-  }): void {
+  private _setReferenceInstances(options: SetReferenceInstancesOptions): void {
     if (!this._lastOverlayReference) {
       throw Error('Overlay reference not found!');
     }
@@ -207,12 +189,15 @@ export class AppOverlayService {
    *
    * (both HTML and Virtual)
    *
-   * @param {EmbeddedViewRef<AppOverlayComponent>} hostView - Host view.
+   * @param {AppendToDOMOptions['hostView]} options.hostView - Embedded host view.
+   * @param {AppendToDOMOptions['targetDOM']} [options.targetDOM] - Target element where we want to inject native elements (rootNodes).
    *
    * @private
    * @returns {void}
    */
-  private _appendToDOM(hostView: EmbeddedViewRef<AppOverlayComponent>): void {
+  private _appendToDOM(options: AppendToDOMOptions): void {
+    const { hostView, targetDOM } = options;
+
     const ROOT_NODES = hostView.rootNodes.length > 0 && hostView.rootNodes;
 
     if (!ROOT_NODES) {
@@ -220,19 +205,22 @@ export class AppOverlayService {
     }
 
     this._applicationReference.attachView(hostView);
-    this._document.body.append(ROOT_NODES[0]);
+
+    if (targetDOM) {
+      targetDOM.appendChild(ROOT_NODES[0]);
+    } else {
+      this._document.body.appendChild(ROOT_NODES[0]);
+    }
   }
 
   /**
    * @summary - Save unique overlay references.
    *
-   * @param {ComponentReferencesState} options.contentReferences - Nodes to remove whenever we close the overlay.
+   * @param {SaveOverlayReferenceOptions['contentReferences']} options.contentReferences - Nodes to remove whenever we close the overlay.
    *
    * @returns {void}
    */
-  private _saveOverlayReference(options: {
-    contentReferences: ComponentReferencesState;
-  }): void {
+  private _saveOverlayReference(options: SaveOverlayReferenceOptions): void {
     const { contentReferences } = options;
 
     this._currentID++;
@@ -285,8 +273,9 @@ export class AppOverlayService {
       throw Error('Overlay reference not found!');
     }
 
-    this._rxjsSubscriptions.closingOverlay =
-      this._lastOverlayReference.closingOverlay$.subscribe({
+    this._lastOverlayReference.closingOverlay$
+      .pipe(takeUntil(this._lastOverlayReference.completeObservable$))
+      .subscribe({
         next: () => {
           const COMPONENT_REFERENCES =
             this._overlayReferenceStack.has(this._overlayReferenceStack.size) &&
@@ -320,8 +309,13 @@ export class AppOverlayService {
    * @returns {void}
    */
   private _initEscapeEvent(): void {
-    this._rxjsSubscriptions.keydown = fromEvent<KeyboardEvent>(document, 'keydown')
+    if (!this._lastOverlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(
+        takeUntil(this._lastOverlayReference.closingOverlay$),
         filter(event => {
           const ALLOWED_KEYS = ['Escape'];
 
@@ -345,13 +339,10 @@ export class AppOverlayService {
    * @private
    */
   private _cleanup(): void {
-    Object.keys(this._rxjsSubscriptions).forEach(key => {
-      const SUBSCRIPTION =
-        this._rxjsSubscriptions[key as keyof typeof this._rxjsSubscriptions];
+    if (!this._lastOverlayReference) {
+      throw Error('Overlay reference not foun!');
+    }
 
-      if (SUBSCRIPTION) {
-        SUBSCRIPTION.unsubscribe();
-      }
-    });
+    this._lastOverlayReference.complete();
   }
 }
