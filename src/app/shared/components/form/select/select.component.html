@@ -1,6 +1,11 @@
-<div class="select-current-value">
-  Select value
-  <app-icon svgIcon="caret-down" />
+<div class="select-value-container">
+  <div class="label">Custom label</div>
+
+  <app-icon svgIcon="caret-down" *ngIf="!focused; else caretUp" />
+
+  <ng-template #caretUp>
+    <app-icon svgIcon="caret-up" />
+  </ng-template>
 </div>
 
 <ng-template #selectOptionsContainer>

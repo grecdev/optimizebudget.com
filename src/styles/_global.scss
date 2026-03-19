@@ -8,7 +8,7 @@ body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
   font-size: map.get($font-size, 'body');
-  line-height: 1.25;
+  line-height: $line-height;
 
   color: map.get($color-palette, 'body-text-color', 'default');
 }

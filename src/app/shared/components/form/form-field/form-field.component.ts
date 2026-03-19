@@ -48,7 +48,7 @@ import { AppFormFieldControl } from './form-field-control';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'app-form-field',
-    '[class.app-form-field-variant-outline]': 'variant === "outlined"',
+    '[class.app-form-field-variant-outlined]': 'variant === "outlined"',
     '[class.app-form-field-focused]': 'formFieldControl.focused',
     '[class.app-form-field-has-value]': 'formFieldControl.hasValue',
   },

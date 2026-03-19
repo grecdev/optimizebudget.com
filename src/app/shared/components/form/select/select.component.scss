@@ -1,16 +1,33 @@
 @use 'sass:map';
+@use 'sass:math';
 
 @use 'color-palette' as *;
+@use 'typography' as *;
+
+@use '../form-field/form-field.component' as form-field-component;
 
 .app-form-field {
   & .app-select {
+    position: relative;
     cursor: pointer;
 
-    & .select-current-value {
+    & .select-value-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       color: map.get($color-palette, 'gray', 'variant-4');
+
+      & .label {
+        $full-height: 100%;
+        $translate-y: calc($full-height + $full-height / 2 / $line-height);
+
+        position: absolute;
+        bottom: 100%;
+        left: form-field-component.$input-spacing-default;
+        transition: transform 150ms ease-in-out;
+        transform-origin: left center;
+        transform: translateY($translate-y) scale(1);
+      }
 
       & app-icon {
         $size: 15px;
@@ -19,13 +36,36 @@
         height: $size;
       }
     }
+
+    & .select-options-container {
+      position: fixed;
+      background: map.get($color-palette, 'common', 'white');
+    }
   }
 
-  &:not(&.app-form-field-has-value) .app-select:hover {
-    background: map.get($color-palette, 'gray', 'default');
+  &:not(.app-form-field-focused) {
+    & .app-select:hover {
+      @include form-field-component.focus-state;
+
+      & .select-value-container .label {
+        color: map.get($color-palette, 'body-text-color', 'default');
+      }
+    }
   }
 
   &-focused:has(.app-select) {
-    background: red;
+    & .app-select .select-value-container .label {
+      transform: translateY(50%) scale(0.75);
+    }
+
+    & .app-overlay {
+      cursor: auto;
+    }
+  }
+
+  &-variant-outlined:has(.app-select) {
+    & .app-select .select-value-container .label {
+      background: map.get($color-palette, 'common', 'white');
+    }
   }
 }
