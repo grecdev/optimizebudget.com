@@ -1,8 +1,10 @@
+// Future note: update deprecated code. 😚
+
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Output,
+  ElementRef,
+  HostListener,
   ViewEncapsulation,
 } from '@angular/core';
 
@@ -18,10 +20,23 @@ import { type AppDialogOptions } from './dialog.model';
   styleUrls: ['./dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'app-dialog',
+  },
 })
 export class AppDialogComponent implements AppDialogOptions, AppOverlayContentInstances {
-  private readonly _iconRegistryService: IconRegistryService;
   private readonly _domSanitizer: DomSanitizer;
+  private readonly _elementRef: ElementRef;
+
+  /**
+   * @summary - Icon registry service, used to store icons and then render them in template.
+   *
+   * @type {IconRegistryService}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _iconRegistryService: IconRegistryService;
 
   /**
    * @summary - Assigned from the OverlayService.
@@ -37,6 +52,7 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
    *
    * @type {Record<string, string>}
    * @public
+   * @readonly
    */
   public readonly icons: {
     [key: string]: string;
@@ -44,16 +60,54 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
     xmark: 'xmark',
   };
 
+  /**
+   * @summary - Title of the dialog.
+   *
+   * @type {string}
+   *
+   * @public
+   */
   public title: string = 'Please add your title!';
+
+  /**
+   * @summary - Close button + icon.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
   public closeButton: boolean = true;
 
-  constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
+  constructor(
+    iconRegistryService: IconRegistryService,
+    domSanitizer: DomSanitizer,
+    elementRef: ElementRef
+  ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
+    this._elementRef = elementRef;
 
     this._initIconRegistry();
   }
 
+  @HostListener('click', ['$event']) handleClickRoot(event: MouseEvent) {
+    event.stopPropagation();
+
+    const NATIVE_ELEMENT = this._elementRef.nativeElement as AppDialogComponent;
+
+    if (!NATIVE_ELEMENT) {
+      throw Error('Native element not found for AppDialogComponent!');
+    }
+
+    const TARGET = event.target as HTMLElement | AppDialogComponent;
+    const CURRENT_TARGET_CLICKED = TARGET === NATIVE_ELEMENT;
+
+    if (!CURRENT_TARGET_CLICKED) {
+      return;
+    }
+
+    this._triggerOverlayClose();
+  }
   /**
    * @summary - Clicking on the dynamically rendered button.
    *
@@ -62,7 +116,7 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
    * @public
    * @returns {void}
    */
-  handleButtonCloseClick(event: MouseEvent): void {
+  public handleButtonCloseClick(event: MouseEvent): void {
     event.stopPropagation();
 
     this._triggerOverlayClose();

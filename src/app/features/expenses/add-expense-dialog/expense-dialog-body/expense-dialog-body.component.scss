@@ -1,10 +1,22 @@
 @use 'sass:map';
 @use 'spacing' as *;
+@use 'variables' as *;
+
+:host,
+form {
+  display: grid;
+  gap: map.get($spacing, 'default');
+}
 
 .form-inputs-container {
+  $spacing: map.get($spacing, 'default');
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
-  gap: map.get($spacing, 'default');
+  grid-template-columns: repeat(2, calc(($input-maximum-size - $spacing) / 2));
+  gap: $spacing;
+
+  & #category-select {
+    grid-column: -1;
+  }
 }
 
 #footer {

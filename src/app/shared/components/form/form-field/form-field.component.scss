@@ -22,6 +22,7 @@ $input-spacing-default: map.get($spacing, 'sm');
   & .app-input,
   & .app-select {
     width: 100%;
+    max-width: $input-maximum-size;
   }
 
   & .app-label,

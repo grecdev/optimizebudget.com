@@ -3,7 +3,6 @@
     <app-form-field
       variant="outlined"
       color="primary-default"
-      class="mb-default"
       [labelOptions]="{
         position: 'top',
       }"
@@ -22,7 +21,6 @@
     <app-form-field
       variant="outlined"
       color="primary-default"
-      class="mb-default"
       [labelOptions]="{
         position: 'top',
       }"
@@ -41,21 +39,26 @@
     <app-form-field
       variant="outlined"
       color="primary-default"
-      class="mb-default"
       [labelOptions]="{
         position: 'top',
       }"
     >
       <app-input-label>Category</app-input-label>
 
-      <app-select id="category-select"></app-select>
+      <app-select id="category-select">
+        <app-select-option>Option 1</app-select-option>
+        <app-select-option>Option 2</app-select-option>
+        <app-select-option>Option 3</app-select-option>
+        <app-select-option>Option 4</app-select-option>
+        <app-select-option>Option 5</app-select-option>
+        <app-select-option>Option 6</app-select-option>
+      </app-select>
     </app-form-field>
   </div>
 
   <app-form-field
     variant="outlined"
     color="primary-default"
-    class="mb-default"
     [labelOptions]="{
       position: 'top',
     }"
