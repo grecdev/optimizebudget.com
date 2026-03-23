@@ -3,7 +3,7 @@
 
   <div class="current-value">{{ currentValueTextContent }}</div>
 
-  <app-icon svgIcon="caret-down" />
+  <app-icon svgIcon="caret-down" [@rotateAnimation]="!focused ? 'initial' : 'focused'" />
 </div>
 
 <ng-template #selectOptionsContainer>

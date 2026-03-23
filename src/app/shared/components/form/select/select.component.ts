@@ -27,13 +27,15 @@ import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 
 import { AppFormFieldControl } from '../form-field/form-field-control';
 
+import { AppSelectOptionComponent } from './select-option/select-option.component';
+
 import {
   type SetOptionsContainerStyleOptions,
   type HandleOptionChangeOptions,
 } from './select.model';
 
 import { APP_SELECT_COMPONENT_REFERENCE } from './select.tokens';
-import { AppSelectOptionComponent } from './select-option/select-option.component';
+import { iconAnimation } from './select-animations.component';
 
 @Component({
   selector: 'app-form-field app-select',
@@ -54,6 +56,7 @@ import { AppSelectOptionComponent } from './select-option/select-option.componen
   host: {
     class: 'app-select',
   },
+  animations: [iconAnimation],
 })
 export class AppSelectComponent
   implements AppFormFieldControl, ControlValueAccessor, AfterContentInit
