@@ -5,4 +5,9 @@ interface SetOptionsContainerStyleOptions {
   currentTarget: HTMLElement;
 }
 
-export type { SetOptionsContainerStyleOptions };
+interface HandleOptionChangeOptions {
+  value: string;
+  textContent: string;
+}
+
+export type { SetOptionsContainerStyleOptions, HandleOptionChangeOptions };

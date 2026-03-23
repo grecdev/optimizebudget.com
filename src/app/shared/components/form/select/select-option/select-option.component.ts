@@ -38,7 +38,7 @@ export class AppSelectOptionComponent {
    *
    * @public
    */
-  @Input({ required: true }) get value(): string {
+  @Input({ required: true }) public get value(): string {
     return this._value;
   }
 
@@ -46,7 +46,7 @@ export class AppSelectOptionComponent {
     this._value = value;
   }
 
-  _value: string = '';
+  private _value: string = '';
 
   constructor(@Inject(APP_SELECT_COMPONENT_REFERENCE) selectRoot: AppSelectComponent) {
     this._selectRoot = selectRoot;
@@ -55,10 +55,17 @@ export class AppSelectOptionComponent {
   @HostListener('click', ['$event']) handleClick(event: MouseEvent) {
     event.stopPropagation();
 
-    if (!this._selectRoot) {
-      throw Error('Parent element not found!');
+    const TARGET = event.target as HTMLElement;
+    const TEXT_CONTENT_ELEMENT = TARGET.querySelector('.text-content');
+    const TEXT_CONTENT = TEXT_CONTENT_ELEMENT && TEXT_CONTENT_ELEMENT.textContent;
+
+    if (!this._selectRoot || !TEXT_CONTENT) {
+      throw Error('Elements not found!');
     }
 
-    this._selectRoot.handleOptionChange(this._value);
+    this._selectRoot.handleOptionChange({
+      value: this._value,
+      textContent: this._value.length > 0 ? TEXT_CONTENT : '',
+    });
   }
 }

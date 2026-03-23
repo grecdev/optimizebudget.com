@@ -19,23 +19,28 @@ $icon-size: 15px;
 
     width: $input-maximum-size;
 
+    & .current-value {
+      min-height: calc(map.get($font-size, 'body') * $line-height);
+    }
+
     & .select-value-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
 
-      color: map.get($color-palette, 'gray', 'variant-4');
-
       & .label {
         $full-height: 100%;
-        $translate-y: calc($full-height + $full-height / 2 / $line-height);
-
+        $translate-y: calc($full-height + $full-height / 2);
+        //
         position: absolute;
         bottom: 100%;
         left: form-field-component.$input-spacing-default;
+
         transition: transform 150ms ease-in-out;
         transform-origin: left center;
         transform: translateY($translate-y) scale(1);
+
+        color: map.get($color-palette, 'gray', 'variant-4');
       }
 
       & app-icon {

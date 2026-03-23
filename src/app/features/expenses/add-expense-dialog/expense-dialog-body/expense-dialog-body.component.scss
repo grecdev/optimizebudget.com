@@ -10,12 +10,13 @@ form {
 
 .form-inputs-container {
   $spacing: map.get($spacing, 'default');
+  //
   display: grid;
   grid-template-columns: repeat(2, calc(($input-maximum-size - $spacing) / 2));
   gap: $spacing;
 
-  & #category-select {
-    grid-column: -1;
+  & .app-form-field:has(#category-select) {
+    grid-column: 1 / -1;
   }
 }
 

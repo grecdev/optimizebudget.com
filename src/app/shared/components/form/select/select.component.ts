@@ -11,6 +11,9 @@ import {
   forwardRef,
   Optional,
   Self,
+  AfterContentInit,
+  QueryList,
+  ContentChildren,
 } from '@angular/core';
 
 import { ControlValueAccessor, NgControl } from '@angular/forms';
@@ -24,8 +27,13 @@ import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 
 import { AppFormFieldControl } from '../form-field/form-field-control';
 
-import { type SetOptionsContainerStyleOptions } from './select.model';
+import {
+  type SetOptionsContainerStyleOptions,
+  type HandleOptionChangeOptions,
+} from './select.model';
+
 import { APP_SELECT_COMPONENT_REFERENCE } from './select.tokens';
+import { AppSelectOptionComponent } from './select-option/select-option.component';
 
 @Component({
   selector: 'app-form-field app-select',
@@ -47,7 +55,9 @@ import { APP_SELECT_COMPONENT_REFERENCE } from './select.tokens';
     class: 'app-select',
   },
 })
-export class AppSelectComponent implements AppFormFieldControl, ControlValueAccessor {
+export class AppSelectComponent
+  implements AppFormFieldControl, ControlValueAccessor, AfterContentInit
+{
   private readonly _domSanitizer: DomSanitizer;
   private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _ngControl: NgControl;
@@ -86,9 +96,18 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
    *
    * @type {string}
    *
+   * @private
+   */
+  private _currentValue: string = '';
+
+  /**
+   * @summary - Value rendered after clicking an option.
+   *
+   * @type {string}
+   *
    * @public
    */
-  public selectedValue: string = '';
+  public currentValueTextContent: string = '';
 
   /**
    * @summary - Icons state.
@@ -98,7 +117,6 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
    */
   public readonly icons: Record<string, string> = {
     'caret-down': 'caret-down',
-    'caret-up': 'caret-up',
   };
 
   /**
@@ -136,9 +154,21 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
    * @type {TemplateRef<void> | null}
    *
    * @private
+   * @readonly
    */
   @ViewChild('selectOptionsContainer')
   private readonly _selectOptionsContainer: TemplateRef<void> | null = null;
+
+  /**
+   * @summary - Option children.
+   *
+   * @type {QueryList<AppSelectOptionComponent> | null}
+   *
+   * @private
+   * @readonly
+   */
+  @ContentChildren(AppSelectOptionComponent)
+  private readonly _childrenOptions: QueryList<AppSelectOptionComponent> | null = null;
 
   constructor(
     iconRegistryService: IconRegistryService,
@@ -217,11 +247,11 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
    * @public
    */
   public writeValue(value: string): void {
-    if (value === this.selectedValue) {
+    if (value === this._currentValue) {
       return;
     }
 
-    this.selectedValue = value;
+    this._currentValue = value;
 
     this._changeDetectorRef.markForCheck();
   }
@@ -229,21 +259,21 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
   /**
    * @summary - Method used together with the click event from the `app-select-option` elements.
    *
-   * @param {string} value
+   * @param {HandleOptionChangeOptions['value']} options.value - Value used for data.
+   * @param {HandleOptionChangeOptions['textContent']} options.textContent - Visible value.
    *
    * @returns {void}
    * @public
    */
-  public handleOptionChange(value: string): void {
-    if (!value) {
-      throw Error('Value not found!');
-    }
+  public handleOptionChange(options: HandleOptionChangeOptions): void {
+    const { value, textContent } = options;
 
     if (!this._overlayReference) {
       throw Error('Overlay reference not found!');
     }
 
-    this.selectedValue = value;
+    this._currentValue = value;
+    this.currentValueTextContent = textContent;
 
     this._onChange(value);
     this._onTouched();
@@ -359,8 +389,33 @@ export class AppSelectComponent implements AppFormFieldControl, ControlValueAcce
         this._changeDetectorRef.markForCheck();
         this._overlayReference = null;
 
-        this.focused = this.selectedValue.length > 0;
+        this.focused = this._currentValue.length > 0;
       },
     });
+  }
+
+  /**
+   * @summary - Check for duplicated options.
+   *
+   * @private
+   */
+  private _checkDuplicatedValues(): void {
+    if (!this._childrenOptions) {
+      return;
+    }
+
+    const VALUES = this._childrenOptions.map(item => item.value);
+
+    const HAS_DUPLICATED_VALUES = VALUES.some(
+      (item, index, self) => self.indexOf(item) !== index
+    );
+
+    if (HAS_DUPLICATED_VALUES) {
+      throw Error('Duplicated values found for select options!');
+    }
+  }
+
+  ngAfterContentInit() {
+    this._checkDuplicatedValues();
   }
 }
