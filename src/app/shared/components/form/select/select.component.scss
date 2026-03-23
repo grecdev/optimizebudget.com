@@ -91,12 +91,15 @@ $icon-size: 15px;
   }
 
   &-focused:has(.app-select) {
-    & .app-select .select-value-container .label {
-      transform: translateY(50%) scale(0.75);
-    }
-
     & .app-overlay {
       cursor: auto;
+    }
+  }
+
+  &-focused:has(.app-select),
+  &-has-value:has(.app-select) {
+    & .app-select .select-value-container .label {
+      transform: translateY(50%) scale(0.75);
     }
   }
 

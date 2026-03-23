@@ -1,9 +1,12 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   Inject,
   Input,
+  OnInit,
   ViewEncapsulation,
 } from '@angular/core';
 
@@ -21,15 +24,18 @@ import { type AppSelectComponent } from '../select.component';
     class: 'app-select-option',
   },
 })
-export class AppSelectOptionComponent {
+export class AppSelectOptionComponent implements OnInit {
+  private _elementRef: ElementRef;
+
   /**
    * @summary - Accessing parent root data.
    *
    * @type {AppSelectComponent}
    *
    * @private
+   * @readonly
    */
-  private _selectRoot: AppSelectComponent;
+  private readonly _selectRoot: AppSelectComponent;
 
   /**
    * @summary - Option's current value
@@ -43,23 +49,79 @@ export class AppSelectOptionComponent {
   }
 
   set value(value: string) {
+    if (value === this._value) {
+      return;
+    }
+
     this._value = value;
   }
 
   private _value: string = '';
 
-  constructor(@Inject(APP_SELECT_COMPONENT_REFERENCE) selectRoot: AppSelectComponent) {
+  /**
+   * @summary - Set the app-select value from within the template.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  @Input({
+    transform: booleanAttribute,
+  })
+  get selected(): boolean {
+    return this._selected;
+  }
+
+  set selected(value) {
+    if (value === this._selected) {
+      return;
+    }
+
+    this._selected = value;
+  }
+
+  private _selected: boolean = false;
+
+  constructor(
+    @Inject(APP_SELECT_COMPONENT_REFERENCE) selectRoot: AppSelectComponent,
+    elementRef: ElementRef
+  ) {
     this._selectRoot = selectRoot;
+    this._elementRef = elementRef;
   }
 
   @HostListener('click', ['$event']) handleClick(event: MouseEvent) {
     event.stopPropagation();
 
-    const TARGET = event.target as HTMLElement;
-    const TEXT_CONTENT_ELEMENT = TARGET.querySelector('.text-content');
-    const TEXT_CONTENT = TEXT_CONTENT_ELEMENT && TEXT_CONTENT_ELEMENT.textContent;
+    this._setValue();
+  }
 
-    if (!this._selectRoot || !TEXT_CONTENT) {
+  /**
+   * @summary - Get text content from the element reference.
+   *
+   * @private
+   * @returns {string}
+   */
+  private _getTextContent(): string {
+    const NATIVE_ELEMENT = this._elementRef.nativeElement;
+
+    if (!NATIVE_ELEMENT) {
+      return '';
+    }
+
+    return NATIVE_ELEMENT.textContent;
+  }
+
+  /**
+   * @summary - Trigger change from parent.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setValue(): void {
+    const TEXT_CONTENT = this._getTextContent();
+
+    if (!this._selectRoot) {
       throw Error('Elements not found!');
     }
 
@@ -67,5 +129,23 @@ export class AppSelectOptionComponent {
       value: this._value,
       textContent: this._value.length > 0 ? TEXT_CONTENT : '',
     });
+  }
+
+  /**
+   * @summary - Emit value if selected via template.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _handleSelectedValue(): void {
+    if (!this._selected) {
+      return;
+    }
+
+    this._setValue();
+  }
+
+  ngOnInit() {
+    this._handleSelectedValue();
   }
 }

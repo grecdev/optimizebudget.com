@@ -134,6 +134,17 @@ export class AppSelectComponent
   public focused: AppFormFieldControl['focused'] = false;
 
   /**
+   * @summary - Based on this variable, we change the select element's UI.
+   *
+   * Part of the `AppFormFieldControl` class.
+   *
+   * @type {AppFormFieldControl['hasValue']}
+   *
+   * @public
+   */
+  public hasValue: AppFormFieldControl['hasValue'] = false;
+
+  /**
    * @summary - As always, pass a unique identifier.
    *
    * @type {string}
@@ -146,6 +157,10 @@ export class AppSelectComponent
   }
 
   set id(value: string) {
+    if (value === this._id) {
+      return;
+    }
+
     this._id = value;
   }
 
@@ -271,18 +286,18 @@ export class AppSelectComponent
   public handleOptionChange(options: HandleOptionChangeOptions): void {
     const { value, textContent } = options;
 
-    if (!this._overlayReference) {
-      throw Error('Overlay reference not found!');
-    }
-
     this._currentValue = value;
     this.currentValueTextContent = textContent;
+    this.hasValue = value.length > 0;
 
     this._onChange(value);
     this._onTouched();
 
     this._changeDetectorRef.markForCheck();
-    this._overlayReference.close();
+
+    if (this._overlayReference) {
+      this._overlayReference.close();
+    }
   }
 
   /**
@@ -392,7 +407,7 @@ export class AppSelectComponent
         this._changeDetectorRef.markForCheck();
         this._overlayReference = null;
 
-        this.focused = this._currentValue.length > 0;
+        this.focused = false;
       },
     });
   }
