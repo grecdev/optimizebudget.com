@@ -3,18 +3,27 @@
 
 @use 'color-palette' as *;
 @use 'typography' as *;
+@use 'variables' as *;
+@use 'spacing' as *;
 
 @use '../form-field/form-field.component' as form-field-component;
+
+$icon-size: 15px;
 
 .app-form-field {
   & .app-select {
     position: relative;
+
     cursor: pointer;
+    user-select: none;
+
+    width: $input-maximum-size;
 
     & .select-value-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       color: map.get($color-palette, 'gray', 'variant-4');
 
       & .label {
@@ -30,16 +39,39 @@
       }
 
       & app-icon {
-        $size: 15px;
-
-        width: $size;
-        height: $size;
+        width: $icon-size;
+        height: $icon-size;
       }
     }
 
     & .select-options-container {
       position: fixed;
+
+      display: flex;
+      flex-direction: column;
+
       background: map.get($color-palette, 'common', 'white');
+      box-shadow: map.get($box-shadow, 'variant-3');
+
+      width: $input-maximum-size;
+      max-height: $input-maximum-size;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    & .label,
+    & .current-value {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    // The label will never exceeds its parent width, but I want to make sure it's ellipsis.
+    // It's positioned absolute, so I need to apply this stupid formula.
+    & .label {
+      max-width: calc(100% - $icon-size - map.get($spacing, 'sm') * 2);
     }
   }
 

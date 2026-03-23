@@ -1,5 +1,7 @@
 <div class="select-value-container">
-  <div class="label">Custom label</div>
+  <div class="label">Some label</div>
+
+  <div class="current-value"></div>
 
   <app-icon svgIcon="caret-down" *ngIf="!focused; else caretUp" />
 
@@ -9,5 +11,7 @@
 </div>
 
 <ng-template #selectOptionsContainer>
-  <div class="select-options-container">children elements</div>
+  <div class="select-options-container">
+    <ng-content></ng-content>
+  </div>
 </ng-template>

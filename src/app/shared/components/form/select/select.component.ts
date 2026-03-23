@@ -8,7 +8,12 @@ import {
   ViewChild,
   ViewEncapsulation,
   ChangeDetectorRef,
+  forwardRef,
+  Optional,
+  Self,
 } from '@angular/core';
+
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -20,6 +25,7 @@ import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { AppFormFieldControl } from '../form-field/form-field-control';
 
 import { type SetOptionsContainerStyleOptions } from './select.model';
+import { APP_SELECT_COMPONENT_REFERENCE } from './select.tokens';
 
 @Component({
   selector: 'app-form-field app-select',
@@ -30,27 +36,59 @@ import { type SetOptionsContainerStyleOptions } from './select.model';
   providers: [
     {
       provide: AppFormFieldControl,
-      useExisting: AppSelectComponent,
+      useExisting: forwardRef(() => AppSelectComponent),
+    },
+    {
+      provide: APP_SELECT_COMPONENT_REFERENCE,
+      useExisting: forwardRef(() => AppSelectComponent),
     },
   ],
   host: {
     class: 'app-select',
   },
 })
-export class AppSelectComponent implements AppFormFieldControl {
-  private readonly _overlayService: AppOverlayService;
-  private readonly _iconRegistryService: IconRegistryService;
+export class AppSelectComponent implements AppFormFieldControl, ControlValueAccessor {
   private readonly _domSanitizer: DomSanitizer;
   private readonly _changeDetectorRef: ChangeDetectorRef;
+  private readonly _ngControl: NgControl;
 
   /**
-   * @summary - Overlay reference.
+   * @summary - Overlay service used to display overlays on top of everything.
+   *
+   * @type {AppOverlayService}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _overlayService: AppOverlayService;
+
+  /**
+   * @summary - Icon registry service, used to store icons and then render them in template.
+   *
+   * @type {IconRegistryService}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _iconRegistryService: IconRegistryService;
+
+  /**
+   * @summary - Overlay reference, to subscribe on events.
    *
    * @type {AppOverlayContentInstances['overlayReference']}
    *
    * @private
    */
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
+
+  /**
+   * @summary - Value selected via CVA's API.
+   *
+   * @type {string}
+   *
+   * @public
+   */
+  public selectedValue: string = '';
 
   /**
    * @summary - Icons state.
@@ -64,16 +102,15 @@ export class AppSelectComponent implements AppFormFieldControl {
   };
 
   /**
-   * @summary - Based on this variable, we change the select element's UI
+   * @summary - Based on this variable, we change the select element's UI.
    *
-   * @type {boolean}
+   * Part of the `AppFormFieldControl` class.
+   *
+   * @type {AppFormFieldControl['focused']}
    *
    * @public
    */
-  public focused: boolean = false;
-
-  @ViewChild('selectOptionsContainer')
-  private readonly _selectOptionsContainer: TemplateRef<void> | null = null;
+  public focused: AppFormFieldControl['focused'] = false;
 
   /**
    * @summary - As always, pass a unique identifier.
@@ -93,18 +130,126 @@ export class AppSelectComponent implements AppFormFieldControl {
 
   private _id: string = '';
 
+  /**
+   * @summary - Rendered `app-select-option` elements container.
+   *
+   * @type {TemplateRef<void> | null}
+   *
+   * @private
+   */
+  @ViewChild('selectOptionsContainer')
+  private readonly _selectOptionsContainer: TemplateRef<void> | null = null;
+
   constructor(
     iconRegistryService: IconRegistryService,
     domSanitizer: DomSanitizer,
     overlayService: AppOverlayService,
-    changeDetectorRef: ChangeDetectorRef
+    changeDetectorRef: ChangeDetectorRef,
+    @Optional() @Self() ngControl: NgControl
   ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
     this._overlayService = overlayService;
     this._changeDetectorRef = changeDetectorRef;
+    this._ngControl = ngControl;
+
+    if (this._ngControl) {
+      this._ngControl.valueAccessor = this;
+    }
 
     this._initIconRegistry();
+  }
+
+  /**
+   * @summary - Works together with CVA registerOnChange.
+   *
+   * @param {string} value - Value obtained by clicking on the option element.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _onChange(value: string): void {}
+
+  /**
+   * @summary - Works together with CVA registerOnChange.
+   *
+   * Update the form model on "blur".
+   *
+   * @private
+   * @returns {void}
+   */
+  private _onTouched(): void {}
+
+  /**
+   * @summary - CVA method.
+   *
+   * @param {(value: string) => void} fn - Callback function assigned to the onChange method.
+   *
+   * @returns {void}
+   * @public
+   */
+  public registerOnChange(fn: (value: string) => void): void {
+    this._onChange = fn;
+  }
+
+  /**
+   * @summary - CVA method.
+   *
+   * @param {() => void} fn - Callback function assigned to the onChange method.
+   *
+   * @returns {void}
+   * @public
+   */
+  public registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+
+  /**
+   * @summary - CVA method.
+   *
+   * This method is called by the forms API, hence we don't manually call `this._onChange`.
+   *
+   * AKA @angular/forms.
+   *
+   * @param {string} value - Value selected.
+   *
+   * @returns {void}
+   * @public
+   */
+  public writeValue(value: string): void {
+    if (value === this.selectedValue) {
+      return;
+    }
+
+    this.selectedValue = value;
+
+    this._changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * @summary - Method used together with the click event from the `app-select-option` elements.
+   *
+   * @param {string} value
+   *
+   * @returns {void}
+   * @public
+   */
+  public handleOptionChange(value: string): void {
+    if (!value) {
+      throw Error('Value not found!');
+    }
+
+    if (!this._overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.selectedValue = value;
+
+    this._onChange(value);
+    this._onTouched();
+
+    this._changeDetectorRef.markForCheck();
+    this._overlayReference.close();
   }
 
   /**
@@ -211,9 +356,10 @@ export class AppSelectComponent implements AppFormFieldControl {
 
     this._overlayReference.closingOverlay$.subscribe({
       next: () => {
-        this.focused = false;
         this._changeDetectorRef.markForCheck();
         this._overlayReference = null;
+
+        this.focused = this.selectedValue.length > 0;
       },
     });
   }

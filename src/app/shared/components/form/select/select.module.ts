@@ -9,6 +9,6 @@ import { AppSelectOptionModule } from './select-option/select-option.module';
 @NgModule({
   declarations: [AppSelectComponent],
   imports: [NgStyle, NgIf, AppSelectOptionModule, AppIconModule],
-  exports: [AppSelectComponent],
+  exports: [AppSelectComponent, AppSelectOptionModule],
 })
 export class AppSelectModule {}

@@ -1,0 +1,26 @@
+@use 'sass:map';
+
+@use 'spacing' as *;
+@use 'color-palette' as *;
+
+.app-select-option {
+  display: flex;
+  align-items: center;
+
+  padding: map.get($spacing, 'default');
+  cursor: pointer;
+  width: 100%;
+
+  & .text-content {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: map.get($color-palette, 'gray', 'default');
+  }
+}
