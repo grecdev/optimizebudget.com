@@ -27,7 +27,7 @@ import { type AppSelectComponent } from '../select.component';
   },
 })
 export class AppSelectOptionComponent implements OnInit {
-  private _elementRef: ElementRef;
+  public readonly elementRef: ElementRef;
 
   /**
    * @summary - Accessing parent root data.
@@ -113,7 +113,7 @@ export class AppSelectOptionComponent implements OnInit {
     elementRef: ElementRef
   ) {
     this._selectRoot = selectRoot;
-    this._elementRef = elementRef;
+    this.elementRef = elementRef;
   }
 
   @HostListener('click', ['$event']) handleClick(event: MouseEvent) {
@@ -133,7 +133,7 @@ export class AppSelectOptionComponent implements OnInit {
    * @returns {string}
    */
   private _getTextContent(): string {
-    const NATIVE_ELEMENT = this._elementRef.nativeElement;
+    const NATIVE_ELEMENT = this.elementRef.nativeElement;
 
     if (!NATIVE_ELEMENT) {
       return '';

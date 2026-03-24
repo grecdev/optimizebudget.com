@@ -189,11 +189,11 @@ export class AppSelectComponent
   private readonly _childrenOptions: QueryList<AppSelectOptionComponent> | null = null;
 
   constructor(
+    @Optional() @Self() ngControl: NgControl,
     iconRegistryService: IconRegistryService,
     domSanitizer: DomSanitizer,
     overlayService: AppOverlayService,
-    changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Self() ngControl: NgControl
+    changeDetectorRef: ChangeDetectorRef
   ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
@@ -346,6 +346,7 @@ export class AppSelectComponent
       },
     });
 
+    this._scrollOptionIntoView();
     this._initCloseSubscription();
   }
 
@@ -453,6 +454,28 @@ export class AppSelectComponent
 
       return item;
     });
+  }
+
+  /**
+   * @summary - Scroll to selected option.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _scrollOptionIntoView(): void {
+    if (!this._childrenOptions) {
+      throw Error('Children options not found!');
+    }
+
+    const SELECTED_OPTION = this._childrenOptions.find(
+      item => item.selected && item.elementRef.nativeElement
+    );
+
+    if (!SELECTED_OPTION) {
+      return;
+    }
+
+    SELECTED_OPTION.elementRef.nativeElement.scrollIntoView();
   }
 
   ngAfterContentInit() {
