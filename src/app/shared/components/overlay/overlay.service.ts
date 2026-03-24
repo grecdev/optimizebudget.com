@@ -13,7 +13,7 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
-import { filter, fromEvent, takeUntil } from 'rxjs';
+import { filter, fromEvent, takeUntil, Subject } from 'rxjs';
 
 import {
   type ComponentReferencesState,
@@ -90,6 +90,8 @@ export class AppOverlayService {
     this._injector = appInjector;
     this._applicationReference = applicationReference;
     this._document = document;
+
+    this._initEscapeEvent();
   }
 
   /**
@@ -138,10 +140,6 @@ export class AppOverlayService {
     });
 
     this._initCloseOverlayReferenceSubscription();
-
-    if (this._overlayReferenceStack.size === 1) {
-      this._initEscapeEvent();
-    }
 
     return this._lastOverlayReference;
   }
@@ -309,13 +307,8 @@ export class AppOverlayService {
    * @returns {void}
    */
   private _initEscapeEvent(): void {
-    if (!this._lastOverlayReference) {
-      throw Error('Overlay reference not found!');
-    }
-
     fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(
-        takeUntil(this._lastOverlayReference.closingOverlay$),
         filter(event => {
           const ALLOWED_KEYS = ['Escape'];
 
