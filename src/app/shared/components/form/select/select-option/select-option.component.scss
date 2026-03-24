@@ -16,6 +16,10 @@
     cursor: auto;
   }
 
+  &.selected {
+    background: map.get($color-palette, 'gray', 'default');
+  }
+
   & .text-content {
     display: inline-block;
     white-space: nowrap;
@@ -25,7 +29,7 @@
     pointer-events: none;
   }
 
-  &:not(.disabled):hover {
-    background: map.get($color-palette, 'gray', 'default');
+  &:not(.disabled):not(.selected):hover {
+    background: map.get($color-palette, 'gray', 'variant-5');
   }
 }

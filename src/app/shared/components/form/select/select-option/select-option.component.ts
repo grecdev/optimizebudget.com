@@ -23,6 +23,7 @@ import { type AppSelectComponent } from '../select.component';
   host: {
     class: 'app-select-option',
     '[class.disabled]': 'disabled',
+    '[class.selected]': 'selected',
   },
 })
 export class AppSelectOptionComponent implements OnInit {

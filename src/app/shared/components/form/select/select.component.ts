@@ -293,6 +293,8 @@ export class AppSelectComponent
     this._onChange(value);
     this._onTouched();
 
+    this._highlightSelectedValue();
+
     this._changeDetectorRef.markForCheck();
 
     if (this._overlayReference) {
@@ -431,6 +433,26 @@ export class AppSelectComponent
     if (HAS_DUPLICATED_VALUES) {
       throw Error('Duplicated values found for select options!');
     }
+  }
+
+  /**
+   * @summar - Query all children and highlight selected one based on _currentValue.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _highlightSelectedValue(): void {
+    if (!this._childrenOptions) {
+      return;
+    }
+
+    this._childrenOptions.map(item => {
+      const { value } = item;
+
+      item.selected = this._currentValue === value;
+
+      return item;
+    });
   }
 
   ngAfterContentInit() {
