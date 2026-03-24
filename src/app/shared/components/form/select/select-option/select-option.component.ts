@@ -22,6 +22,7 @@ import { type AppSelectComponent } from '../select.component';
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'app-select-option',
+    '[class.disabled]': 'disabled',
   },
 })
 export class AppSelectOptionComponent implements OnInit {
@@ -59,7 +60,7 @@ export class AppSelectOptionComponent implements OnInit {
   private _value: string = '';
 
   /**
-   * @summary - Set the app-select value from within the template.
+   * @summary - Set the default selected value.
    *
    * @type {boolean}
    *
@@ -82,6 +83,30 @@ export class AppSelectOptionComponent implements OnInit {
 
   private _selected: boolean = false;
 
+  /**
+   * @summary - Disable option.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  @Input({
+    transform: booleanAttribute,
+  })
+  get disabled(): boolean {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    if (value === this._disabled) {
+      return;
+    }
+
+    this._disabled = value;
+  }
+
+  private _disabled: boolean = false;
+
   constructor(
     @Inject(APP_SELECT_COMPONENT_REFERENCE) selectRoot: AppSelectComponent,
     elementRef: ElementRef
@@ -92,6 +117,10 @@ export class AppSelectOptionComponent implements OnInit {
 
   @HostListener('click', ['$event']) handleClick(event: MouseEvent) {
     event.stopPropagation();
+
+    if (this._disabled) {
+      return;
+    }
 
     this._setValue();
   }

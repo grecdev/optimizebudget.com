@@ -11,6 +11,11 @@
   cursor: pointer;
   width: 100%;
 
+  &.disabled {
+    color: map.get($color-palette, 'gray', 'variant-3');
+    cursor: auto;
+  }
+
   & .text-content {
     display: inline-block;
     white-space: nowrap;
@@ -20,7 +25,7 @@
     pointer-events: none;
   }
 
-  &:hover {
+  &:not(.disabled):hover {
     background: map.get($color-palette, 'gray', 'default');
   }
 }
