@@ -28,6 +28,11 @@ $icon-size: 15px;
       align-items: center;
       justify-content: space-between;
 
+      position: relative;
+      z-index: $overlap-index-everything;
+
+      padding: form-field-component.$input-spacing-default;
+
       & .label {
         $full-height: 100%;
         $translate-y: calc($full-height + $full-height / 2);
@@ -80,17 +85,17 @@ $icon-size: 15px;
     }
   }
 
-  &:not(.app-form-field-focused) {
-    & .app-select:hover {
+  &:not(.app-form-field-has-value):not(.app-form-field-focused) {
+    & .app-select .select-value-container:hover {
       @include form-field-component.focus-state;
 
-      & .select-value-container .label {
+      & .label {
         color: map.get($color-palette, 'body-text-color', 'default');
       }
     }
   }
 
-  &-focused:has(.app-select) {
+  &-focused {
     & .app-overlay {
       cursor: auto;
     }

@@ -32,9 +32,12 @@ $input-spacing-default: map.get($spacing, 'sm');
     font-size: map.get($font-size, 'body');
   }
 
-  & .app-input,
-  & .app-select {
+  & .app-input {
     padding: $input-spacing-default;
+  }
+
+  & .app-input,
+  & .app-select .select-value-container {
     border-radius: map.get($spacing, 'sm');
   }
 
@@ -45,7 +48,7 @@ $input-spacing-default: map.get($spacing, 'sm');
 
   &-variant-outlined {
     & .app-input,
-    & .app-select {
+    & .app-select .select-value-container {
       background: map.get($color-palette, 'common', 'white');
       border: 1px solid map.get($color-palette, 'gray', 'variant-3');
     }

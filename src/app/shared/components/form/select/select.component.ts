@@ -151,7 +151,9 @@ export class AppSelectComponent
    *
    * @public
    */
-  @Input()
+  @Input({
+    required: true,
+  })
   get id(): string {
     return this._id;
   }
@@ -165,6 +167,28 @@ export class AppSelectComponent
   }
 
   private _id: string = '';
+
+  /**
+   * @summary - Label text content.
+   *
+   * @type {string}
+   *
+   * @public
+   */
+  @Input()
+  get label(): string {
+    return this._label;
+  }
+
+  set label(value: string) {
+    if (value === this._label) {
+      return;
+    }
+
+    this._label = value;
+  }
+
+  private _label: string = '';
 
   /**
    * @summary - Rendered `app-select-option` elements container.
@@ -294,12 +318,9 @@ export class AppSelectComponent
     this._onTouched();
 
     this._highlightSelectedValue();
+    this._triggerClose();
 
     this._changeDetectorRef.markForCheck();
-
-    if (this._overlayReference) {
-      this._overlayReference.close();
-    }
   }
 
   /**
@@ -317,37 +338,6 @@ export class AppSelectComponent
         ),
       });
     });
-  }
-
-  @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
-    event.stopPropagation();
-
-    const CURRENT_TARGET = event.currentTarget as HTMLElement;
-
-    if (!this._selectOptionsContainer || !CURRENT_TARGET) {
-      throw Error('Elements not found!');
-    }
-
-    this.focused = true;
-
-    const OPTIONS_EMBEDDED_VIEW = this._createOptionsContainerEmbedded();
-
-    this._setOptionsContainerStyle({
-      optionsContainer: OPTIONS_EMBEDDED_VIEW,
-      currentTarget: CURRENT_TARGET,
-    });
-
-    this._overlayReference = this._overlayService.appendOverlay({
-      contentReferences: [OPTIONS_EMBEDDED_VIEW],
-      projectableNodes: [OPTIONS_EMBEDDED_VIEW.rootNodes],
-      targetDOM: CURRENT_TARGET,
-      instanceOptions: {
-        noBackground: true,
-      },
-    });
-
-    this._scrollOptionIntoView();
-    this._initCloseSubscription();
   }
 
   /**
@@ -407,10 +397,11 @@ export class AppSelectComponent
 
     this._overlayReference.closingOverlay$.subscribe({
       next: () => {
-        this._changeDetectorRef.markForCheck();
-        this._overlayReference = null;
-
         this.focused = false;
+
+        this._changeDetectorRef.markForCheck();
+
+        this._overlayReference = null;
       },
     });
   }
@@ -476,6 +467,55 @@ export class AppSelectComponent
     }
 
     SELECTED_OPTION.elementRef.nativeElement.scrollIntoView();
+  }
+
+  /**
+   * @summary - Trigger select close.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _triggerClose(): void {
+    if (this._overlayReference) {
+      this._overlayReference.close();
+    }
+  }
+
+  @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
+    event.stopPropagation();
+
+    const CURRENT_TARGET = event.currentTarget as HTMLElement;
+
+    if (!this._selectOptionsContainer || !CURRENT_TARGET) {
+      throw Error('Elements not found!');
+    }
+
+    if (this.focused) {
+      this._triggerClose();
+
+      return;
+    }
+
+    this.focused = true;
+
+    const OPTIONS_EMBEDDED_VIEW = this._createOptionsContainerEmbedded();
+
+    this._setOptionsContainerStyle({
+      optionsContainer: OPTIONS_EMBEDDED_VIEW,
+      currentTarget: CURRENT_TARGET,
+    });
+
+    this._overlayReference = this._overlayService.appendOverlay({
+      contentReferences: [OPTIONS_EMBEDDED_VIEW],
+      projectableNodes: [OPTIONS_EMBEDDED_VIEW.rootNodes],
+      targetDOM: CURRENT_TARGET,
+      instanceOptions: {
+        noBackground: true,
+      },
+    });
+
+    this._scrollOptionIntoView();
+    this._initCloseSubscription();
   }
 
   ngAfterContentInit() {
