@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalBodyComponent } from './modal-body.component';
+import { AppSelectComponent } from './select.component';
 
-describe('ModalBodyComponent', () => {
-  let component: ModalBodyComponent;
-  let fixture: ComponentFixture<ModalBodyComponent>;
+describe('AppSelectComponent', () => {
+  let component: AppSelectComponent;
+  let fixture: ComponentFixture<AppSelectComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ModalBodyComponent]
+      declarations: [AppSelectComponent],
     });
-    fixture = TestBed.createComponent(ModalBodyComponent);
+    fixture = TestBed.createComponent(AppSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

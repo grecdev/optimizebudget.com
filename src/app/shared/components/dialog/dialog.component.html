@@ -1,13 +1,18 @@
-<div id="dialog-overlay-content">
+<div id="dialog-content">
   <div class="header">
     <h2>{{ title }}</h2>
 
-    <button type="button" *ngIf="closeButton" (click)="handleButtonCloseClick($event)">
+    <button
+      type="button"
+      appIconButton
+      *ngIf="closeButton"
+      (click)="handleButtonCloseClick($event)"
+    >
       <app-icon [svgIcon]="icons['xmark']" />
     </button>
   </div>
 
-  <div id="body">
+  <div class="body">
     <ng-content></ng-content>
   </div>
 </div>

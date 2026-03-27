@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { AppButtonModule } from '@shared/components/button/button.module';
 
-import { AddExpenseModalComponent } from './add-expense-modal.component';
+import { AddExpenseDialogComponent } from './add-expense-dialog.component';
 
 @NgModule({
-  declarations: [AddExpenseModalComponent],
+  declarations: [AddExpenseDialogComponent],
   imports: [CommonModule, AppButtonModule],
-  exports: [AddExpenseModalComponent],
+  exports: [AddExpenseDialogComponent],
 })
-export class AddExpenseModalModule {}
+export class AddExpenseDialogModule {}

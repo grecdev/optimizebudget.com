@@ -1,0 +1,116 @@
+@use 'sass:map';
+@use 'sass:math';
+
+@use 'color-palette' as *;
+@use 'typography' as *;
+@use 'variables' as *;
+@use 'spacing' as *;
+
+@use '../form-field/form-field.component' as form-field-component;
+
+$icon-size: 15px;
+
+.app-form-field {
+  & .app-select {
+    position: relative;
+
+    cursor: pointer;
+    user-select: none;
+
+    width: $input-maximum-size;
+
+    & .current-value {
+      min-height: calc(map.get($font-size, 'body') * $line-height);
+    }
+
+    & .select-value-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      position: relative;
+      z-index: $overlap-index-everything;
+
+      padding: form-field-component.$input-spacing-default;
+
+      & .label {
+        $full-height: 100%;
+        $translate-y: calc($full-height + $full-height / 2);
+        //
+        position: absolute;
+        bottom: 100%;
+        left: form-field-component.$input-spacing-default;
+
+        transition: transform 150ms ease-in-out;
+        transform-origin: left center;
+        transform: translateY($translate-y) scale(1);
+
+        color: map.get($color-palette, 'gray', 'variant-4');
+      }
+
+      & app-icon {
+        width: $icon-size;
+        height: $icon-size;
+      }
+    }
+
+    & .select-options-container {
+      position: fixed;
+
+      display: flex;
+      flex-direction: column;
+
+      background: map.get($color-palette, 'common', 'white');
+      box-shadow: map.get($box-shadow, 'variant-3');
+
+      width: $input-maximum-size;
+      max-height: $input-maximum-size;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    & .label,
+    & .current-value {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    // The label will never exceeds its parent width, but I want to make sure it's ellipsis.
+    // It's positioned absolute, so I need to apply this stupid formula.
+    & .label {
+      max-width: calc(100% - $icon-size - map.get($spacing, 'sm') * 2);
+    }
+  }
+
+  &:not(.app-form-field-has-value):not(.app-form-field-focused) {
+    & .app-select .select-value-container:hover {
+      @include form-field-component.focus-state;
+
+      & .label {
+        color: map.get($color-palette, 'body-text-color', 'default');
+      }
+    }
+  }
+
+  &-focused {
+    & .app-overlay {
+      cursor: auto;
+    }
+  }
+
+  &-focused:has(.app-select),
+  &-has-value:has(.app-select) {
+    & .app-select .select-value-container .label {
+      transform: translateY(50%) scale(0.75);
+    }
+  }
+
+  &-variant-outlined:has(.app-select) {
+    & .app-select .select-value-container .label {
+      background: map.get($color-palette, 'common', 'white');
+    }
+  }
+}

@@ -7,4 +7,7 @@ export abstract class AppFormFieldControl {
 
   /** Whether the control is focused. */
   readonly focused: boolean = false;
+
+  /** Check if we have any value set, usually for <select> elements */
+  readonly hasValue?: boolean = false;
 }

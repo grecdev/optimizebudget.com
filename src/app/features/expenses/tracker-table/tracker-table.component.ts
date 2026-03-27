@@ -95,6 +95,5 @@ export class TrackerTableComponent {
     },
   ];
 
-  constructor(...args: Array<unknown>);
   constructor() {}
 }

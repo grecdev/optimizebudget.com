@@ -1,34 +1,58 @@
+// Future note: update deprecated code. 😚
+
 import {
-  ElementRef,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
-  EventEmitter,
-  Output,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import { DomSanitizer } from '@angular/platform-browser';
-
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
+import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import { type DialogOptions } from './dialog.model';
+import { type AppDialogOptions } from './dialog.model';
 
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    class: 'app-dialog',
+  },
 })
-export class DialogComponent implements DialogOptions {
-  private readonly _elementRef: ElementRef<DialogComponent>;
-  private readonly _iconRegistryService: IconRegistryService;
+export class AppDialogComponent implements AppDialogOptions, AppOverlayContentInstances {
   private readonly _domSanitizer: DomSanitizer;
+  private readonly _elementRef: ElementRef;
+
+  /**
+   * @summary - Icon registry service, used to store icons and then render them in template.
+   *
+   * @type {IconRegistryService}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _iconRegistryService: IconRegistryService;
+
+  /**
+   * @summary - Assigned from the OverlayService.
+   *
+   * @type {AppOverlayContentInstances['overlayReference']}
+   *
+   * @public
+   */
+  public overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   /**
    * @summary - Icons state.
    *
    * @type {Record<string, string>}
    * @public
+   * @readonly
    */
   public readonly icons: {
     [key: string]: string;
@@ -36,70 +60,54 @@ export class DialogComponent implements DialogOptions {
     xmark: 'xmark',
   };
 
+  /**
+   * @summary - Title of the dialog.
+   *
+   * @type {string}
+   *
+   * @public
+   */
   public title: string = 'Please add your title!';
+
+  /**
+   * @summary - Close button + icon.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
   public closeButton: boolean = true;
 
-  @Output() closeDialog: EventEmitter<null> = new EventEmitter();
-
   constructor(
-    elementRef: ElementRef<DialogComponent>,
     iconRegistryService: IconRegistryService,
-    domSanitizer: DomSanitizer
+    domSanitizer: DomSanitizer,
+    elementRef: ElementRef
   ) {
-    this._elementRef = elementRef;
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
+    this._elementRef = elementRef;
 
     this._initIconRegistry();
   }
 
-  /**
-   * @summary - Clicking on the overlay.
-   *
-   * @param {Event} event - Event object.
-   *
-   * @private
-   * @returns {void}
-   */
-  @HostListener('click', ['$event']) onClick(event: MouseEvent): void {
+  @HostListener('click', ['$event']) handleClickRoot(event: MouseEvent) {
     event.stopPropagation();
 
-    const NATIVE_ELEMENT = this._elementRef.nativeElement as DialogComponent;
+    const NATIVE_ELEMENT = this._elementRef.nativeElement as AppDialogComponent;
 
     if (!NATIVE_ELEMENT) {
-      throw Error('Native element not found for DialogComponent!');
+      throw Error('Native element not found for AppDialogComponent!');
     }
 
-    const TARGET = event.target as HTMLElement | DialogComponent;
-    const OVERLAY_CLICKED = TARGET === NATIVE_ELEMENT;
+    const TARGET = event.target as HTMLElement | AppDialogComponent;
+    const CURRENT_TARGET_CLICKED = TARGET === NATIVE_ELEMENT;
 
-    if (!OVERLAY_CLICKED) {
+    if (!CURRENT_TARGET_CLICKED) {
       return;
     }
 
-    this.closeDialog.emit(null);
+    this._triggerOverlayClose();
   }
-
-  /**
-   * @summary - Pressing ESCAPE key.
-   *
-   * @param {Event} event - Event object.
-   *
-   * @private
-   * @returns {void}
-   */
-  @HostListener('window:keydown', ['$event']) onEscapeKey(event: KeyboardEvent): void {
-    event.stopPropagation();
-
-    const ALLOWED_KEYS = ['Escape'];
-
-    if (!ALLOWED_KEYS.includes(event.code)) {
-      return;
-    }
-
-    this.closeDialog.emit(null);
-  }
-
   /**
    * @summary - Clicking on the dynamically rendered button.
    *
@@ -108,10 +116,10 @@ export class DialogComponent implements DialogOptions {
    * @public
    * @returns {void}
    */
-  handleButtonCloseClick(event: MouseEvent): void {
+  public handleButtonCloseClick(event: MouseEvent): void {
     event.stopPropagation();
 
-    this.closeDialog.emit(null);
+    this._triggerOverlayClose();
   }
 
   /**
@@ -129,5 +137,19 @@ export class DialogComponent implements DialogOptions {
         ),
       });
     });
+  }
+
+  /**
+   * @summary - Trigger overlay reference subscription event.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _triggerOverlayClose(): void {
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.overlayReference.close();
   }
 }

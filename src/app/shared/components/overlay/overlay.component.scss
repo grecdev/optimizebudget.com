@@ -1,0 +1,18 @@
+@use 'sass:map';
+@use 'variables' as *;
+@use 'color-palette' as *;
+
+.app-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $overlap-index-everything;
+
+  overflow: hidden;
+
+  &:not(.no-background) {
+    background: rgba(map.get($color-palette, 'common', 'black'), 0.25);
+  }
+}

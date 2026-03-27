@@ -8,6 +8,6 @@ arrowParens: 'avoid'
 htmlWhitespaceSensitivity: 'ignore'
 overrides:
   - files:
-      - "*.html"
+      - '*.html'
     options:
-      parser: "angular"
+      parser: 'angular'

@@ -3,7 +3,7 @@ import { Directive, Input } from '@angular/core';
 import { AppFormFieldControl } from '../form-field/form-field-control';
 
 @Directive({
-  selector: 'input[appInput], textarea[appInput]',
+  selector: 'app-form-field input[appInput], app-form-field textarea[appInput]',
   providers: [
     {
       // Alias AppFormFieldControl w/ reference to AppInput

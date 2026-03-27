@@ -1,0 +1,13 @@
+<div class="select-value-container">
+  <div class="label">{{ label || 'Label not found!' }}</div>
+
+  <div class="current-value">{{ currentValueTextContent }}</div>
+
+  <app-icon svgIcon="caret-down" [@rotateAnimation]="!focused ? 'initial' : 'focused'" />
+</div>
+
+<ng-template #selectOptionsContainer>
+  <div class="select-options-container">
+    <ng-content></ng-content>
+  </div>
+</ng-template>
