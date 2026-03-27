@@ -43,15 +43,15 @@
         position: 'top',
       }"
     >
-      <app-input-label>Category</app-input-label>
-
-      <app-select id="category-select" label="Pick category">
+      <app-select id="category-select" label="Pick a category">
         <app-select-option value="" selected>None</app-select-option>
 
-        <app-select-option value="category-1">Category 1</app-select-option>
-        <app-select-option value="category-2">Category 2</app-select-option>
-        <app-select-option value="category-3">Category 3</app-select-option>
-        <app-select-option value="category-4">Category 4</app-select-option>
+        <app-select-option
+          *ngFor="let item of expenseCategories; trackBy: expenseCategoriesTrackByFn"
+          [value]="item.value"
+        >
+          {{ item.textContent }}
+        </app-select-option>
       </app-select>
     </app-form-field>
   </div>

@@ -16,6 +16,7 @@
 
     <ng-container [appColumnDef]="ExpenseItemKey.STATUS">
       <th app-header-cell *appHeaderCellDef>Status</th>
+
       <td app-cell *appCellDef="let item" [ngSwitch]="item[ExpenseItemKey.STATUS]">
         <app-pill-status *ngSwitchCase="ExpenseStatus.PAID" [type]="StatusType.SUCCESS">
           Paid
