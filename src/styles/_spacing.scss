@@ -1,6 +1,15 @@
+// Deprecated: remove map.get(...) if you see it somewhere in the code please 😚
 $spacing: (
   'sm': 0.5rem,
   'default': 1rem,
   'md': 1.5rem,
   'lg': 2rem,
 );
+// Deprecated code above
+
+$sm: 0.5rem;
+$default: 1rem;
+$md: 1.5rem;
+$lg: 2rem;
+
+$grid-gap-spacing: $md;
