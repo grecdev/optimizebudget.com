@@ -1,0 +1,7 @@
+@use 'spacing' as spacing;
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: spacing.$grid-gap-spacing;
+}

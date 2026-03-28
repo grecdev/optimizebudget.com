@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
@@ -7,7 +7,13 @@ import { TotalMonthlyExpensesComponent } from './total-monthly-expenses.componen
 
 @NgModule({
   declarations: [TotalMonthlyExpensesComponent],
-  imports: [CommonModule, WidgetBoxModule],
+  imports: [
+    CommonModule,
+    CurrencyPipe,
+    DecimalPipe,
+    //
+    WidgetBoxModule,
+  ],
   exports: [TotalMonthlyExpensesComponent],
 })
 export class TotalMonthlyExpensesModule {}
