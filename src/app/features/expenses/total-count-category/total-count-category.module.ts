@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TotalCountCategoryComponent } from './total-count-category.component';
+import { AppIconModule } from '@shared/components/icon/icon.module';
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
+
+import { TotalCountCategoryComponent } from './total-count-category.component';
 
 @NgModule({
   declarations: [TotalCountCategoryComponent],
@@ -10,6 +12,7 @@ import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
     CommonModule,
     //
     WidgetBoxModule,
+    AppIconModule,
   ],
   exports: [TotalCountCategoryComponent],
 })

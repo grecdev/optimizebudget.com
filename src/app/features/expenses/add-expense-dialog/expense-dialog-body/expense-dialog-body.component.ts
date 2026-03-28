@@ -72,13 +72,13 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   /**
    * @summary - Track by function used for expense categories for loop.
    *
-   * @param {number} index - Not used really.
+   * @param {number} _index - Not used.
    * @param {ExpenseCategoryItem} item - Array's item.
    *
    * @returns {string}
    * @public
    */
-  public expenseCategoriesTrackByFn(_: number, item: ExpenseCategoryItem): string {
+  public expenseCategoriesTrackByFn(_index: number, item: ExpenseCategoryItem): string {
     return item.value;
   }
 }

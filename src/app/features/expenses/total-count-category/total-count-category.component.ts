@@ -13,14 +13,38 @@ import { type TotalExpensesCountItem } from './total-count-category.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TotalCountCategoryComponent {
-  public totalExpenses: Array<TotalExpensesCountItem> = [
+  // Will be fetched from Supabase.
+  public totalExpensesData: Array<TotalExpensesCountItem> = [
     {
       id: 0,
       type: CategoryType.FOOD,
-      count: 23,
-      icon: '',
+      count: 12,
+    },
+    {
+      id: 1,
+      type: CategoryType.GADGETS,
+      count: 34,
+    },
+    {
+      id: 2,
+      type: CategoryType.CLOTHING,
+      count: 56,
+    },
+    {
+      id: 3,
+      type: CategoryType.HOME,
+      count: 78,
     },
   ];
+
+  /**
+   * @summary - Count of all expenses.
+   *
+   * @type number
+   *
+   * @public
+   */
+  public totalExpensesCount: number = 0;
 
   /**
    * @summary - Icon registry service.
@@ -45,14 +69,44 @@ export class TotalCountCategoryComponent {
    * @public
    */
   public readonly icons: Record<string, string> = {
-    'iconName': 'icon-name',
+    [CategoryType.FOOD]: 'utensils',
+    [CategoryType.GADGETS]: 'mobile-screen-button',
+    [CategoryType.CLOTHING]: 'shirt',
+    [CategoryType.HOME]: 'house',
   };
 
   constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
 
+    this.calculateTotalExpenses();
+
     this._initIconRegistry();
+  }
+
+  /**
+   * @summary - Track by function used for totalExpenses data.
+   *
+   * @param {number} _index - Not used.
+   * @param {TotalExpensesCountItem} item - Current iterable item.
+   *
+   * @public
+   * @returs {number}
+   */
+  public trackByFnTotalExpenses(_index: number, item: TotalExpensesCountItem): number {
+    return item.id;
+  }
+
+  /**
+   * @summary - A count of all expenses from data.
+   *
+   * @public
+   * @returns {void}
+   */
+  public calculateTotalExpenses(): void {
+    this.totalExpensesCount = this.totalExpensesData
+      .map(item => item.count)
+      .reduce((total, currentIteration) => total + currentIteration, 0);
   }
 
   /**
