@@ -4,9 +4,16 @@ import { CommonModule } from '@angular/common';
 import { ExpensesRoutingModule } from './expenses-routing.module';
 import { ExpensesComponent } from './expenses.component';
 import { TrackerTableModule } from './tracker-table/tracker-table.module';
+import { TotalMonthlyExpensesModule } from './total-monthly-expenses/total-monthly-expenses.module';
 
 @NgModule({
   declarations: [ExpensesComponent],
-  imports: [CommonModule, ExpensesRoutingModule, TrackerTableModule],
+  imports: [
+    CommonModule,
+    //
+    ExpensesRoutingModule,
+    TrackerTableModule,
+    TotalMonthlyExpensesModule,
+  ],
 })
 export class ExpensesModule {}
