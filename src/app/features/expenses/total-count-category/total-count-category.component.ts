@@ -1,32 +1,27 @@
-# Icon registry implementation
-
-```typescript
-// some.module.ts
-
-import { NgModule } from '@angular/core';
-
-import { AppIconModule } from '@shared/components/icon/icon.module';
-
-@NgModule({
-  declarations: [SomeComponent],
-  imports: [AppIconModule],
-  exports: [SomeComponent],
-})
-export class SomeModule {}
-```
-
-```typescript
-// some.component.ts
-
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
+import { CategoryType } from '@shared/models/enums';
+
+import { type TotalExpensesCountItem } from './total-count-category.model';
 
 @Component({
-  // ...
+  selector: 'app-total-count-category',
+  templateUrl: './total-count-category.component.html',
+  styleUrls: ['./total-count-category.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SomeComponent {
+export class TotalCountCategoryComponent {
+  public totalExpenses: Array<TotalExpensesCountItem> = [
+    {
+      id: 0,
+      type: CategoryType.FOOD,
+      count: 23,
+      icon: '',
+    },
+  ];
+
   /**
    * @summary - Icon registry service.
    *
@@ -77,10 +72,3 @@ export class SomeComponent {
     });
   }
 }
-```
-
-```angular2html
-<!-- some.component.html -->
-
-<app-icon [svgIcon]="icons.someComponent"/>
-```
