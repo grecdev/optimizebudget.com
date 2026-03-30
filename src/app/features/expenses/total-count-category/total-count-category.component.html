@@ -1,20 +1,5 @@
 <app-widget-box>
-  <h4 app-widget-box-title>Total expenses (123)</h4>
+  <h4 app-widget-box-title>Total expenses ({{ totalExpensesCount }})</h4>
 
-  <div class="category-container">
-    <div
-      [class]="['category-item', 'category-item--' + item.type]"
-      *ngFor="let item of totalExpensesData; trackBy: trackByFnTotalExpenses"
-    >
-      <div class="category-item__name">
-        <app-icon [svgIcon]="icons[item.type]" />
-        &nbsp;
-        <p class="category-item__type">{{ item.type }}:</p>
-      </div>
-      &nbsp;
-      <p class="category-item__value">
-        {{ item.count }}
-      </p>
-    </div>
-  </div>
+  <canvas id="bar-chart" #barChart>Your device doesn't support canvas element.</canvas>
 </app-widget-box>

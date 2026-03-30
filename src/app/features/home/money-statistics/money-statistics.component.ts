@@ -1,4 +1,4 @@
-import { type AfterViewInit, Component, type ElementRef, OnInit, ViewChild } from '@angular/core';
+import { type AfterViewInit, Component, type ElementRef, ViewChild } from '@angular/core';
 
 import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
 
@@ -178,10 +178,8 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    * @type {ElementRef<HTMLCanvasElement> | null}
    * @public
    */
-  @ViewChild('lineChart') public canvasElement: ElementRef<HTMLCanvasElement> | null = null;
-
-  constructor(...args: Array<unknown>);
-  constructor() {}
+  @ViewChild('lineChart') public canvasElement: ElementRef<HTMLCanvasElement> | null =
+    null;
 
   /**
    * @summary - Render initial canvas element, with basic configuration.
@@ -258,7 +256,8 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       this._canvasContext.font = this._canvasStyle.font;
       this._canvasContext.fillText(FORMATTED_ITEM, -999, -999);
 
-      const ITEM_WIDTH_AFTER_RENDER = this._canvasContext.measureText(FORMATTED_ITEM).width;
+      const ITEM_WIDTH_AFTER_RENDER =
+        this._canvasContext.measureText(FORMATTED_ITEM).width;
 
       TEXT_SIZES.push(ITEM_WIDTH_AFTER_RENDER);
     }
@@ -275,7 +274,11 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       this._canvasContext.fillStyle = '#000';
       this._canvasContext.textAlign = 'right';
       this._canvasContext.textBaseline = 'middle';
-      this._canvasContext.fillText(FORMATTED_ITEM, this._startingPositionX, Math.abs(POSITION_Y));
+      this._canvasContext.fillText(
+        FORMATTED_ITEM,
+        this._startingPositionX,
+        Math.abs(POSITION_Y)
+      );
     }
 
     this._renderBackgroundLines(DATA_LENGTH, ROW_WIDTH, CANVAS_ELEMENT.width);
@@ -301,8 +304,14 @@ export class MoneyStatisticsComponent implements AfterViewInit {
 
     const graphConfiguration = this._getGraphConfiguration();
 
-    const { DATA_SOURCE, PADDING_X, RENDERING_AREA_X, DATA_LENGTH, AREA_Y_WIDTH, COLUMN_WIDTH } =
-      graphConfiguration;
+    const {
+      DATA_SOURCE,
+      PADDING_X,
+      RENDERING_AREA_X,
+      DATA_LENGTH,
+      AREA_Y_WIDTH,
+      COLUMN_WIDTH,
+    } = graphConfiguration;
 
     const TEXT_SIZES: Array<number> = DATA_SOURCE.map(
       item => canvasContext.measureText(item).width + PADDING_X
@@ -321,7 +330,11 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       canvasContext.textAlign = 'center';
       canvasContext.textBaseline = 'bottom';
 
-      canvasContext.fillText(ITEM, i % STEP === 0 ? POSITION_X : -999, CANVAS_ELEMENT.height);
+      canvasContext.fillText(
+        ITEM,
+        i % STEP === 0 ? POSITION_X : -999,
+        CANVAS_ELEMENT.height
+      );
     }
   }
 
@@ -335,7 +348,11 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    * @private
    * @returns {void}
    */
-  private _renderBackgroundLines(dataLength: number, rowWidth: number, canvasWidth: number): void {
+  private _renderBackgroundLines(
+    dataLength: number,
+    rowWidth: number,
+    canvasWidth: number
+  ): void {
     if (!this._canvasContext) {
       throw Error('Canvas context not found!');
     }
@@ -345,7 +362,10 @@ export class MoneyStatisticsComponent implements AfterViewInit {
 
       this._canvasContext.beginPath();
 
-      this._canvasContext.moveTo(this._startingPositionX + this._canvasStyle.spacing, POSITION_Y);
+      this._canvasContext.moveTo(
+        this._startingPositionX + this._canvasStyle.spacing,
+        POSITION_Y
+      );
       this._canvasContext.lineTo(canvasWidth, POSITION_Y);
       this._canvasContext.strokeStyle = '#c9c9c9';
       this._canvasContext.lineWidth = 1;
@@ -449,7 +469,9 @@ export class MoneyStatisticsComponent implements AfterViewInit {
     }
 
     const DATA_SOURCE = this._dataSource.xAxis.data;
-    const ALL_VALUES = this._dataSource.series.map(item => item[DataSourceItemKey.VALUE]).flat();
+    const ALL_VALUES = this._dataSource.series
+      .map(item => item[DataSourceItemKey.VALUE])
+      .flat();
     const DATA_LENGTH = ALL_VALUES.length;
     const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
 
@@ -486,7 +508,8 @@ export class MoneyStatisticsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
-    const CANVAS_CONTEXT = CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
+    const CANVAS_CONTEXT =
+      CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
 
     if (!CANVAS_ELEMENT || !CANVAS_CONTEXT) {
       throw Error('Canvas element not queried!');

@@ -1,9 +1,51 @@
 import { CategoryType } from '@shared/models/enums';
 
-interface TotalExpensesCountItem {
-  id: number;
-  count: number;
-  type: CategoryType;
+enum DataSourceItemKey {
+  ID = 'ID',
+  NAME = 'NAME',
+  VALUE = 'VALUE',
 }
 
-export type { TotalExpensesCountItem };
+interface DataSourceItem {
+  [DataSourceItemKey.ID]: number;
+  [DataSourceItemKey.NAME]: CategoryType;
+  [DataSourceItemKey.VALUE]: Array<number>;
+}
+
+interface DataSourceOptions {
+  xAxis: {
+    data: Array<string>;
+  };
+  series: Array<DataSourceItem>;
+}
+
+interface GraphConfiguration {
+  DATA_SOURCE: Array<string>;
+  ALL_VALUES: Array<number>;
+  DATA_LENGTH: number;
+  MAXIMUM_VALUE: number;
+  RENDERING_AREA_X: number;
+  RENDERING_AREA_Y: number;
+  AREA_Y_WIDTH: number;
+  COLUMN_WIDTH: number;
+  PADDING_X: number;
+  FULL_PERCENT: number;
+  ARC_RADIUS: number;
+  START_ANGLE: number;
+  END_ANGLE: number;
+}
+
+interface RenderBackgroundLinesOptions {
+  dataLength: number;
+  rowWidth: number;
+  canvasWidth: number;
+}
+
+export type {
+  DataSourceItem,
+  DataSourceOptions,
+  GraphConfiguration,
+  RenderBackgroundLinesOptions,
+};
+
+export { DataSourceItemKey };
