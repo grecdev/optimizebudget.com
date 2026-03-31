@@ -177,7 +177,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const COLUMN_WIDTH_X = RENDERING_AREA_X / (X_AXIS_DATA.length - 1);
 
     const RENDERING_AREA_Y =
-      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
+      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 3 - this._canvasStyle.fontSize;
 
     const PADDING_X = this._canvasStyle.spacing * 2;
 
@@ -372,8 +372,8 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       canvasContext.moveTo(AREA_Y_WIDTH - this._canvasStyle.spacing, POSITION_Y);
 
       canvasContext.lineTo(RENDERING_AREA_X + AREA_Y_WIDTH, POSITION_Y);
-      canvasContext.strokeStyle = '#c9c9c9';
-      canvasContext.lineWidth = 1;
+      canvasContext.strokeStyle = '#b3b3b3';
+      canvasContext.lineWidth = 0.5;
       canvasContext.stroke();
 
       canvasContext.closePath();
@@ -387,9 +387,13 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
       canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
 
-      canvasContext.lineTo(POSITION_X, RENDERING_AREA_Y + this._canvasStyle.spacing);
-      canvasContext.strokeStyle = '#c9c9c9';
-      canvasContext.lineWidth = 1;
+      canvasContext.lineTo(
+        POSITION_X,
+        CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2
+      );
+
+      canvasContext.strokeStyle = '#b3b3b3';
+      canvasContext.lineWidth = 0.5;
       canvasContext.stroke();
 
       canvasContext.closePath();
