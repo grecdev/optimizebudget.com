@@ -169,7 +169,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const DATA_SOURCE_SERIES_LENGTH = ALL_SERIES_DATA_SOURCE.length;
     const MAXIMUM_VALUE = Math.max(...ALL_SERIES_DATA_SOURCE);
 
-    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
+    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing * 2;
 
     const RENDERING_AREA_X =
       CANVAS_ELEMENT.width - AREA_Y_WIDTH - LAST_ITEM_MEASURE.width / 2;
@@ -292,7 +292,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
       this._canvasContext.font = this._canvasStyle.font;
       this._canvasContext.fillStyle = '#000';
-      this._canvasContext.textAlign = 'center';
+      this._canvasContext.textAlign = 'right';
       this._canvasContext.textBaseline = 'middle';
 
       this._canvasContext.fillText(
@@ -366,11 +366,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     // Rows
     for (let i = 0; i < niceNumbers.length; i++) {
       const POSITION_Y = ROW_HEIGHT * i + this._canvasStyle.spacing;
-      const POSITION_X = this._startingPositionX + this._canvasStyle.spacing;
 
       canvasContext.beginPath();
 
-      canvasContext.moveTo(POSITION_X, POSITION_Y);
+      canvasContext.moveTo(AREA_Y_WIDTH - this._canvasStyle.spacing, POSITION_Y);
 
       canvasContext.lineTo(RENDERING_AREA_X + AREA_Y_WIDTH, POSITION_Y);
       canvasContext.strokeStyle = '#c9c9c9';
