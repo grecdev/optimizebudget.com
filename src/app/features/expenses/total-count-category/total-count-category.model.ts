@@ -20,32 +20,23 @@ interface DataSourceOptions {
 }
 
 interface GraphConfiguration {
-  DATA_SOURCE: Array<string>;
-  ALL_VALUES: Array<number>;
-  DATA_LENGTH: number;
+  X_AXIS_DATA: Array<string>;
+  ALL_SERIES_DATA_SOURCE: Array<number>;
+  DATA_SOURCE_SERIES_LENGTH: number;
   MAXIMUM_VALUE: number;
   RENDERING_AREA_X: number;
   RENDERING_AREA_Y: number;
   AREA_Y_WIDTH: number;
-  COLUMN_WIDTH: number;
+  COLUMN_WIDTH_X: number;
   PADDING_X: number;
   FULL_PERCENT: number;
   ARC_RADIUS: number;
   START_ANGLE: number;
   END_ANGLE: number;
+  ROW_HEIGHT: number;
+  niceNumbers: Array<number>;
 }
 
-interface RenderBackgroundLinesOptions {
-  dataLength: number;
-  rowWidth: number;
-  canvasWidth: number;
-}
-
-export type {
-  DataSourceItem,
-  DataSourceOptions,
-  GraphConfiguration,
-  RenderBackgroundLinesOptions,
-};
+export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
 
 export { DataSourceItemKey };

@@ -13,7 +13,6 @@ import {
   DataSourceItemKey,
   type DataSourceOptions,
   type GraphConfiguration,
-  type RenderBackgroundLinesOptions,
 } from './total-count-category.model';
 
 @Component({
@@ -78,28 +77,28 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    */
   private _dataSource: DataSourceOptions = {
     xAxis: {
-      data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      data: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
     },
     series: [
       {
         [DataSourceItemKey.ID]: 0,
         [DataSourceItemKey.NAME]: CategoryType.FOOD,
-        [DataSourceItemKey.VALUE]: [12],
+        [DataSourceItemKey.VALUE]: [12, 0, 0, 0],
       },
       {
         [DataSourceItemKey.ID]: 1,
         [DataSourceItemKey.NAME]: CategoryType.GADGETS,
-        [DataSourceItemKey.VALUE]: [34],
+        [DataSourceItemKey.VALUE]: [34, 0, 0, 0],
       },
       {
         [DataSourceItemKey.ID]: 2,
         [DataSourceItemKey.NAME]: CategoryType.CLOTHING,
-        [DataSourceItemKey.VALUE]: [56],
+        [DataSourceItemKey.VALUE]: [56, 0, 0, 0],
       },
       {
         [DataSourceItemKey.ID]: 3,
         [DataSourceItemKey.NAME]: CategoryType.HOME,
-        [DataSourceItemKey.VALUE]: [78],
+        [DataSourceItemKey.VALUE]: [78, 123, 0, 0],
       },
     ],
   };
@@ -112,19 +111,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    * @private
    */
   private _startingPositionX: number = 0;
-
-  /**
-   * @summary - Icons state.
-   *
-   * @type {Record<string, string>}
-   * @public
-   */
-  public readonly icons: Record<string, string> = {
-    [CategoryType.FOOD]: 'utensils',
-    [CategoryType.GADGETS]: 'mobile-screen-button',
-    [CategoryType.CLOTHING]: 'shirt',
-    [CategoryType.HOME]: 'house',
-  };
 
   /**
    * @summary - Count of all expenses.
@@ -171,18 +157,24 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const DATA_SOURCE = this._dataSource.xAxis.data;
+    const X_AXIS_DATA = this._dataSource.xAxis.data;
 
-    const ALL_VALUES = this._dataSource.series
+    const LAST_ITEM = X_AXIS_DATA[X_AXIS_DATA.length - 1];
+    const LAST_ITEM_MEASURE = this._canvasContext.measureText(LAST_ITEM);
+
+    const ALL_SERIES_DATA_SOURCE = this._dataSource.series
       .map(item => item[DataSourceItemKey.VALUE])
       .flat();
 
-    const DATA_LENGTH = ALL_VALUES.length;
-    const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
+    const DATA_SOURCE_SERIES_LENGTH = ALL_SERIES_DATA_SOURCE.length;
+    const MAXIMUM_VALUE = Math.max(...ALL_SERIES_DATA_SOURCE);
 
     const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
-    const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y_WIDTH;
-    const COLUMN_WIDTH = RENDERING_AREA_X / DATA_SOURCE.length;
+
+    const RENDERING_AREA_X =
+      CANVAS_ELEMENT.width - AREA_Y_WIDTH - LAST_ITEM_MEASURE.width / 2;
+
+    const COLUMN_WIDTH_X = RENDERING_AREA_X / (X_AXIS_DATA.length - 1);
 
     const RENDERING_AREA_Y =
       CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
@@ -194,22 +186,30 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const START_ANGLE = 0;
     const END_ANGLE = Math.PI * 2; // 360° means a complete circle
 
-    return {
-      DATA_SOURCE,
-      ALL_VALUES,
-      DATA_LENGTH,
-      MAXIMUM_VALUE,
+    let niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE);
 
+    if (niceNumbers.length > DEFAULT_TICKS) {
+      niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE, DEFAULT_TICKS / 2);
+    }
+
+    const ROW_HEIGHT = RENDERING_AREA_Y / (niceNumbers.length - 1);
+
+    return {
+      X_AXIS_DATA,
+      ALL_SERIES_DATA_SOURCE,
+      DATA_SOURCE_SERIES_LENGTH,
+      MAXIMUM_VALUE,
       RENDERING_AREA_X,
       RENDERING_AREA_Y,
       AREA_Y_WIDTH,
-      COLUMN_WIDTH,
+      COLUMN_WIDTH_X,
       PADDING_X,
-
       FULL_PERCENT,
       ARC_RADIUS,
       START_ANGLE,
       END_ANGLE,
+      ROW_HEIGHT,
+      niceNumbers,
     };
   }
 
@@ -259,30 +259,18 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     const graphConfiguration = this._getGraphConfiguration();
 
-    const { MAXIMUM_VALUE, RENDERING_AREA_Y } = graphConfiguration;
-
-    let niceNumberValues = generateNiceNumbersArray(0, MAXIMUM_VALUE);
-
-    if (niceNumberValues.length > DEFAULT_TICKS) {
-      niceNumberValues = generateNiceNumbersArray(0, MAXIMUM_VALUE, DEFAULT_TICKS / 2);
-    }
+    const { niceNumbers, ROW_HEIGHT } = graphConfiguration;
 
     // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
-    niceNumberValues.reverse();
+    niceNumbers.reverse();
 
-    const formatNumber = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    const DATA_LENGTH = niceNumberValues.length;
+    const formatNumber = new Intl.NumberFormat('en-US');
 
     const TEXT_SIZES = [];
-    const ROW_WIDTH = RENDERING_AREA_Y / (DATA_LENGTH - 1);
 
     // Invisible text
-    for (let i = 0; i < DATA_LENGTH; i++) {
-      const ITEM = niceNumberValues[i];
+    for (let i = 0; i < niceNumbers.length; i++) {
+      const ITEM = niceNumbers[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
 
       this._canvasContext.font = this._canvasStyle.font;
@@ -297,27 +285,22 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._startingPositionX = Math.max(...TEXT_SIZES);
 
     // Visible text
-    for (let i = 0; i < DATA_LENGTH; i++) {
-      const ITEM = niceNumberValues[i];
+    for (let i = 0; i < niceNumbers.length; i++) {
+      const ITEM = niceNumbers[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
-      const POSITION_Y = ROW_WIDTH * i + this._canvasStyle.spacing;
+      const POSITION_Y = ROW_HEIGHT * i + this._canvasStyle.spacing;
 
       this._canvasContext.font = this._canvasStyle.font;
       this._canvasContext.fillStyle = '#000';
-      this._canvasContext.textAlign = 'right';
+      this._canvasContext.textAlign = 'center';
       this._canvasContext.textBaseline = 'middle';
+
       this._canvasContext.fillText(
         FORMATTED_ITEM,
         this._startingPositionX,
         Math.abs(POSITION_Y)
       );
     }
-
-    this._renderBackgroundLines({
-      rowWidth: ROW_WIDTH,
-      canvasWidth: CANVAS_ELEMENT.width,
-      dataLength: DATA_LENGTH,
-    });
   }
 
   /**
@@ -340,72 +323,77 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     const graphConfiguration = this._getGraphConfiguration();
 
-    const {
-      DATA_SOURCE,
-      PADDING_X,
-      RENDERING_AREA_X,
-      DATA_LENGTH,
-      AREA_Y_WIDTH,
-      COLUMN_WIDTH,
-    } = graphConfiguration;
+    const { X_AXIS_DATA, AREA_Y_WIDTH, COLUMN_WIDTH_X } = graphConfiguration;
 
-    const TEXT_SIZES: Array<number> = DATA_SOURCE.map(
-      item => canvasContext.measureText(item).width + PADDING_X
-    );
-
-    const MAXIMUM_TEXT_SIZE = Math.max(...TEXT_SIZES.map(item => item));
-    const MAX_LABELS = Math.floor(RENDERING_AREA_X / MAXIMUM_TEXT_SIZE);
-    const STEP = Math.ceil(DATA_LENGTH / MAX_LABELS);
-
-    for (let i = 0; i < DATA_SOURCE.length; i++) {
-      const ITEM = DATA_SOURCE[i];
-      const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
+    for (let i = 0; i < X_AXIS_DATA.length; i++) {
+      const ITEM = X_AXIS_DATA[i];
+      const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH_X;
 
       canvasContext.font = this._canvasStyle.font;
       canvasContext.fillStyle = '#000';
       canvasContext.textAlign = 'center';
       canvasContext.textBaseline = 'bottom';
 
-      canvasContext.fillText(
-        ITEM,
-        i % STEP === 0 ? POSITION_X : -999,
-        CANVAS_ELEMENT.height
-      );
+      canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
     }
   }
 
   /**
    * @summary - Render lines that are aligned with the legend on y-axis.
    *
-   * @param {RenderBackgroundLinesOptions['dataLength']} options.dataLength - Total items rendered
-   * @param {RenderBackgroundLinesOptions['rowWidth']} options.rowWidth - Row width between ticks
-   * @param {RenderBackgroundLinesOptions['canvasWidth']} options.canvasWidth - Canvas element width
-   *
    * @private
    * @returns {void}
    */
-  private _renderBackgroundLines(options: RenderBackgroundLinesOptions): void {
-    if (!this._canvasContext) {
+  private _renderBackgroundLines(): void {
+    const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
+
+    const canvasContext = this._canvasContext;
+
+    if (!canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
 
-    const { canvasWidth, rowWidth, dataLength } = options;
+    const {
+      niceNumbers,
+      ROW_HEIGHT,
+      RENDERING_AREA_X,
+      RENDERING_AREA_Y,
+      AREA_Y_WIDTH,
+      X_AXIS_DATA,
+      COLUMN_WIDTH_X,
+    } = this._getGraphConfiguration();
 
-    for (let i = 0; i < dataLength; i++) {
-      const POSITION_Y = rowWidth * i + this._canvasStyle.spacing;
+    // Rows
+    for (let i = 0; i < niceNumbers.length; i++) {
+      const POSITION_Y = ROW_HEIGHT * i + this._canvasStyle.spacing;
+      const POSITION_X = this._startingPositionX + this._canvasStyle.spacing;
 
-      this._canvasContext.beginPath();
+      canvasContext.beginPath();
 
-      this._canvasContext.moveTo(
-        this._startingPositionX + this._canvasStyle.spacing,
-        POSITION_Y
-      );
-      this._canvasContext.lineTo(canvasWidth, POSITION_Y);
-      this._canvasContext.strokeStyle = '#c9c9c9';
-      this._canvasContext.lineWidth = 1;
-      this._canvasContext.stroke();
+      canvasContext.moveTo(POSITION_X, POSITION_Y);
 
-      this._canvasContext.closePath();
+      canvasContext.lineTo(RENDERING_AREA_X + AREA_Y_WIDTH, POSITION_Y);
+      canvasContext.strokeStyle = '#c9c9c9';
+      canvasContext.lineWidth = 1;
+      canvasContext.stroke();
+
+      canvasContext.closePath();
+    }
+
+    // Columns
+    for (let i = 0; i < X_AXIS_DATA.length; i++) {
+      const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH_X;
+
+      canvasContext.beginPath();
+
+      canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
+
+      canvasContext.lineTo(POSITION_X, RENDERING_AREA_Y + this._canvasStyle.spacing);
+      canvasContext.strokeStyle = '#c9c9c9';
+      canvasContext.lineWidth = 1;
+      canvasContext.stroke();
+
+      canvasContext.closePath();
     }
   }
 
@@ -426,12 +414,12 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     const {
       ARC_RADIUS,
-      DATA_LENGTH,
-      ALL_VALUES,
+      DATA_SOURCE_SERIES_LENGTH,
+      ALL_SERIES_DATA_SOURCE,
       MAXIMUM_VALUE,
       FULL_PERCENT,
       AREA_Y_WIDTH,
-      COLUMN_WIDTH,
+      COLUMN_WIDTH_X,
       RENDERING_AREA_Y,
       START_ANGLE,
       END_ANGLE,
@@ -440,20 +428,21 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._canvasContext.strokeStyle = '#008000';
     this._canvasContext.lineWidth = ARC_RADIUS / 2;
 
-    for (let i = 0; i < DATA_LENGTH; i++) {
-      const CURRENT_VALUE = ALL_VALUES[i];
+    for (let i = 0; i < DATA_SOURCE_SERIES_LENGTH; i++) {
+      const CURRENT_VALUE = ALL_SERIES_DATA_SOURCE[i];
       const CURRENT_PERCENT = (CURRENT_VALUE / MAXIMUM_VALUE) * FULL_PERCENT;
 
-      const CURRENT_POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
+      const CURRENT_POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH_X + COLUMN_WIDTH_X / 2;
       const CURRENT_POSITION_Y =
         RENDERING_AREA_Y -
         (CURRENT_PERCENT / FULL_PERCENT) * RENDERING_AREA_Y +
         this._canvasStyle.fontSize;
 
       // lines
-      const NEXT_VALUE = ALL_VALUES[i + 1];
+      const NEXT_VALUE = ALL_SERIES_DATA_SOURCE[i + 1];
       const NEXT_PERCENT = (NEXT_VALUE / MAXIMUM_VALUE) * FULL_PERCENT;
-      const NEXT_POSITION_X = AREA_Y_WIDTH + (i + 1) * COLUMN_WIDTH + COLUMN_WIDTH / 2;
+      const NEXT_POSITION_X =
+        AREA_Y_WIDTH + (i + 1) * COLUMN_WIDTH_X + COLUMN_WIDTH_X / 2;
 
       const NEXT_POSITION_Y =
         RENDERING_AREA_Y -
@@ -503,5 +492,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._renderLegendY();
     this._renderLegendX();
     this._renderDataGraph();
+    this._renderBackgroundLines();
   }
 }
