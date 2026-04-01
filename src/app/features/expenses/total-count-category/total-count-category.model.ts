@@ -20,21 +20,13 @@ interface DataSourceOptions {
 }
 
 interface GraphConfiguration {
-  X_AXIS_DATA: Array<string>;
-  ALL_SERIES_DATA_SOURCE: Array<number>;
-  DATA_SOURCE_SERIES_LENGTH: number;
-  MAXIMUM_VALUE: number;
-  RENDERING_AREA_X: number;
-  RENDERING_AREA_Y: number;
-  AREA_Y_WIDTH: number;
-  COLUMN_WIDTH_X: number;
-  PADDING_X: number;
-  FULL_PERCENT: number;
-  ARC_RADIUS: number;
-  START_ANGLE: number;
-  END_ANGLE: number;
-  ROW_HEIGHT: number;
+  axisDataX: Array<string>;
+  renderingAreaX: number;
+  areaWidthY: number;
+  columnWidthX: number;
+  rowHeight: number;
   niceNumbers: Array<number>;
+  startingPositionX: number;
 }
 
 export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
