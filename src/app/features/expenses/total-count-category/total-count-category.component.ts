@@ -71,7 +71,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     height: 350,
     spacing: 16,
     fontSize: 16,
-    font: "1rem 'Roboto', sans-serif",
+    font: "normal 400 1rem/1.25 'Roboto', sans-serif",
   };
 
   /**
@@ -108,7 +108,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    */
   private _dataSource: DataSourceOptions = {
     xAxis: {
-      data: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+      data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
     },
     series: [
       {
@@ -207,7 +207,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const RENDERING_AREA_X =
       CANVAS_ELEMENT.width - AREA_Y_WIDTH - LAST_ITEM_MEASURE.width / 2;
 
-    const COLUMN_WIDTH_X = RENDERING_AREA_X / (X_AXIS_DATA.length - 1);
+    const COLUMN_WIDTH_X = RENDERING_AREA_X / X_AXIS_DATA.length;
 
     const RENDERING_AREA_Y =
       CANVAS_ELEMENT.height - this._canvasStyle.spacing * 3 - this._canvasStyle.fontSize;
@@ -254,8 +254,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     this._canvasContext.font = this._canvasStyle.font;
     this._canvasContext.fillStyle = '#000';
-    this._canvasContext.textAlign = 'right';
-    this._canvasContext.textBaseline = 'middle';
   }
 
   /**
@@ -276,6 +274,9 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
     this._graphConfiguration.niceNumbers.reverse();
+
+    this._canvasContext.textAlign = 'right';
+    this._canvasContext.textBaseline = 'middle';
 
     for (let i = 0; i < this._graphConfiguration.niceNumbers.length; i++) {
       const ITEM = this._graphConfiguration.niceNumbers[i];
@@ -304,24 +305,23 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   private _renderLegendX(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
-    const canvasContext = this._canvasContext;
-
-    if (!canvasContext || !CANVAS_ELEMENT) {
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
+
+    this._canvasContext.textAlign = 'center';
+    this._canvasContext.textBaseline = 'bottom';
 
     for (let i = 0; i < this._graphConfiguration.axisDataX.length; i++) {
       const ITEM = this._graphConfiguration.axisDataX[i];
 
+      // Center the labels in the middle of the column.
       const POSITION_X =
-        this._graphConfiguration.areaWidthY + i * this._graphConfiguration.columnWidthX;
+        this._graphConfiguration.areaWidthY +
+        this._graphConfiguration.columnWidthX / 2 +
+        i * this._graphConfiguration.columnWidthX;
 
-      canvasContext.font = this._canvasStyle.font;
-      canvasContext.fillStyle = '#000';
-      canvasContext.textAlign = 'center';
-      canvasContext.textBaseline = 'bottom';
-
-      canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
+      this._canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
     }
   }
 
@@ -340,7 +340,11 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    // Rows
+    const EXTRA_COLUMN_LINES = 1; // I need to add an extra line at the end of the graph.
+    const STROKE_STYLE = '#b3b3b3';
+    const LINE_WIDTH = 0.5;
+
+    // X-axis lines
     for (let i = 0; i < this._graphConfiguration.niceNumbers.length; i++) {
       const POSITION_Y =
         this._graphConfiguration.rowHeight * i + this._canvasStyle.spacing;
@@ -357,15 +361,19 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         POSITION_Y
       );
 
-      canvasContext.strokeStyle = '#b3b3b3';
-      canvasContext.lineWidth = 0.5;
-      canvasContext.stroke();
+      canvasContext.strokeStyle = STROKE_STYLE;
+      canvasContext.lineWidth = LINE_WIDTH;
 
+      canvasContext.stroke();
       canvasContext.closePath();
     }
 
-    // Columns
-    for (let i = 0; i < this._graphConfiguration.axisDataX.length; i++) {
+    // Y-axis lines
+    for (
+      let i = 0;
+      i < this._graphConfiguration.axisDataX.length + EXTRA_COLUMN_LINES;
+      i++
+    ) {
       const POSITION_X =
         this._graphConfiguration.areaWidthY + i * this._graphConfiguration.columnWidthX;
 
@@ -378,10 +386,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2
       );
 
-      canvasContext.strokeStyle = '#b3b3b3';
-      canvasContext.lineWidth = 0.5;
-      canvasContext.stroke();
+      canvasContext.strokeStyle = STROKE_STYLE;
+      canvasContext.lineWidth = LINE_WIDTH;
 
+      canvasContext.stroke();
       canvasContext.closePath();
     }
   }
@@ -399,6 +407,12 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     if (!canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
+    }
+
+    for (let i = 0; i < this._graphConfiguration.axisDataX.length; i++) {
+      const ITEM = this._graphConfiguration.axisDataX[i];
+
+      console.log(ITEM);
     }
   }
 
