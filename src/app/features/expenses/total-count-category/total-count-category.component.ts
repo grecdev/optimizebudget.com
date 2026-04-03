@@ -435,8 +435,11 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         columnIndex < this._dataSource.xAxis.data.length;
         columnIndex++
       ) {
-        // const COLUMN_ITEM = this._dataSource.xAxis.data[columnIndex];
-        // const CORRESPONDING_VALUE = SERIES_ITEM[DataSourceItemKey.VALUE][columnIndex];
+        const CORRESPONDING_VALUE = SERIES_ITEM[DataSourceItemKey.VALUE][columnIndex];
+        const CORRESPONDING_VALUE_FRACTION = CORRESPONDING_VALUE / MAXIMUM_VALUE;
+
+        const THRESHOLD_POSITION_Y =
+          this._graphConfiguration.renderingAreaY * CORRESPONDING_VALUE_FRACTION;
 
         let positionX = COLUMN_START_POSITION;
 
@@ -446,15 +449,18 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         // Doing this because we need to position the bars in their corresponding columns
         positionX += this._graphConfiguration.columnWidthX * columnIndex;
 
+        const POSITION_Y =
+          this._graphConfiguration.renderingAreaY + this._canvasStyle.spacing;
+
         this._canvasContext.beginPath();
 
         this._canvasContext.fillStyle = SERIES_ITEM[DataSourceItemKey.COLOR];
 
         this._canvasContext.fillRect(
           positionX,
-          this._canvasStyle.spacing,
+          POSITION_Y,
           BAR_WIDTH_PX,
-          this._graphConfiguration.renderingAreaY
+          -THRESHOLD_POSITION_Y
         );
 
         this._canvasContext.closePath();
