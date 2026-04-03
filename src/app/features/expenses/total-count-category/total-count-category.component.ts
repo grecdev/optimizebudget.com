@@ -406,22 +406,9 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     }
 
     const MAXIMUM_VALUE = this._graphConfiguration.maximumValue;
-
-    const SPACING_LEFT = this._canvasStyle.spacing;
-    const SPACING_RIGHT = this._canvasStyle.spacing;
-    const SPACING_BETWEEN_ELEMENTS = this._canvasStyle.spacing;
-
-    /**
-     * 1. Remove the spacing on left and right from the column's width in order to have "padding" on our column.
-     * 2. Then remove the SPACING_BETWEEN_ELEMENTS from the column's width in order to have "margin" between the elements.
-     */
-    const COLUMN_AVAILABLE_WIDTH =
-      this._graphConfiguration.columnWidthX -
-      SPACING_LEFT -
-      SPACING_RIGHT -
-      SPACING_BETWEEN_ELEMENTS;
-
-    const COLUMN_START_POSITION = this._graphConfiguration.areaWidthY;
+    const SPACING = this._canvasStyle.spacing;
+    const COLUMN_START_POSITION = this._graphConfiguration.areaWidthY + SPACING;
+    const SPACING_X = SPACING * 2; // "padding" left and right
 
     // Match values with each given column
     for (
@@ -431,9 +418,17 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     ) {
       const SERIES_ITEM = this._dataSource.series[seriesIndex];
 
+      // We have one space remaining on the right side which represents "padding-right";
+      const NUMBER_OF_SPACES_BETWEEN_BARS =
+        SERIES_ITEM[DataSourceItemKey.VALUE].length - 1;
+
+      const SPACING_BETWEEN_BARS = SPACING * NUMBER_OF_SPACES_BETWEEN_BARS;
+
+      const COLUMN_AVAILABLE_WIDTH =
+        this._graphConfiguration.columnWidthX - SPACING_BETWEEN_BARS - SPACING_X;
+
       const BAR_WIDTH_PX =
-        COLUMN_AVAILABLE_WIDTH / SERIES_ITEM[DataSourceItemKey.VALUE].length -
-        SPACING_LEFT / 2;
+        COLUMN_AVAILABLE_WIDTH / SERIES_ITEM[DataSourceItemKey.VALUE].length;
 
       for (
         let columnIndex = 0;
@@ -443,10 +438,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         // const COLUMN_ITEM = this._dataSource.xAxis.data[columnIndex];
         // const CORRESPONDING_VALUE = SERIES_ITEM[DataSourceItemKey.VALUE][columnIndex];
 
-        let positionX = COLUMN_START_POSITION + SPACING_LEFT;
+        let positionX = COLUMN_START_POSITION;
 
         positionX += BAR_WIDTH_PX * seriesIndex;
-        positionX += SPACING_LEFT * seriesIndex;
+        positionX += SPACING * seriesIndex;
 
         // Doing this because we need to position the bars in their corresponding columns
         positionX += this._graphConfiguration.columnWidthX * columnIndex;
