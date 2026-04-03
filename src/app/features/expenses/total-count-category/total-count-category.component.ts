@@ -115,25 +115,25 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       {
         [DataSourceItemKey.ID]: 0,
         [DataSourceItemKey.NAME]: CategoryType.FOOD,
-        [DataSourceItemKey.VALUE]: [23, 47, 15, 62],
+        [DataSourceItemKey.VALUE]: [10, 40, 50, 100],
         [DataSourceItemKey.COLOR]: 'rgba(255, 228, 196, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 1,
         [DataSourceItemKey.NAME]: CategoryType.GADGETS,
-        [DataSourceItemKey.VALUE]: [89, 34, 71, 45],
+        [DataSourceItemKey.VALUE]: [20, 30, 60, 70],
         [DataSourceItemKey.COLOR]: 'rgba(196,239,255, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 2,
         [DataSourceItemKey.NAME]: CategoryType.CLOTHING,
-        [DataSourceItemKey.VALUE]: [56, 18, 93, 37],
+        [DataSourceItemKey.VALUE]: [30, 20, 70, 60],
         [DataSourceItemKey.COLOR]: 'rgba(223, 196, 255, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 3,
         [DataSourceItemKey.NAME]: CategoryType.HOME,
-        [DataSourceItemKey.VALUE]: [42, 76, 28, 85],
+        [DataSourceItemKey.VALUE]: [40, 10, 80, 50],
         [DataSourceItemKey.COLOR]: 'rgba(255,196,196, 0.7)',
       },
     ],
@@ -191,13 +191,19 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       .map(item => item[DataSourceItemKey.VALUE])
       .flat();
 
-    const MAXIMUM_VALUE = Math.max(...ALL_SERIES_DATA_SOURCE);
+    const MAXIMUM_VALUE_DATA_SOURCE = Math.max(...ALL_SERIES_DATA_SOURCE);
 
-    let niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE);
+    let niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE_DATA_SOURCE);
 
     if (niceNumbers.length > DEFAULT_TICKS) {
-      niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE, DEFAULT_TICKS / 2);
+      niceNumbers = generateNiceNumbersArray(
+        0,
+        MAXIMUM_VALUE_DATA_SOURCE,
+        DEFAULT_TICKS / 2
+      );
     }
+
+    const MAX_VALUE_NICE_NUMBERS = Math.max(...niceNumbers);
 
     const TEXT_SIZES = niceNumbers.map(item => {
       const FORMATTED_ITEM = this._formatNumber.format(item);
@@ -226,7 +232,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       renderingAreaY: RENDERING_AREA_Y,
       rowHeight: ROW_HEIGHT,
       startingPositionX: STARTING_POSITION_X,
-      maximumValue: MAXIMUM_VALUE,
+      maximumValue: MAX_VALUE_NICE_NUMBERS,
     };
   }
 
@@ -427,8 +433,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       const COLUMN_AVAILABLE_WIDTH =
         this._graphConfiguration.columnWidthX - SPACING_BETWEEN_BARS - SPACING_X;
 
-      const BAR_WIDTH_PX =
-        COLUMN_AVAILABLE_WIDTH / SERIES_ITEM[DataSourceItemKey.VALUE].length;
+      const BAR_WIDTH_PX = COLUMN_AVAILABLE_WIDTH / this._dataSource.xAxis.data.length;
 
       for (
         let columnIndex = 0;
