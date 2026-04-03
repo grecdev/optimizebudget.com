@@ -83,12 +83,13 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    */
   private _graphConfiguration: GraphConfiguration = {
     areaWidthY: 0,
-    axisDataX: [],
     columnWidthX: 0,
     niceNumbers: [],
     renderingAreaX: 0,
+    renderingAreaY: 0,
     rowHeight: 0,
     startingPositionX: 0,
+    maximumValue: 0,
   };
 
   /**
@@ -114,22 +115,26 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       {
         [DataSourceItemKey.ID]: 0,
         [DataSourceItemKey.NAME]: CategoryType.FOOD,
-        [DataSourceItemKey.VALUE]: [12, 0, 0, 0],
+        [DataSourceItemKey.VALUE]: [23, 47, 15, 62],
+        [DataSourceItemKey.COLOR]: 'rgba(255, 228, 196, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 1,
         [DataSourceItemKey.NAME]: CategoryType.GADGETS,
-        [DataSourceItemKey.VALUE]: [34, 0, 0, 0],
+        [DataSourceItemKey.VALUE]: [89, 34, 71, 45],
+        [DataSourceItemKey.COLOR]: 'rgba(196,239,255, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 2,
         [DataSourceItemKey.NAME]: CategoryType.CLOTHING,
-        [DataSourceItemKey.VALUE]: [56, 0, 0, 0],
+        [DataSourceItemKey.VALUE]: [56, 18, 93, 37],
+        [DataSourceItemKey.COLOR]: 'rgba(223, 196, 255, 0.7)',
       },
       {
         [DataSourceItemKey.ID]: 3,
         [DataSourceItemKey.NAME]: CategoryType.HOME,
-        [DataSourceItemKey.VALUE]: [78, 123, 0, 0],
+        [DataSourceItemKey.VALUE]: [42, 76, 28, 85],
+        [DataSourceItemKey.COLOR]: 'rgba(255,196,196, 0.7)',
       },
     ],
   };
@@ -179,8 +184,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const X_AXIS_DATA = this._dataSource.xAxis.data;
-    const LAST_ITEM = X_AXIS_DATA[X_AXIS_DATA.length - 1];
+    const LAST_ITEM = this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
     const LAST_ITEM_MEASURE = this._canvasContext.measureText(LAST_ITEM);
 
     const ALL_SERIES_DATA_SOURCE = this._dataSource.series
@@ -207,21 +211,22 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const RENDERING_AREA_X =
       CANVAS_ELEMENT.width - AREA_Y_WIDTH - LAST_ITEM_MEASURE.width / 2;
 
-    const COLUMN_WIDTH_X = RENDERING_AREA_X / X_AXIS_DATA.length;
+    const COLUMN_WIDTH_X = RENDERING_AREA_X / this._dataSource.xAxis.data.length;
 
     const RENDERING_AREA_Y =
-      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 3 - this._canvasStyle.fontSize;
+      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
 
     const ROW_HEIGHT = RENDERING_AREA_Y / (niceNumbers.length - 1);
 
     this._graphConfiguration = {
       areaWidthY: AREA_Y_WIDTH,
-      axisDataX: X_AXIS_DATA,
       columnWidthX: COLUMN_WIDTH_X,
       niceNumbers,
       renderingAreaX: RENDERING_AREA_X,
+      renderingAreaY: RENDERING_AREA_Y,
       rowHeight: ROW_HEIGHT,
       startingPositionX: STARTING_POSITION_X,
+      maximumValue: MAXIMUM_VALUE,
     };
   }
 
@@ -311,9 +316,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     this._canvasContext.textAlign = 'center';
     this._canvasContext.textBaseline = 'bottom';
+    this._canvasContext.fillStyle = '#000';
 
-    for (let i = 0; i < this._graphConfiguration.axisDataX.length; i++) {
-      const ITEM = this._graphConfiguration.axisDataX[i];
+    for (let i = 0; i < this._dataSource.xAxis.data.length; i++) {
+      const ITEM = this._dataSource.xAxis.data[i];
 
       // Center the labels in the middle of the column.
       const POSITION_X =
@@ -369,22 +375,14 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     }
 
     // Y-axis lines
-    for (
-      let i = 0;
-      i < this._graphConfiguration.axisDataX.length + EXTRA_COLUMN_LINES;
-      i++
-    ) {
+    for (let i = 0; i < this._dataSource.xAxis.data.length + EXTRA_COLUMN_LINES; i++) {
       const POSITION_X =
         this._graphConfiguration.areaWidthY + i * this._graphConfiguration.columnWidthX;
 
       canvasContext.beginPath();
 
       canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
-
-      canvasContext.lineTo(
-        POSITION_X,
-        CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2
-      );
+      canvasContext.lineTo(POSITION_X, CANVAS_ELEMENT.height - this._canvasStyle.spacing);
 
       canvasContext.strokeStyle = STROKE_STYLE;
       canvasContext.lineWidth = LINE_WIDTH;
@@ -403,16 +401,69 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   private _renderDataBars(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
-    const canvasContext = this._canvasContext;
-
-    if (!canvasContext || !CANVAS_ELEMENT) {
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
 
-    for (let i = 0; i < this._graphConfiguration.axisDataX.length; i++) {
-      const ITEM = this._graphConfiguration.axisDataX[i];
+    const MAXIMUM_VALUE = this._graphConfiguration.maximumValue;
 
-      console.log(ITEM);
+    const SPACING_LEFT = this._canvasStyle.spacing;
+    const SPACING_RIGHT = this._canvasStyle.spacing;
+    const SPACING_BETWEEN_ELEMENTS = this._canvasStyle.spacing;
+
+    /**
+     * 1. Remove the spacing on left and right from the column's width in order to have "padding" on our column.
+     * 2. Then remove the SPACING_BETWEEN_ELEMENTS from the column's width in order to have "margin" between the elements.
+     */
+    const COLUMN_AVAILABLE_WIDTH =
+      this._graphConfiguration.columnWidthX -
+      SPACING_LEFT -
+      SPACING_RIGHT -
+      SPACING_BETWEEN_ELEMENTS;
+
+    const COLUMN_START_POSITION = this._graphConfiguration.areaWidthY;
+
+    // Match values with each given column
+    for (
+      let seriesIndex = 0;
+      seriesIndex < this._dataSource.series.length;
+      seriesIndex++
+    ) {
+      const SERIES_ITEM = this._dataSource.series[seriesIndex];
+
+      const BAR_WIDTH_PX =
+        COLUMN_AVAILABLE_WIDTH / SERIES_ITEM[DataSourceItemKey.VALUE].length -
+        SPACING_LEFT / 2;
+
+      for (
+        let columnIndex = 0;
+        columnIndex < this._dataSource.xAxis.data.length;
+        columnIndex++
+      ) {
+        // const COLUMN_ITEM = this._dataSource.xAxis.data[columnIndex];
+        // const CORRESPONDING_VALUE = SERIES_ITEM[DataSourceItemKey.VALUE][columnIndex];
+
+        let positionX = COLUMN_START_POSITION + SPACING_LEFT;
+
+        positionX += BAR_WIDTH_PX * seriesIndex;
+        positionX += SPACING_LEFT * seriesIndex;
+
+        // Doing this because we need to position the bars in their corresponding columns
+        positionX += this._graphConfiguration.columnWidthX * columnIndex;
+
+        this._canvasContext.beginPath();
+
+        this._canvasContext.fillStyle = SERIES_ITEM[DataSourceItemKey.COLOR];
+
+        this._canvasContext.fillRect(
+          positionX,
+          this._canvasStyle.spacing,
+          BAR_WIDTH_PX,
+          this._graphConfiguration.renderingAreaY
+        );
+
+        this._canvasContext.closePath();
+      }
     }
   }
 

@@ -4,12 +4,14 @@ enum DataSourceItemKey {
   ID = 'ID',
   NAME = 'NAME',
   VALUE = 'VALUE',
+  COLOR = 'COLOR',
 }
 
 interface DataSourceItem {
   [DataSourceItemKey.ID]: number;
   [DataSourceItemKey.NAME]: CategoryType;
   [DataSourceItemKey.VALUE]: Array<number>;
+  [DataSourceItemKey.COLOR]: string;
 }
 
 interface DataSourceOptions {
@@ -20,13 +22,14 @@ interface DataSourceOptions {
 }
 
 interface GraphConfiguration {
-  axisDataX: Array<string>;
   renderingAreaX: number;
+  renderingAreaY: number;
   areaWidthY: number;
   columnWidthX: number;
   rowHeight: number;
   niceNumbers: Array<number>;
   startingPositionX: number;
+  maximumValue: number;
 }
 
 export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
