@@ -80,16 +80,20 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    * @type {GraphConfiguration}
    *
    * @private
+   * @readonly
    */
-  private _graphConfiguration: GraphConfiguration = {
-    areaWidthY: 0,
-    columnWidthX: 0,
-    niceNumbers: [],
-    renderingAreaX: 0,
-    renderingAreaY: 0,
+  private readonly _graphConfiguration: GraphConfiguration = {
+    legendTopHeight: 0,
+    legendXAxisWidth: 0,
+    legendYAxisWidth: 0,
+    legendYAxisHeight: 0,
+    //
+    columnWidth: 0,
     rowHeight: 0,
-    startingPositionX: 0,
-    maximumValue: 0,
+    //
+    niceNumbersData: [],
+    niceNumbersMaximumValue: 0,
+    niceNumbersStartingPositionX: 0,
   };
 
   /**
@@ -170,22 +174,68 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   // }
 
   /**
-   * @summary - Get all configurations needed to render data on our graph.
-   *
-   * Widths, spacing, steps, positions etc.
+   * @summary - Set legend sizes on top, right, bottom, left.
    *
    * @private
    * @returns {void}
    */
-  private _setGraphConfiguration(): void {
+  private _setLegendSizesConfig(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
     if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
 
-    const LAST_ITEM = this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
-    const LAST_ITEM_MEASURE = this._canvasContext.measureText(LAST_ITEM);
+    const PADDING_X = this._canvasStyle.spacing * 2;
+    const PADDING_Y = this._canvasStyle.spacing * 2;
+
+    const LAST_ITEM_X_AXIS =
+      this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
+
+    const LAST_ITEM_X_AXIS_MEASURE = this._canvasContext.measureText(LAST_ITEM_X_AXIS);
+
+    const LEGEND_TOP_HEIGHT = 20 + PADDING_Y;
+
+    const LEGEND_BOTTOM_HEIGHT = PADDING_Y + this._canvasStyle.fontSize;
+
+    const LEGEND_Y_AXIS_WIDTH =
+      this._graphConfiguration.niceNumbersStartingPositionX + PADDING_X;
+
+    const LEGEND_Y_AXIS_HEIGHT =
+      CANVAS_ELEMENT.height - LEGEND_TOP_HEIGHT - LEGEND_BOTTOM_HEIGHT;
+
+    // I need to divide LAST_ITEM_X_AXIS_MEASURE.width, so half of the element don't go outside its column.
+    const LEGEND_X_AXIS_WIDTH =
+      CANVAS_ELEMENT.width - LEGEND_Y_AXIS_WIDTH - LAST_ITEM_X_AXIS_MEASURE.width / 2;
+
+    const COLUMN_WIDTH = LEGEND_X_AXIS_WIDTH / this._dataSource.xAxis.data.length;
+
+    const ROW_HEIGHT =
+      LEGEND_Y_AXIS_HEIGHT / (this._graphConfiguration.niceNumbersData.length - 1);
+
+    Object.assign(this._graphConfiguration, {
+      //
+      columnWidth: COLUMN_WIDTH,
+      rowHeight: ROW_HEIGHT,
+      //
+      legendTopHeight: LEGEND_TOP_HEIGHT,
+      //
+      legendXAxisWidth: LEGEND_X_AXIS_WIDTH,
+      legendYAxisWidth: LEGEND_Y_AXIS_WIDTH,
+      legendYAxisHeight: LEGEND_Y_AXIS_HEIGHT,
+    });
+  }
+
+  /**
+   * @summary - Set data for nice numbers.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setNiceNumbersConfig(): void {
+    if (!this._canvasContext) {
+      throw Error('Canvas context not found!');
+    }
 
     const ALL_SERIES_DATA_SOURCE = this._dataSource.series
       .map(item => item[DataSourceItemKey.VALUE])
@@ -203,37 +253,21 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       );
     }
 
-    const MAX_VALUE_NICE_NUMBERS = Math.max(...niceNumbers);
-
     const TEXT_SIZES = niceNumbers.map(item => {
       const FORMATTED_ITEM = this._formatNumber.format(item);
 
       return this._canvasContext!.measureText(FORMATTED_ITEM).width;
     });
 
+    const MAX_VALUE_NICE_NUMBERS = Math.max(...niceNumbers);
     const STARTING_POSITION_X = Math.max(...TEXT_SIZES);
-    const AREA_Y_WIDTH = STARTING_POSITION_X + this._canvasStyle.spacing * 2;
 
-    const RENDERING_AREA_X =
-      CANVAS_ELEMENT.width - AREA_Y_WIDTH - LAST_ITEM_MEASURE.width / 2;
-
-    const COLUMN_WIDTH_X = RENDERING_AREA_X / this._dataSource.xAxis.data.length;
-
-    const RENDERING_AREA_Y =
-      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
-
-    const ROW_HEIGHT = RENDERING_AREA_Y / (niceNumbers.length - 1);
-
-    this._graphConfiguration = {
-      areaWidthY: AREA_Y_WIDTH,
-      columnWidthX: COLUMN_WIDTH_X,
-      niceNumbers,
-      renderingAreaX: RENDERING_AREA_X,
-      renderingAreaY: RENDERING_AREA_Y,
-      rowHeight: ROW_HEIGHT,
-      startingPositionX: STARTING_POSITION_X,
-      maximumValue: MAX_VALUE_NICE_NUMBERS,
-    };
+    Object.assign(this._graphConfiguration, {
+      ...this._graphConfiguration,
+      niceNumbersData: niceNumbers,
+      niceNumbersStartingPositionX: STARTING_POSITION_X,
+      niceNumbersMaximumValue: MAX_VALUE_NICE_NUMBERS,
+    });
   }
 
   /**
@@ -281,6 +315,25 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
+
+    this._canvasContext.beginPath();
+
+    this._canvasContext.fillStyle = 'red';
+
+    this._canvasContext.fillRect(
+      this._graphConfiguration.legendYAxisWidth,
+      0,
+      this._graphConfiguration.legendXAxisWidth,
+      this._graphConfiguration.legendTopHeight
+    );
+
+    this._canvasContext.closePath();
+
+    for (let i = 0; i < this._dataSource.series.length; i++) {
+      const ITEM = this._dataSource.series[i];
+
+      console.log({ ITEM });
+    }
   }
 
   /**
@@ -308,9 +361,9 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
       // Center the labels in the middle of the column.
       const POSITION_X =
-        this._graphConfiguration.areaWidthY +
-        this._graphConfiguration.columnWidthX / 2 +
-        i * this._graphConfiguration.columnWidthX;
+        this._graphConfiguration.legendYAxisWidth +
+        this._graphConfiguration.columnWidth / 2 +
+        i * this._graphConfiguration.columnWidth;
 
       this._canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
     }
@@ -330,21 +383,23 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     }
 
     // I am reversing the array here, because we need to start the rendering from the canvas's bottom position.
-    this._graphConfiguration.niceNumbers.reverse();
+    this._graphConfiguration.niceNumbersData.reverse();
 
     this._canvasContext.textAlign = 'right';
     this._canvasContext.textBaseline = 'middle';
 
-    for (let i = 0; i < this._graphConfiguration.niceNumbers.length; i++) {
-      const ITEM = this._graphConfiguration.niceNumbers[i];
+    for (let i = 0; i < this._graphConfiguration.niceNumbersData.length; i++) {
+      const ITEM = this._graphConfiguration.niceNumbersData[i];
       const FORMATTED_ITEM = this._formatNumber.format(ITEM);
 
       const POSITION_Y =
-        this._graphConfiguration.rowHeight * i + this._canvasStyle.spacing;
+        this._graphConfiguration.rowHeight * i +
+        this._canvasStyle.spacing +
+        this._graphConfiguration.legendTopHeight;
 
       this._canvasContext.fillText(
         FORMATTED_ITEM,
-        this._graphConfiguration.startingPositionX,
+        this._graphConfiguration.niceNumbersStartingPositionX,
         Math.abs(POSITION_Y)
       );
     }
@@ -366,21 +421,25 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const EXTRA_COLUMN_LINES = 1; // I need to add an extra line at the end of the graph.
     const STROKE_STYLE = '#b3b3b3';
     const LINE_WIDTH = 0.5;
+    const PADDING_Y = this._canvasStyle.spacing * 2;
 
     // X-axis lines
-    for (let i = 0; i < this._graphConfiguration.niceNumbers.length; i++) {
+    for (let i = 0; i < this._graphConfiguration.niceNumbersData.length; i++) {
       const POSITION_Y =
-        this._graphConfiguration.rowHeight * i + this._canvasStyle.spacing;
+        this._graphConfiguration.rowHeight * i +
+        this._canvasStyle.spacing +
+        this._graphConfiguration.legendTopHeight;
 
       this._canvasContext.beginPath();
 
       this._canvasContext.moveTo(
-        this._graphConfiguration.areaWidthY - this._canvasStyle.spacing,
+        this._graphConfiguration.legendYAxisWidth - this._canvasStyle.spacing,
         POSITION_Y
       );
 
       this._canvasContext.lineTo(
-        this._graphConfiguration.renderingAreaX + this._graphConfiguration.areaWidthY,
+        this._graphConfiguration.legendXAxisWidth +
+          this._graphConfiguration.legendYAxisWidth,
         POSITION_Y
       );
 
@@ -394,16 +453,22 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     // Y-axis lines
     for (let i = 0; i < this._dataSource.xAxis.data.length + EXTRA_COLUMN_LINES; i++) {
       const POSITION_X =
-        this._graphConfiguration.areaWidthY + i * this._graphConfiguration.columnWidthX;
+        this._graphConfiguration.legendYAxisWidth +
+        i * this._graphConfiguration.columnWidth;
+
+      const POSITION_Y =
+        PADDING_Y +
+        this._graphConfiguration.legendYAxisHeight +
+        this._graphConfiguration.legendTopHeight;
 
       this._canvasContext.beginPath();
 
-      this._canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
-
-      this._canvasContext.lineTo(
+      this._canvasContext.moveTo(
         POSITION_X,
-        CANVAS_ELEMENT.height - this._canvasStyle.spacing
+        this._canvasStyle.spacing + this._graphConfiguration.legendTopHeight
       );
+
+      this._canvasContext.lineTo(POSITION_X, POSITION_Y);
 
       this._canvasContext.strokeStyle = STROKE_STYLE;
       this._canvasContext.lineWidth = LINE_WIDTH;
@@ -426,9 +491,9 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const MAXIMUM_VALUE = this._graphConfiguration.maximumValue;
+    const MAXIMUM_VALUE = this._graphConfiguration.niceNumbersMaximumValue;
     const SPACING = this._canvasStyle.spacing;
-    const COLUMN_START_POSITION = this._graphConfiguration.areaWidthY + SPACING;
+    const COLUMN_START_POSITION = this._graphConfiguration.legendYAxisWidth + SPACING;
     const SPACING_X = SPACING * 2; // "padding" left and right
 
     // Match values with each given column
@@ -446,7 +511,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       const SPACING_BETWEEN_BARS = SPACING * NUMBER_OF_SPACES_BETWEEN_BARS;
 
       const COLUMN_AVAILABLE_WIDTH =
-        this._graphConfiguration.columnWidthX - SPACING_BETWEEN_BARS - SPACING_X;
+        this._graphConfiguration.columnWidth - SPACING_BETWEEN_BARS - SPACING_X;
 
       const BAR_WIDTH_PX = COLUMN_AVAILABLE_WIDTH / this._dataSource.xAxis.data.length;
 
@@ -459,7 +524,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         const CORRESPONDING_VALUE_FRACTION = CORRESPONDING_VALUE / MAXIMUM_VALUE;
 
         const THRESHOLD_POSITION_Y =
-          this._graphConfiguration.renderingAreaY * CORRESPONDING_VALUE_FRACTION;
+          this._graphConfiguration.legendYAxisHeight * CORRESPONDING_VALUE_FRACTION;
 
         let positionX = COLUMN_START_POSITION;
 
@@ -467,10 +532,12 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         positionX += SPACING * seriesIndex;
 
         // Doing this because we need to position the bars in their corresponding columns
-        positionX += this._graphConfiguration.columnWidthX * columnIndex;
+        positionX += this._graphConfiguration.columnWidth * columnIndex;
 
         const POSITION_Y =
-          this._graphConfiguration.renderingAreaY + this._canvasStyle.spacing;
+          this._graphConfiguration.legendYAxisHeight +
+          this._canvasStyle.spacing +
+          this._graphConfiguration.legendTopHeight;
 
         this._canvasContext.beginPath();
 
@@ -501,7 +568,9 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._canvasContext = CANVAS_CONTEXT;
 
     this._renderInitialCanvas();
-    this._setGraphConfiguration();
+    //
+    this._setNiceNumbersConfig();
+    this._setLegendSizesConfig();
     //
     this._renderLegendTop();
     this._renderLegendBottom();

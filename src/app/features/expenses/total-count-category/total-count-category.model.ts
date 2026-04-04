@@ -22,14 +22,17 @@ interface DataSourceOptions {
 }
 
 interface GraphConfiguration {
-  renderingAreaX: number;
-  renderingAreaY: number;
-  areaWidthY: number;
-  columnWidthX: number;
+  legendTopHeight: number;
+  legendXAxisWidth: number;
+  legendYAxisWidth: number;
+  legendYAxisHeight: number;
+  //
+  columnWidth: number;
   rowHeight: number;
-  niceNumbers: Array<number>;
-  startingPositionX: number;
-  maximumValue: number;
+  //
+  niceNumbersData: Array<number>;
+  niceNumbersMaximumValue: number;
+  niceNumbersStartingPositionX: number;
 }
 
 export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
