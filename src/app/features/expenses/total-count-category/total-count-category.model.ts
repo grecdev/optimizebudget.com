@@ -35,6 +35,15 @@ interface GraphConfiguration {
   niceNumbersStartingPositionX: number;
 }
 
-export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
+interface CanvasStyle {
+  width: number;
+  height: number;
+  spacing: number;
+  fontSize: number;
+  font: string;
+  color: string;
+}
+
+export type { DataSourceItem, DataSourceOptions, GraphConfiguration, CanvasStyle };
 
 export { DataSourceItemKey };

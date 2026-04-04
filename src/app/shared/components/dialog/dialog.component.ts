@@ -51,6 +51,7 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
    * @summary - Icons state.
    *
    * @type {Record<string, string>}
+   *
    * @public
    * @readonly
    */
