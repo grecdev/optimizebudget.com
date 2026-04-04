@@ -268,15 +268,61 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   }
 
   /**
-   * @summary - Render dataSource values on the Y axis.
-   *
-   * Basically render an "invisible" text outside our canvas element, to get the width of the rendered pixels.
-   * And only after then, we add another set of text, which is visible in the canvas, with correct positions.
+   * @summary - Render legend on top side. Usually colors + values.
    *
    * @private
    * @returns {void}
    */
-  private _renderLegendY(): void {
+  private _renderLegendTop(): void {
+    console.log('_renderLegendTop');
+
+    const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
+
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+  }
+
+  /**
+   * @summary - Dynamically render legend values on bottom side.
+   *
+   * Calculate the total labels to render on canvas,
+   * based on the render area's width and the maximum label's width.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderLegendBottom(): void {
+    const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
+
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
+      throw Error('Canvas context not found!');
+    }
+
+    this._canvasContext.textAlign = 'center';
+    this._canvasContext.textBaseline = 'bottom';
+    this._canvasContext.fillStyle = '#000';
+
+    for (let i = 0; i < this._dataSource.xAxis.data.length; i++) {
+      const ITEM = this._dataSource.xAxis.data[i];
+
+      // Center the labels in the middle of the column.
+      const POSITION_X =
+        this._graphConfiguration.areaWidthY +
+        this._graphConfiguration.columnWidthX / 2 +
+        i * this._graphConfiguration.columnWidthX;
+
+      this._canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
+    }
+  }
+
+  /**
+   * @summary - Render dataSource values on the left side.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _renderLegendLeft(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
     if (!this._canvasContext || !CANVAS_ELEMENT) {
@@ -305,39 +351,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   }
 
   /**
-   * @summary - Dynamically render legend values on x-axis.
-   *
-   * Calculate the total labels to render on canvas,
-   * based on the render area's width and the maximum label's width.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _renderLegendX(): void {
-    const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
-
-    if (!this._canvasContext || !CANVAS_ELEMENT) {
-      throw Error('Canvas context not found!');
-    }
-
-    this._canvasContext.textAlign = 'center';
-    this._canvasContext.textBaseline = 'bottom';
-    this._canvasContext.fillStyle = '#000';
-
-    for (let i = 0; i < this._dataSource.xAxis.data.length; i++) {
-      const ITEM = this._dataSource.xAxis.data[i];
-
-      // Center the labels in the middle of the column.
-      const POSITION_X =
-        this._graphConfiguration.areaWidthY +
-        this._graphConfiguration.columnWidthX / 2 +
-        i * this._graphConfiguration.columnWidthX;
-
-      this._canvasContext.fillText(ITEM, POSITION_X, CANVAS_ELEMENT.height);
-    }
-  }
-
-  /**
    * @summary - Render lines that are aligned with the legend on y-axis.
    *
    * @private
@@ -346,9 +359,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
   private _renderBackgroundLines(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
-    const canvasContext = this._canvasContext;
-
-    if (!canvasContext || !CANVAS_ELEMENT) {
+    if (!this._canvasContext || !CANVAS_ELEMENT) {
       throw Error('Canvas context not found!');
     }
 
@@ -361,23 +372,23 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       const POSITION_Y =
         this._graphConfiguration.rowHeight * i + this._canvasStyle.spacing;
 
-      canvasContext.beginPath();
+      this._canvasContext.beginPath();
 
-      canvasContext.moveTo(
+      this._canvasContext.moveTo(
         this._graphConfiguration.areaWidthY - this._canvasStyle.spacing,
         POSITION_Y
       );
 
-      canvasContext.lineTo(
+      this._canvasContext.lineTo(
         this._graphConfiguration.renderingAreaX + this._graphConfiguration.areaWidthY,
         POSITION_Y
       );
 
-      canvasContext.strokeStyle = STROKE_STYLE;
-      canvasContext.lineWidth = LINE_WIDTH;
+      this._canvasContext.strokeStyle = STROKE_STYLE;
+      this._canvasContext.lineWidth = LINE_WIDTH;
 
-      canvasContext.stroke();
-      canvasContext.closePath();
+      this._canvasContext.stroke();
+      this._canvasContext.closePath();
     }
 
     // Y-axis lines
@@ -385,16 +396,20 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       const POSITION_X =
         this._graphConfiguration.areaWidthY + i * this._graphConfiguration.columnWidthX;
 
-      canvasContext.beginPath();
+      this._canvasContext.beginPath();
 
-      canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
-      canvasContext.lineTo(POSITION_X, CANVAS_ELEMENT.height - this._canvasStyle.spacing);
+      this._canvasContext.moveTo(POSITION_X, this._canvasStyle.spacing);
 
-      canvasContext.strokeStyle = STROKE_STYLE;
-      canvasContext.lineWidth = LINE_WIDTH;
+      this._canvasContext.lineTo(
+        POSITION_X,
+        CANVAS_ELEMENT.height - this._canvasStyle.spacing
+      );
 
-      canvasContext.stroke();
-      canvasContext.closePath();
+      this._canvasContext.strokeStyle = STROKE_STYLE;
+      this._canvasContext.lineWidth = LINE_WIDTH;
+
+      this._canvasContext.stroke();
+      this._canvasContext.closePath();
     }
   }
 
@@ -487,8 +502,11 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     this._renderInitialCanvas();
     this._setGraphConfiguration();
-    this._renderLegendY();
-    this._renderLegendX();
+    //
+    this._renderLegendTop();
+    this._renderLegendBottom();
+    this._renderLegendLeft();
+    //
     this._renderBackgroundLines();
     this._renderDataBars();
   }
