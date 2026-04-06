@@ -66,6 +66,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     height: 350,
     spacing: 16,
     fontSize: 16,
+    lineHeight: 1.25,
     font: "normal 400 1rem/1.25 'Roboto', sans-serif",
     color: '#000',
   };
@@ -80,12 +81,14 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    */
   private readonly _graphConfiguration: GraphConfiguration = {
     legendTopHeight: 0,
+    legendBottomHeight: 0,
     legendXAxisWidth: 0,
     legendYAxisWidth: 0,
     legendYAxisHeight: 0,
     //
     columnWidth: 0,
     rowHeight: 0,
+    legendTopRectangleHeight: 0,
     //
     niceNumbersData: [],
     niceNumbersMaximumValue: 0,
@@ -183,15 +186,15 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     }
 
     const PADDING_X = this._canvasStyle.spacing * 2;
-    const PADDING_Y = this._canvasStyle.spacing * 2;
 
     const LAST_ITEM_X_AXIS =
       this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
 
     const LAST_ITEM_X_AXIS_MEASURE = this._canvasContext.measureText(LAST_ITEM_X_AXIS);
 
-    const LEGEND_TOP_HEIGHT = this._canvasStyle.fontSize + PADDING_Y;
-    const LEGEND_BOTTOM_HEIGHT = this._canvasStyle.fontSize + PADDING_Y;
+    const LEGEND_TOP_RECTANGLE_HEIGHT = 20;
+    const LEGEND_TOP_HEIGHT = LEGEND_TOP_RECTANGLE_HEIGHT + this._canvasStyle.spacing;
+    const LEGEND_BOTTOM_HEIGHT = this._canvasStyle.fontSize + this._canvasStyle.spacing;
 
     const LEGEND_Y_AXIS_WIDTH =
       this._graphConfiguration.niceNumbersStartingPositionX + PADDING_X;
@@ -212,8 +215,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       //
       columnWidth: COLUMN_WIDTH,
       rowHeight: ROW_HEIGHT,
+      legendTopRectangleHeight: LEGEND_TOP_RECTANGLE_HEIGHT,
       //
       legendTopHeight: LEGEND_TOP_HEIGHT,
+      legendBottomHeight: LEGEND_BOTTOM_HEIGHT,
       //
       legendXAxisWidth: LEGEND_X_AXIS_WIDTH,
       legendYAxisWidth: LEGEND_Y_AXIS_WIDTH,
@@ -308,26 +313,13 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    this._canvasContext.beginPath();
-
-    this._canvasContext.strokeStyle = 'red';
-
-    this._canvasContext.strokeRect(
-      this._graphConfiguration.legendYAxisWidth,
-      0,
-      this._graphConfiguration.legendXAxisWidth,
-      this._graphConfiguration.legendTopHeight
-    );
-
-    this._canvasContext.closePath();
-
     this._canvasContext.textBaseline = 'middle';
 
     const SPACING = this._canvasStyle.spacing;
-    const POSITION_Y = this._graphConfiguration.legendTopHeight / 2;
     const RECT_WIDTH = 45;
-    const RECT_HEIGHT = 20;
-    const POSITION_Y_RECT = POSITION_Y - RECT_HEIGHT / 2;
+    const POSITION_Y_RECT = 0;
+    const POSITION_Y_TEXT_CONTENT = this._graphConfiguration.legendTopRectangleHeight / 2;
+
     const MARGIN_RECT_AND_TEXT = 5;
     const SPACE_BETWEEN_ITEMS = SPACING;
 
@@ -360,23 +352,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       MARGIN_RECT_AND_TEXT +
       HORIZONTAL_CENTER_POSITION;
 
-    ///////////////////////////////////////
-
-    this._canvasContext.beginPath();
-
-    this._canvasContext.strokeStyle = 'green';
-
-    this._canvasContext.strokeRect(
-      this._graphConfiguration.legendYAxisWidth + HORIZONTAL_CENTER_POSITION,
-      0,
-      ITEMS_CONTAINER_WIDTH,
-      this._graphConfiguration.legendTopHeight
-    );
-
-    this._canvasContext.closePath();
-
-    ///////////////////////////////////////
-
     let positionXRect = RECT_START_POSITION;
     let positionXTextContent = TEXT_CONTENT_START_POSITION;
 
@@ -406,7 +381,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         positionXRect,
         POSITION_Y_RECT,
         RECT_WIDTH,
-        RECT_HEIGHT
+        this._graphConfiguration.legendTopRectangleHeight
       );
 
       this._canvasContext.closePath();
@@ -415,14 +390,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       this._canvasContext.fillText(
         CURRENT_TEXT_CONTENT,
         positionXTextContent,
-        POSITION_Y
-      );
-
-      console.log(
-        this._canvasContext.measureText(CURRENT_TEXT_CONTENT).width +
-          RECT_WIDTH +
-          MARGIN_RECT_AND_TEXT +
-          SPACE_BETWEEN_ITEMS
+        POSITION_Y_TEXT_CONTENT
       );
     }
   }
@@ -443,6 +411,8 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
+    const POSITION_Y = CANVAS_ELEMENT.height;
+
     this._canvasContext.textAlign = 'center';
     this._canvasContext.textBaseline = 'bottom';
     this._canvasContext.fillStyle = this._canvasStyle.color;
@@ -455,8 +425,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         this._graphConfiguration.legendYAxisWidth +
         this._graphConfiguration.columnWidth / 2 +
         i * this._graphConfiguration.columnWidth;
-
-      const POSITION_Y = CANVAS_ELEMENT.height - this._canvasStyle.fontSize;
 
       this._canvasContext.fillText(ITEM, POSITION_X, POSITION_Y);
     }
@@ -513,7 +481,6 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     const EXTRA_COLUMN_LINES = 1; // I need to add an extra line at the end of the graph.
     const STROKE_STYLE = '#b3b3b3';
     const LINE_WIDTH = 0.5;
-    const PADDING_Y = this._canvasStyle.spacing * 2;
 
     // X-axis lines
     for (let i = 0; i < this._graphConfiguration.niceNumbersData.length; i++) {

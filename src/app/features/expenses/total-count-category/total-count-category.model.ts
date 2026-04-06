@@ -23,12 +23,14 @@ interface DataSourceOptions {
 
 interface GraphConfiguration {
   legendTopHeight: number;
+  legendBottomHeight: number;
   legendXAxisWidth: number;
   legendYAxisWidth: number;
   legendYAxisHeight: number;
   //
   columnWidth: number;
   rowHeight: number;
+  legendTopRectangleHeight: number;
   //
   niceNumbersData: Array<number>;
   niceNumbersMaximumValue: number;
@@ -40,6 +42,7 @@ interface CanvasStyle {
   height: number;
   spacing: number;
   fontSize: number;
+  lineHeight: number;
   font: string;
   color: string;
 }
