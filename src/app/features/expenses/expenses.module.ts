@@ -6,6 +6,7 @@ import { ExpensesComponent } from './expenses.component';
 import { TrackerTableModule } from './tracker-table/tracker-table.module';
 import { TotalMonthlySpentModule } from './total-monthly-spent/total-monthly-spent.module';
 import { TotalCountCategoryModule } from './total-count-category/total-count-category.module';
+import { IncomingPaymentsModule } from './incoming-payments/incoming-payments.module';
 
 @NgModule({
   declarations: [ExpensesComponent],
@@ -16,6 +17,7 @@ import { TotalCountCategoryModule } from './total-count-category/total-count-cat
     TrackerTableModule,
     TotalMonthlySpentModule,
     TotalCountCategoryModule,
+    IncomingPaymentsModule,
   ],
 })
 export class ExpensesModule {}

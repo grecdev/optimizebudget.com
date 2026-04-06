@@ -1,0 +1,39 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+@use 'spacing' as spacing;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$sm;
+  overflow: auto;
+
+  &__item {
+    gap: spacing.$sm;
+    justify-content: space-between;
+
+    &,
+    & .name {
+      display: flex;
+      align-items: center;
+    }
+
+    & .name {
+      &__text__content {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100px;
+      }
+
+      & .app-icon {
+        $size: 15px;
+        //
+        width: $size;
+        height: $size;
+        fill: map.get(color-palette.$red, 'variant-2');
+      }
+    }
+  }
+}

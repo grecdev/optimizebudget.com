@@ -1,0 +1,15 @@
+<app-widget-box>
+  <h4 app-widget-box-title>Incoming expenses</h4>
+
+  <div class="body">
+    <div class="body__item" *ngFor="let item of dataSource; trackBy: trackByDataSource">
+      <div class="name">
+        <app-icon [svgIcon]="icons['arrowRight']" />
+        &nbsp;
+        <p class="name__text__content">{{ item[dataSourceKeys.NAME] }}</p>
+      </div>
+
+      <p class="amount">{{ item[dataSourceKeys.AMOUNT] | currency: 'USD' }}</p>
+    </div>
+  </div>
+</app-widget-box>
