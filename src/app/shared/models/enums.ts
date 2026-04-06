@@ -1,7 +1,8 @@
 enum CategoryType {
-  SHOPPING = 'Shopping',
+  CLOTHING = 'Clothing',
   FOOD = 'Food',
   HOME = 'Home',
+  GADGETS = 'Gadgets',
 }
 
 enum ExpenseStatus {

@@ -2,8 +2,8 @@
 
 @use 'spacing' as spacing;
 
-//.row {
-//display: grid;
-//grid-template-columns: repeat(2, max-content);
-//gap: spacing.$grid-gap-spacing;
-//}
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: spacing.$grid-gap-spacing;
+}

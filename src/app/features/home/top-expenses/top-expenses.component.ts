@@ -7,7 +7,7 @@ const TOP_EXPENSES: Array<ExpenseItem> = [
   {
     [ExpenseItemKey.ID]: 0,
     [ExpenseItemKey.NAME]: 'Laptop for work',
-    [ExpenseItemKey.CATEGORY]: CategoryType.SHOPPING,
+    [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
     [ExpenseItemKey.PRICE]: 2000,
     [ExpenseItemKey.TIMESTAMP]: 1767853992492,
   },

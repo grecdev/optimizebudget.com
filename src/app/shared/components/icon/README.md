@@ -3,33 +3,32 @@
 ```typescript
 // some.module.ts
 
-import {NgModule} from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {AppIconModule} from '@shared/components/icon/icon.module';
+import { AppIconModule } from '@shared/components/icon/icon.module';
 
 @NgModule({
   declarations: [SomeComponent],
   imports: [AppIconModule],
   exports: [SomeComponent],
 })
-export class SomeModule {
-}
+export class SomeModule {}
 ```
 
 ```typescript
 // some.component.ts
 
-import {Component} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
+import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
-import {IconRegistryService} from '@shared/components/icon/icon-registry.service';
+import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
 
 @Component({
   // ...
 })
 export class SomeComponent {
   /**
-   * @summary - Icon registry service
+   * @summary - Icon registry service.
    *
    * @type {IconRegistryService}
    * @private
@@ -37,7 +36,7 @@ export class SomeComponent {
   private readonly _iconRegistryService: IconRegistryService;
 
   /**
-   * @summary - Dom sanitizer
+   * @summary - Sanitize whatever inputs.
    *
    * @type {DomSanitizer}
    * @private
@@ -51,7 +50,7 @@ export class SomeComponent {
    * @public
    */
   public readonly icons: Record<string, string> = {
-    'iconName': 'icon-name'
+    'iconName': 'icon-name',
   };
 
   constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
@@ -67,7 +66,7 @@ export class SomeComponent {
    * @private
    * @returns {void}
    */
-  private _initIconRegistry() {
+  private _initIconRegistry(): void {
     Object.values(this.icons).forEach(item => {
       this._iconRegistryService.addSvgIconConfig({
         name: item,

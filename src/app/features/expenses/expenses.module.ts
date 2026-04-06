@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ExpensesRoutingModule } from './expenses-routing.module';
 import { ExpensesComponent } from './expenses.component';
 import { TrackerTableModule } from './tracker-table/tracker-table.module';
-import { TotalMonthlyExpensesModule } from './total-monthly-expenses/total-monthly-expenses.module';
+import { TotalMonthlySpentModule } from './total-monthly-spent/total-monthly-spent.module';
+import { TotalCountCategoryModule } from './total-count-category/total-count-category.module';
 
 @NgModule({
   declarations: [ExpensesComponent],
@@ -13,7 +14,8 @@ import { TotalMonthlyExpensesModule } from './total-monthly-expenses/total-month
     //
     ExpensesRoutingModule,
     TrackerTableModule,
-    TotalMonthlyExpensesModule,
+    TotalMonthlySpentModule,
+    TotalCountCategoryModule,
   ],
 })
 export class ExpensesModule {}

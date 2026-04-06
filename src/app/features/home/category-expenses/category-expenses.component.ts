@@ -52,7 +52,7 @@ export class CategoryExpensesComponent implements AfterViewInit {
     {
       id: 1,
       color: '#276CF5',
-      name: CategoryType.SHOPPING,
+      name: CategoryType.GADGETS,
       value: 456,
     },
   ];
@@ -87,13 +87,17 @@ export class CategoryExpensesComponent implements AfterViewInit {
    * @type {ElementRef<HTMLCanvasElement> | null}
    * @public
    */
-  @ViewChild('pieChart') public canvasElement: ElementRef<HTMLCanvasElement> | null = null;
+  @ViewChild('pieChart') public canvasElement: ElementRef<HTMLCanvasElement> | null =
+    null;
 
   constructor(...args: Array<unknown>);
   constructor() {
     this._dataOnlyValues = this.data.map(item => item.value);
 
-    this._totalValues = this._dataOnlyValues.reduce((total, currentItem) => total + currentItem, 0);
+    this._totalValues = this._dataOnlyValues.reduce(
+      (total, currentItem) => total + currentItem,
+      0
+    );
   }
 
   trackByCustom(_index: number, item: CategoryExpenseItem) {

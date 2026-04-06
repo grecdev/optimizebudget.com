@@ -33,7 +33,7 @@ export class TrackerTableComponent {
     {
       [ExpenseItemKey.TIMESTAMP]: 1706188800000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.SHOPPING,
+      [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
       [ExpenseItemKey.DESCRIPTION]: 'Bluetooth headphones',
       [ExpenseItemKey.TOTAL]: 59.99,
     },
@@ -54,7 +54,7 @@ export class TrackerTableComponent {
     {
       [ExpenseItemKey.TIMESTAMP]: 1706448000000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.SHOPPING,
+      [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
       [ExpenseItemKey.DESCRIPTION]: 'Phone case replacement',
       [ExpenseItemKey.TOTAL]: 22.99,
     },
@@ -75,7 +75,7 @@ export class TrackerTableComponent {
     {
       [ExpenseItemKey.TIMESTAMP]: 1706707200000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PENDING,
-      [ExpenseItemKey.CATEGORY]: CategoryType.SHOPPING,
+      [ExpenseItemKey.CATEGORY]: CategoryType.CLOTHING,
       [ExpenseItemKey.DESCRIPTION]: 'Winter gloves',
       [ExpenseItemKey.TOTAL]: 25.0,
     },

@@ -1,0 +1,58 @@
+@use 'sass:map';
+
+@use 'spacing' as spacing;
+@use 'color-palette' as color-palette;
+
+@mixin generate-name-color($color) {
+  & .category-item__name {
+    color: $color;
+
+    & .app-icon {
+      fill: $color;
+    }
+  }
+}
+
+.category-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: spacing.$default;
+}
+
+.category-item {
+  $color: inherit;
+
+  &,
+  &__name {
+    display: flex;
+    align-items: center;
+  }
+
+  &__name {
+    font-weight: 500;
+  }
+
+  &--Food {
+    $color: map.get(color-palette.$orange, 'default');
+
+    @include generate-name-color($color);
+  }
+
+  &--Gadgets {
+    $color: map.get(color-palette.$blue, 'default');
+
+    @include generate-name-color($color);
+  }
+
+  &--Clothing {
+    $color: map.get(color-palette.$purple, 'default');
+
+    @include generate-name-color($color);
+  }
+
+  &--Home {
+    $color: map.get(color-palette.$green, 'variant-3');
+
+    @include generate-name-color($color);
+  }
+}
