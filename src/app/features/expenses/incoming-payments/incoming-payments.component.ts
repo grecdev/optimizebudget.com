@@ -135,6 +135,52 @@ export class IncomingPaymentsComponent {
   }
 
   /**
+   * @summary - Trigger event to show a tooltip.
+   *
+   * @param {MouseEvent} event
+   *
+   * @returns {void}
+   */
+  public handleMouseEnter(event: MouseEvent): void {
+    event.stopPropagation();
+
+    const TARGET = event.target as HTMLDivElement;
+
+    const ATTRIBUTE_NAME = 'data-name';
+
+    if (!TARGET.hasAttribute(ATTRIBUTE_NAME)) {
+      return;
+    }
+
+    const NAME = TARGET.getAttribute(ATTRIBUTE_NAME);
+
+    console.log(NAME);
+  }
+
+  /**
+   * @summary - Hide tooltip when leaving the target.
+   *
+   * @param {MouseEvent} event
+   *
+   * @returns {void}
+   */
+  public handleMouseLeave(event: MouseEvent): void {
+    event.stopPropagation();
+
+    console.log(event.type);
+  }
+
+  /**
+   * @summary - Track by function used for dataSource.
+   *
+   * @public
+   * @returns {number}
+   */
+  public trackByDataSource(_: number, item: IncomingPaymentsItem): number {
+    return item[IncomingPaymentsItemKey.ID];
+  }
+
+  /**
    * @summary - Registry icons used in this component.
    *
    * @private
@@ -149,15 +195,5 @@ export class IncomingPaymentsComponent {
         ),
       });
     });
-  }
-
-  /**
-   * @summary - Track by function used for dataSource.
-   *
-   * @public
-   * @returns {number}
-   */
-  public trackByDataSource(_: number, item: IncomingPaymentsItem): number {
-    return item[IncomingPaymentsItemKey.ID];
   }
 }

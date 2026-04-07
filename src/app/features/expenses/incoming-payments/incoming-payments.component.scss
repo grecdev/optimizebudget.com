@@ -2,12 +2,14 @@
 
 @use 'color-palette' as color-palette;
 @use 'spacing' as spacing;
+@use 'shape' as shape;
 
 .body {
   display: flex;
   flex-direction: column;
   gap: spacing.$sm;
-  overflow: auto;
+  overflow-y: auto;
+  //overflow-x: hidden;
 
   &__item {
     gap: spacing.$sm;

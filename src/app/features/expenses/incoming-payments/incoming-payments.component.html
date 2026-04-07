@@ -3,7 +3,12 @@
 
   <div class="body">
     <div class="body__item" *ngFor="let item of dataSource; trackBy: trackByDataSource">
-      <div class="name">
+      <div
+        class="name"
+        [attr.data-name]="item[dataSourceKeys.NAME]"
+        (mouseenter)="handleMouseEnter($event)"
+        (mouseleave)="handleMouseLeave($event)"
+      >
         <app-icon [svgIcon]="icons['arrowRight']" />
         &nbsp;
         <p class="name__text__content">{{ item[dataSourceKeys.NAME] }}</p>
