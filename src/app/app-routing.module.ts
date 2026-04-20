@@ -7,7 +7,9 @@ const routes: Routes = [
   {
     path: allRoutes.login.path,
     loadChildren: () =>
-      import('./features/authentication/login/login.module').then(module => module.LoginModule),
+      import('./features/authentication/login/login.module').then(
+        module => module.LoginModule
+      ),
   },
   {
     path: allRoutes.register.path,
@@ -24,7 +26,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'expenses',
+    path: allRoutes.expenses.path,
     loadChildren: () =>
       import('./features/expenses/expenses.module').then(module => module.ExpensesModule),
   },

@@ -62,7 +62,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    * @private
    */
   private readonly _canvasStyle: CanvasStyle = {
-    width: 800,
+    width: 700,
     height: 350,
     spacing: 16,
     fontSize: 16,
