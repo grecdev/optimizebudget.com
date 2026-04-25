@@ -41,7 +41,6 @@ export class AppDialogService {
     dialogModuleRef: null,
   };
 
-  constructor(...args: Array<unknown>);
   constructor(
     injector: Injector,
     overlayService: AppOverlayService,
@@ -86,6 +85,9 @@ export class AppDialogService {
     const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
       contentReferences: CONTENT_REFERENCES,
       projectableNodes: DIALOG_ROOT_NODES,
+      instanceOptions: {
+        noBackground: false,
+      },
     });
 
     this._cleanup();

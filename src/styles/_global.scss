@@ -1,6 +1,6 @@
 @use 'sass:map';
 
-@use 'variables' as *;
+@use 'variables' as variables;
 @use 'color-palette' as *;
 @use 'typography' as *;
 
@@ -34,4 +34,8 @@ h3 {
 
 h4 {
   font-size: map.get($font-size, 'h4');
+}
+
+.app-tooltip.attached {
+  background: blue;
 }

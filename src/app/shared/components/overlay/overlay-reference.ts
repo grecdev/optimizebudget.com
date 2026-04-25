@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 
 /**
- * @summary - Individual overlay instance, used for behavioural intent.
+ * @summary - Individual overlay instance, used for behavioral intent.
  *
  * Letting the outer component know what is happening with the current rendered overlay.
  *

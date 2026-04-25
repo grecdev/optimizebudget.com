@@ -25,7 +25,7 @@ interface AppOverlayContentInstances {
 interface AppendOverlayOptions<C> extends Pick<AppendToDOMOptions, 'targetDOM'> {
   projectableNodes: EmbeddedViewRef<C>['rootNodes'];
   contentReferences: ComponentReferencesState;
-  instanceOptions?: AppOverlayComponentInstances['options'];
+  instanceOptions: AppOverlayComponentInstances['options'];
 }
 
 interface SetReferenceInstancesOptions {
