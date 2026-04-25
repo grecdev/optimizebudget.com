@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 import { AppIconModule } from '@shared/components/icon/icon.module';
+import { TooltipModule } from '@shared/directives/tooltip/tooltip.module';
 
 import { IncomingPaymentsComponent } from './incoming-payments.component';
 
@@ -14,6 +15,7 @@ import { IncomingPaymentsComponent } from './incoming-payments.component';
     //
     WidgetBoxModule,
     AppIconModule,
+    TooltipModule,
   ],
   exports: [IncomingPaymentsComponent],
 })

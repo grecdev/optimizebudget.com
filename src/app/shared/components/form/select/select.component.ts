@@ -73,7 +73,7 @@ export class AppSelectComponent
    * @private
    * @readonly
    */
-  private readonly _overlayService: AppOverlayService;
+  private readonly _appOverlayService: AppOverlayService;
 
   /**
    * @summary - Icon registry service, used to store icons and then render them in template.
@@ -221,7 +221,7 @@ export class AppSelectComponent
   ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
-    this._overlayService = overlayService;
+    this._appOverlayService = overlayService;
     this._changeDetectorRef = changeDetectorRef;
     this._ngControl = ngControl;
 
@@ -505,7 +505,7 @@ export class AppSelectComponent
       currentTarget: CURRENT_TARGET,
     });
 
-    this._overlayReference = this._overlayService.appendOverlay({
+    this._overlayReference = this._appOverlayService.appendOverlay({
       contentReferences: [OPTIONS_EMBEDDED_VIEW],
       projectableNodes: [OPTIONS_EMBEDDED_VIEW.rootNodes],
       targetDOM: CURRENT_TARGET,
