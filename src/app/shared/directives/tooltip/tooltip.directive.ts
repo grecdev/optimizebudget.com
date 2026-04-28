@@ -14,6 +14,7 @@ import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 
 import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
+import { type SetTooltipStyleOptions } from './tooltip.model';
 import { TooltipComponent } from './tooltip.component';
 
 @Directive({
@@ -109,18 +110,20 @@ export class TooltipDirective implements AfterViewInit {
       throw Error('Element ref not found!');
     }
 
-    const rendererEvent = this._renderer.listen(NATIVE_ELEMENT, 'mouseenter', event => {
-      event.stopPropagation();
+    const rendererEvent = this._renderer.listen(
+      NATIVE_ELEMENT,
+      'mouseenter',
+      (event: MouseEvent) => {
+        event.stopPropagation();
 
-      console.log(event.type);
+        this.attached = true;
+        this._changeDetectorRef.markForCheck();
 
-      this._changeDetectorRef.markForCheck();
-      this.attached = true;
-
-      this._createTooltipComponentReference();
-      this._initMouseLeaveEvent();
-      this._initCleanup();
-    });
+        this._createTooltipComponentReference();
+        this._initMouseLeaveEvent();
+        this._initCleanup();
+      }
+    );
 
     this._cleanupEventsRenderer.push(rendererEvent);
   }
@@ -142,20 +145,25 @@ export class TooltipDirective implements AfterViewInit {
       return;
     }
 
-    console.log('_initMouseLeaveEvent');
-
     this._mouseLeaveInitialized = true;
 
-    const rendererEvent = this._renderer.listen(NATIVE_ELEMENT, 'mouseleave', event => {
-      event.stopPropagation();
+    const rendererEvent = this._renderer.listen(
+      NATIVE_ELEMENT,
+      'mouseleave',
+      (event: MouseEvent) => {
+        event.stopPropagation();
 
-      if (!this._overlayReference) {
-        throw Error('Overlay reference not found!');
+        if (!this._overlayReference) {
+          throw Error('Overlay reference not found!');
+        }
+
+        const RELATED_TARGET = event.relatedTarget;
+
+        console.log(RELATED_TARGET);
+
+        // this._overlayReference.close();
       }
-
-      console.log(event.type);
-      this._overlayReference.close();
-    });
+    );
 
     this._cleanupEventsRenderer.push(rendererEvent);
   }
@@ -182,13 +190,19 @@ export class TooltipDirective implements AfterViewInit {
     });
   }
 
-  /**
+  /*
    * @summary - Create a component reference using the `ComponentFactoryResolver` API.
    *
    * @private
    * @returns {void}
    */
   private _createTooltipComponentReference(): void {
+    const NATIVE_ELEMENT = this._elementRef && this._elementRef.nativeElement;
+
+    if (!NATIVE_ELEMENT) {
+      throw Error('Element ref not found!');
+    }
+
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(TooltipComponent)
       .create(this._injector);
@@ -196,6 +210,11 @@ export class TooltipDirective implements AfterViewInit {
     const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<
       typeof TooltipComponent
     >;
+
+    this._setTooltipStyle({
+      projectableDomElement: HOST_VIEW.rootNodes[0],
+      target: NATIVE_ELEMENT,
+    });
 
     this._overlayReference = this._appOverlayService.appendOverlay({
       contentReferences: [COMPONENT_REFERENCE],
@@ -206,6 +225,26 @@ export class TooltipDirective implements AfterViewInit {
     });
 
     this._applicationReference.attachView(HOST_VIEW);
+  }
+
+  /**
+   * @summary - Set styling for the native element.
+   *
+   * @param {SetOptionsContainerStyleOptions['nativeElement']} options.optionsContainer - Element we want to change.
+   * @param {SetOptionsContainerStyleOptions['target']} options.target - Target we interact with via whatever events.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setTooltipStyle(options: SetTooltipStyleOptions): void {
+    const { projectableDomElement, target } = options;
+
+    const { top, left, height } = target.getBoundingClientRect();
+
+    Object.assign(projectableDomElement.style, {
+      top: `${top + height}px`,
+      left: `${left}px`,
+    });
   }
 
   ngAfterViewInit() {
