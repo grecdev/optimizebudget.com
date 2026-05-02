@@ -1,6 +1,7 @@
 import {
   type AfterViewInit,
   type EmbeddedViewRef,
+  type ComponentRef,
   ApplicationRef,
   ChangeDetectorRef,
   ComponentFactoryResolver,
@@ -10,8 +11,9 @@ import {
   Renderer2,
 } from '@angular/core';
 
-import { AppOverlayService } from '@shared/components/overlay/overlay.service';
+import { Subscription } from 'rxjs';
 
+import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { type SetTooltipStyleOptions } from './tooltip.model';
@@ -79,6 +81,24 @@ export class TooltipDirective implements AfterViewInit {
    */
   private readonly _cleanupEventsRenderer: Array<() => void> = [];
 
+  /**
+   * @summary - Get the dynamically added component reference.
+   *
+   * @type {ComponentRef<TooltipComponent> | null}
+   *
+   * @private
+   */
+  private _tooltipComponentReference: ComponentRef<TooltipComponent> | null = null;
+
+  /**
+   * @summary - For cleanup, of course.
+   *
+   * @type {Subscription}
+   *
+   * @private
+   */
+  private _onHiddenSubscription: Subscription | null = null;
+
   constructor(
     elementRef: ElementRef<HTMLElement>,
     renderer: Renderer2,
@@ -116,10 +136,19 @@ export class TooltipDirective implements AfterViewInit {
       (event: MouseEvent) => {
         event.stopPropagation();
 
+        const TOOLTIP_ALREADY_VISIBLE =
+          this._tooltipComponentReference &&
+          this._tooltipComponentReference.instance.isVisible;
+
+        if (TOOLTIP_ALREADY_VISIBLE) {
+          return;
+        }
+
         this.attached = true;
         this._changeDetectorRef.markForCheck();
 
         this._createTooltipComponentReference();
+        this._initOnHiddenSubscription();
         this._initMouseLeaveEvent();
         this._initCleanup();
       }
@@ -153,15 +182,23 @@ export class TooltipDirective implements AfterViewInit {
       (event: MouseEvent) => {
         event.stopPropagation();
 
-        if (!this._overlayReference) {
-          throw Error('Overlay reference not found!');
+        if (
+          !this._overlayReference ||
+          !this._overlayReference.overlayElement ||
+          !this._tooltipComponentReference
+        ) {
+          throw Error('References not found!');
         }
 
-        const RELATED_TARGET = event.relatedTarget;
+        const RELATED_TARGET = event.relatedTarget as Node | null;
 
-        console.log(RELATED_TARGET);
+        const HOVER_OUTSIDE_TOOLTIP =
+          !RELATED_TARGET ||
+          !this._overlayReference.overlayElement.contains(RELATED_TARGET);
 
-        // this._overlayReference.close();
+        if (HOVER_OUTSIDE_TOOLTIP) {
+          this._tooltipComponentReference.instance.onHidden$.next();
+        }
       }
     );
 
@@ -203,11 +240,11 @@ export class TooltipDirective implements AfterViewInit {
       throw Error('Element ref not found!');
     }
 
-    const COMPONENT_REFERENCE = this._componentFactoryResolver
+    this._tooltipComponentReference = this._componentFactoryResolver
       .resolveComponentFactory(TooltipComponent)
       .create(this._injector);
 
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<
+    const HOST_VIEW = this._tooltipComponentReference.hostView as EmbeddedViewRef<
       typeof TooltipComponent
     >;
 
@@ -216,8 +253,12 @@ export class TooltipDirective implements AfterViewInit {
       target: NATIVE_ELEMENT,
     });
 
+    this._tooltipComponentReference.instance.triggerElement = NATIVE_ELEMENT;
+
+    this._tooltipComponentReference.instance.showTooltip();
+
     this._overlayReference = this._appOverlayService.appendOverlay({
-      contentReferences: [COMPONENT_REFERENCE],
+      contentReferences: [this._tooltipComponentReference],
       projectableNodes: [HOST_VIEW.rootNodes],
       instanceOptions: {
         noBackground: true,
@@ -245,6 +286,33 @@ export class TooltipDirective implements AfterViewInit {
       top: `${top + height}px`,
       left: `${left}px`,
     });
+  }
+
+  /**
+   * @summary - Manage the stream that emits on `mouseleave` events.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initOnHiddenSubscription(): void {
+    if (!this._tooltipComponentReference) {
+      throw Error('Tooltip component reference not found!');
+    }
+
+    this._onHiddenSubscription =
+      this._tooltipComponentReference.instance.onHidden$.subscribe({
+        next: () => {
+          if (!this._overlayReference) {
+            throw Error('Overlay reference has not been found!');
+          }
+
+          if (this._tooltipComponentReference) {
+            this._tooltipComponentReference.instance.isVisible = false;
+          }
+
+          this._overlayReference.close();
+        },
+      });
   }
 
   ngAfterViewInit() {

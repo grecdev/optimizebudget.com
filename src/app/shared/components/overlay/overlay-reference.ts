@@ -1,5 +1,7 @@
 import { Subject } from 'rxjs';
 
+import { type OverlayReferenceConstructorOptions } from './overlay.model';
+
 /**
  * @summary - Individual overlay instance, used for behavioral intent.
  *
@@ -14,6 +16,12 @@ export class OverlayReference<C = unknown, CloseResult = unknown> {
   // So we don't leak our main Subject stream (observer)
   public readonly closingOverlay$ = this._closingOverlay.asObservable();
   public readonly completeObservable$ = this._completeObservable.asObservable();
+  public readonly overlayElement: OverlayReferenceConstructorOptions['overlayElement'] =
+    null;
+
+  constructor(options: OverlayReferenceConstructorOptions) {
+    this.overlayElement = options.overlayElement;
+  }
 
   /**
    * @summary - Method called from outside the reference, on certain events.
