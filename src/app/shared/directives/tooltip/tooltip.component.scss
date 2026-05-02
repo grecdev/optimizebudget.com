@@ -1,4 +1,22 @@
-.app-tooltip-content {
+@use 'sass:math';
+@use 'sass:map';
+
+@use 'spacing' as spacing;
+@use 'typography' as typography;
+@use 'color-palette' as color-palette;
+@use 'shape' as shape;
+
+.app-tooltip-content-container {
   position: fixed;
   pointer-events: auto;
+  padding-top: math.div(spacing.$sm, 2);
+
+  & .tooltip-content {
+    padding: math.div(spacing.$sm, 2);
+    font-size: typography.$body-sm;
+    border-radius: shape.$sm;
+
+    background: map.get(color-palette.$gray, 'variant-6');
+    color: map.get(color-palette.$common, 'white');
+  }
 }

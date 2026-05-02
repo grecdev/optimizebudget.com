@@ -5,13 +5,13 @@ import { Subject } from 'rxjs';
 import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 @Component({
-  selector: 'app-tooltip-content',
+  selector: 'app-tooltip-content-container',
   templateUrl: './tooltip.component.html',
   styleUrls: ['./tooltip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'app-tooltip-content',
+    class: 'app-tooltip-content-container',
     '(mouseleave)': '_handleMouseLeave($event)',
   },
 })
