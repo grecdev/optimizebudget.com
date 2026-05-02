@@ -9,6 +9,7 @@ import {
   ElementRef,
   Injector,
   Renderer2,
+  Input,
 } from '@angular/core';
 
 import { Subscription } from 'rxjs';
@@ -72,6 +73,15 @@ export class TooltipDirective implements AfterViewInit {
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   /**
+   * @summary - Get the dynamically added component reference.
+   *
+   * @type {ComponentRef<TooltipComponent> | null}
+   *
+   * @private
+   */
+  private _tooltipComponentReference: ComponentRef<TooltipComponent> | null = null;
+
+  /**
    * @summary - An array, containing all `Renderer2` cleanup events, for destroying.
    *
    * @type {Array<() => void> =}
@@ -82,15 +92,6 @@ export class TooltipDirective implements AfterViewInit {
   private readonly _cleanupEventsRenderer: Array<() => void> = [];
 
   /**
-   * @summary - Get the dynamically added component reference.
-   *
-   * @type {ComponentRef<TooltipComponent> | null}
-   *
-   * @private
-   */
-  private _tooltipComponentReference: ComponentRef<TooltipComponent> | null = null;
-
-  /**
    * @summary - For cleanup, of course.
    *
    * @type {Subscription}
@@ -98,6 +99,30 @@ export class TooltipDirective implements AfterViewInit {
    * @private
    */
   private _onHiddenSubscription: Subscription | null = null;
+
+  /**
+   * @summary - Basically the tooltip "message" which will be interpolated into the template.
+   *
+   * @type {string}
+   *
+   * @public
+   */
+  @Input({
+    required: true,
+  })
+  public get appTooltip(): string {
+    return this._appTooltipTextContent;
+  }
+
+  set appTooltip(value: string) {
+    if (!value || value === this._appTooltipTextContent) {
+      return;
+    }
+
+    this._appTooltipTextContent = value;
+  }
+
+  private _appTooltipTextContent: string = '';
 
   constructor(
     elementRef: ElementRef<HTMLElement>,
@@ -140,7 +165,9 @@ export class TooltipDirective implements AfterViewInit {
           this._tooltipComponentReference &&
           this._tooltipComponentReference.instance.isVisible;
 
-        if (TOOLTIP_ALREADY_VISIBLE) {
+        const NO_TOOLTIP_MESSAGE = this._appTooltipTextContent.length === 0;
+
+        if (TOOLTIP_ALREADY_VISIBLE || NO_TOOLTIP_MESSAGE) {
           return;
         }
 
@@ -248,12 +275,12 @@ export class TooltipDirective implements AfterViewInit {
       typeof TooltipComponent
     >;
 
-    this._setTooltipStyle({
-      projectableDomElement: HOST_VIEW.rootNodes[0],
-      target: NATIVE_ELEMENT,
-    });
+    // this._setTooltipStyle({
+    //   projectableDomElement: HOST_VIEW.rootNodes[0],
+    //   target: NATIVE_ELEMENT,
+    // });
 
-    this._tooltipComponentReference.instance.triggerElement = NATIVE_ELEMENT;
+    this._setTooltipComponentReferenceInstances();
 
     this._tooltipComponentReference.instance.showTooltip();
 
@@ -269,23 +296,24 @@ export class TooltipDirective implements AfterViewInit {
   }
 
   /**
-   * @summary - Set styling for the native element.
-   *
-   * @param {SetOptionsContainerStyleOptions['nativeElement']} options.optionsContainer - Element we want to change.
-   * @param {SetOptionsContainerStyleOptions['target']} options.target - Target we interact with via whatever events.
+   * @summary - Set instance data for our Tooltip component reference.
    *
    * @private
    * @returns {void}
    */
-  private _setTooltipStyle(options: SetTooltipStyleOptions): void {
-    const { projectableDomElement, target } = options;
+  private _setTooltipComponentReferenceInstances(): void {
+    if (!this._tooltipComponentReference) {
+      throw Error('Element ref not found!');
+    }
 
-    const { top, left, height } = target.getBoundingClientRect();
+    const NATIVE_ELEMENT = this._elementRef && this._elementRef.nativeElement;
 
-    Object.assign(projectableDomElement.style, {
-      top: `${top + height}px`,
-      left: `${left}px`,
-    });
+    if (!NATIVE_ELEMENT) {
+      throw Error('Element ref not found!');
+    }
+
+    this._tooltipComponentReference.instance.triggerElement = NATIVE_ELEMENT;
+    this._tooltipComponentReference.instance.textContent = this._appTooltipTextContent;
   }
 
   /**

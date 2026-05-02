@@ -7,9 +7,10 @@
 @use 'shape' as shape;
 
 .app-tooltip-content-container {
+  display: block;
   position: fixed;
   pointer-events: auto;
-  padding-top: math.div(spacing.$sm, 2);
+  padding-top: spacing.$sm;
 
   & .tooltip-content {
     padding: math.div(spacing.$sm, 2);

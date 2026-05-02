@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { Subject } from 'rxjs';
 
@@ -15,7 +21,9 @@ import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.m
     '(mouseleave)': '_handleMouseLeave($event)',
   },
 })
-export class TooltipComponent implements AppOverlayContentInstances {
+export class TooltipComponent implements AppOverlayContentInstances, AfterViewInit {
+  private readonly _elementRef: ElementRef<HTMLElement> | null = null;
+
   /**
    * @summary - Assigned from the OverlayService.
    *
@@ -61,6 +69,10 @@ export class TooltipComponent implements AppOverlayContentInstances {
    */
   public onHidden$: Subject<void> = new Subject<void>();
 
+  constructor(elementRef: ElementRef<HTMLElement>) {
+    this._elementRef = elementRef;
+  }
+
   /**
    * @summary - Show tooltip on `mouseenter` trigger.
    *
@@ -94,5 +106,41 @@ export class TooltipComponent implements AppOverlayContentInstances {
     if (HOVER_OUTSIDE_TOOLTIP) {
       this.onHidden$.next();
     }
+  }
+
+  /**
+   * @summary - Set styling for the native element.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setNativeElementStyle(): void {
+    const NATIVE_ELEMENT = this._elementRef && this._elementRef.nativeElement;
+
+    if (!this.triggerElement || !NATIVE_ELEMENT) {
+      throw Error('DOM Tree elements not found!');
+    }
+
+    const { width: WIDTH_NATIVE_ELEMENT } = NATIVE_ELEMENT.getBoundingClientRect();
+
+    const {
+      top: TOP_TRIGGER_ELEMENT,
+      left: LEFT_TRIGGER_ELEMENT,
+      height: HEIGHT_TRIGGER_ELEMENT,
+      width: WIDTH_TRIGGER_ELEMENT,
+    } = this.triggerElement.getBoundingClientRect();
+
+    const MIDDLE_POINT = (WIDTH_TRIGGER_ELEMENT - WIDTH_NATIVE_ELEMENT) / 2;
+    const POS_X = LEFT_TRIGGER_ELEMENT + MIDDLE_POINT;
+    const POS_Y = TOP_TRIGGER_ELEMENT + HEIGHT_TRIGGER_ELEMENT;
+
+    Object.assign(NATIVE_ELEMENT.style, {
+      top: `${POS_Y}px`,
+      left: `${POS_X}px`,
+    });
+  }
+
+  ngAfterViewInit() {
+    this._setNativeElementStyle();
   }
 }
