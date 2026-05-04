@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
 
@@ -21,7 +22,9 @@ import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.m
     '(mouseleave)': '_handleMouseLeave($event)',
   },
 })
-export class TooltipComponent implements AppOverlayContentInstances, AfterViewInit {
+export class TooltipComponent
+  implements AppOverlayContentInstances, AfterViewInit, OnDestroy
+{
   private readonly _elementRef: ElementRef<HTMLElement> | null = null;
 
   /**
@@ -142,5 +145,9 @@ export class TooltipComponent implements AppOverlayContentInstances, AfterViewIn
 
   ngAfterViewInit() {
     this._setNativeElementStyle();
+  }
+
+  ngOnDestroy() {
+    this.isVisible = false;
   }
 }

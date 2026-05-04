@@ -10,14 +10,14 @@ import {
   Injector,
   Renderer2,
   Input,
+  OnDestroy,
 } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import { type SetTooltipStyleOptions } from './tooltip.model';
 import { TooltipComponent } from './tooltip.component';
 
 @Directive({
@@ -27,7 +27,7 @@ import { TooltipComponent } from './tooltip.component';
     '[class.attached]': 'attached',
   },
 })
-export class TooltipDirective implements AfterViewInit {
+export class TooltipDirective implements AfterViewInit, OnDestroy {
   private readonly _elementRef: ElementRef<HTMLElement> | null = null;
   private readonly _renderer: Renderer2;
   private readonly _changeDetectorRef: ChangeDetectorRef;
@@ -89,16 +89,17 @@ export class TooltipDirective implements AfterViewInit {
    * @private
    * @readonly
    */
-  private readonly _cleanupEventsRenderer: Array<() => void> = [];
+  private readonly _renderer2Events: Array<() => void> = [];
 
   /**
-   * @summary - For cleanup, of course.
+   * @summary - Observer for whenever the component is destroyed.
    *
-   * @type {Subscription}
+   * @type {Subject<void>}
    *
    * @private
+   * @readonly
    */
-  private _onHiddenSubscription: Subscription | null = null;
+  private readonly _onDestroyed$: Subject<void> = new Subject<void>();
 
   /**
    * @summary - Basically the tooltip "message" which will be interpolated into the template.
@@ -181,7 +182,7 @@ export class TooltipDirective implements AfterViewInit {
       }
     );
 
-    this._cleanupEventsRenderer.push(rendererEvent);
+    this._renderer2Events.push(rendererEvent);
   }
 
   /**
@@ -229,7 +230,7 @@ export class TooltipDirective implements AfterViewInit {
       }
     );
 
-    this._cleanupEventsRenderer.push(rendererEvent);
+    this._renderer2Events.push(rendererEvent);
   }
 
   /**
@@ -274,11 +275,6 @@ export class TooltipDirective implements AfterViewInit {
     const HOST_VIEW = this._tooltipComponentReference.hostView as EmbeddedViewRef<
       typeof TooltipComponent
     >;
-
-    // this._setTooltipStyle({
-    //   projectableDomElement: HOST_VIEW.rootNodes[0],
-    //   target: NATIVE_ELEMENT,
-    // });
 
     this._setTooltipComponentReferenceInstances();
 
@@ -327,15 +323,12 @@ export class TooltipDirective implements AfterViewInit {
       throw Error('Tooltip component reference not found!');
     }
 
-    this._onHiddenSubscription =
-      this._tooltipComponentReference.instance.onHidden$.subscribe({
+    this._tooltipComponentReference.instance.onHidden$
+      .pipe(takeUntil(this._onDestroyed$))
+      .subscribe({
         next: () => {
           if (!this._overlayReference) {
             throw Error('Overlay reference has not been found!');
-          }
-
-          if (this._tooltipComponentReference) {
-            this._tooltipComponentReference.instance.isVisible = false;
           }
 
           this._overlayReference.close();
@@ -345,5 +338,12 @@ export class TooltipDirective implements AfterViewInit {
 
   ngAfterViewInit() {
     this._initMouseEnterEvent();
+  }
+
+  ngOnDestroy() {
+    this._renderer2Events.forEach(cleanupFn => cleanupFn());
+
+    this._onDestroyed$.next();
+    this._onDestroyed$.complete();
   }
 }
