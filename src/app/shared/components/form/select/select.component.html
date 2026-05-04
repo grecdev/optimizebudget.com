@@ -6,8 +6,10 @@
   <app-icon svgIcon="caret-down" [@rotateAnimation]="!focused ? 'initial' : 'focused'" />
 </div>
 
-<ng-template #selectOptionsContainer>
-  <div class="select-options-container">
-    <ng-content></ng-content>
+<ng-template #selectOptionsWrapper>
+  <div class="select-options-wrapper" (click)="handleClickOnWrapper($event)">
+    <div class="select-options-container">
+      <ng-content></ng-content>
+    </div>
   </div>
 </ng-template>
