@@ -1,13 +1,15 @@
 <div class="row">
-  <div class="col-budget-status">
+  <div class="budget-status-container">
     <app-total-monthly-spent />
 
-    <app-incoming-payment-subscriptions />
+    <app-remaining-budget />
+
+    <div>Widget box notes</div>
   </div>
 
-  <app-total-count-category />
+  <app-total-count-category #totalCountCategory />
 
-  <div>notes @a@b@c@d@</div>
+  <app-incoming-payment-subscriptions />
 </div>
 
 <app-tracker-table />

@@ -8,8 +8,9 @@
   gap: spacing.$grid-gap-spacing;
 }
 
-.col-budget-status {
+.budget-status-container {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-auto-rows: auto;
+  align-content: start;
   gap: spacing.$grid-gap-spacing;
 }
