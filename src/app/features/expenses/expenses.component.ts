@@ -15,15 +15,6 @@ export class ExpensesComponent implements AfterViewInit {
     null;
 
   /**
-   * @summary - Style for whatever divs.
-   *
-   * @type {Partial<CSSStyleDeclaration>}
-   *
-   * @public
-   */
-  public styleRow: Partial<CSSStyleDeclaration> = {};
-
-  /**
    * @summary - Calculate the size of total expenses canvas graph, in order to set the sizes of other elements.
    *
    * @private
