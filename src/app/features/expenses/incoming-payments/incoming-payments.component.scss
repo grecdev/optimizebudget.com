@@ -4,6 +4,10 @@
 @use 'spacing' as spacing;
 @use 'shape' as shape;
 
+.wrapper {
+  height: 100%;
+}
+
 .body {
   display: flex;
   flex-direction: column;
@@ -12,7 +16,6 @@
   padding-right: spacing.$default;
 
   overflow: auto;
-  max-height: 250px;
 
   &__item {
     gap: spacing.$sm;

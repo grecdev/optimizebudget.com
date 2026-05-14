@@ -13,6 +13,8 @@ import {
 import { CategoryType } from '@shared/models/enums';
 import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
 
+import { type WidgetBoxComponent } from '@core/layout/widget-box/widget-box.component';
+
 import {
   DataSourceItemKey,
   type CanvasStyle,
@@ -27,6 +29,15 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TotalCountCategoryComponent implements AfterViewInit {
+  /**
+   * @summary - Reference to be used outside its component, in order to obtain a "fluid" layout.
+   *
+   * @type {ElementRef<HTMLElement> | null}
+   * @public
+   */
+  @ViewChild('appWidgetBox')
+  public readonly appWidgetBox: WidgetBoxComponent | null = null;
+
   /**
    * @summary - Get the pixel ratio for current device.
    *
