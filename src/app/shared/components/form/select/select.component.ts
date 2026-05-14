@@ -73,7 +73,7 @@ export class AppSelectComponent
    * @private
    * @readonly
    */
-  private readonly _overlayService: AppOverlayService;
+  private readonly _appOverlayService: AppOverlayService;
 
   /**
    * @summary - Icon registry service, used to store icons and then render them in template.
@@ -198,8 +198,8 @@ export class AppSelectComponent
    * @private
    * @readonly
    */
-  @ViewChild('selectOptionsContainer')
-  private readonly _selectOptionsContainer: TemplateRef<void> | null = null;
+  @ViewChild('selectOptionsWrapper')
+  private readonly _selectOptionsWrapper: TemplateRef<void> | null = null;
 
   /**
    * @summary - Option children.
@@ -221,7 +221,7 @@ export class AppSelectComponent
   ) {
     this._iconRegistryService = iconRegistryService;
     this._domSanitizer = domSanitizer;
-    this._overlayService = overlayService;
+    this._appOverlayService = overlayService;
     this._changeDetectorRef = changeDetectorRef;
     this._ngControl = ngControl;
 
@@ -346,12 +346,12 @@ export class AppSelectComponent
    * @private
    * @returns {EmbeddedViewRef<void>}
    */
-  private _createOptionsContainerEmbedded(): EmbeddedViewRef<void> {
-    if (!this._selectOptionsContainer) {
+  private _createOptionsWrapperEmbedded(): EmbeddedViewRef<void> {
+    if (!this._selectOptionsWrapper) {
       throw Error('_selectOptionsContainer not found!');
     }
 
-    const VIEW = this._selectOptionsContainer.createEmbeddedView();
+    const VIEW = this._selectOptionsWrapper.createEmbeddedView();
 
     const ROOT_NODES = VIEW.rootNodes;
 
@@ -372,16 +372,36 @@ export class AppSelectComponent
    * @returns {void}
    */
   private _setOptionsContainerStyle(options: SetOptionsContainerStyleOptions): void {
-    const { optionsContainer, currentTarget } = options;
+    const { selectOptionsWrapper, currentTarget } = options;
 
     const { top, left, height } = currentTarget.getBoundingClientRect();
 
-    const NATIVE_ELEMENT = optionsContainer.rootNodes[0] as HTMLElement;
+    const WRAPPER_ELEMENT = selectOptionsWrapper.rootNodes[0] as HTMLElement;
 
-    Object.assign(NATIVE_ELEMENT.style, {
+    const OPTIONS_CONTAINER = WRAPPER_ELEMENT.querySelector<HTMLElement>(
+      '.select-options-container'
+    );
+
+    if (!OPTIONS_CONTAINER) {
+      throw Error('Options container not found!');
+    }
+
+    Object.assign(OPTIONS_CONTAINER.style, {
       top: `${top + height}px`,
       left: `${left}px`,
     });
+  }
+
+  /**
+   * @summary - Trigger select close.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _triggerClose(): void {
+    if (this._overlayReference) {
+      this._overlayReference.close();
+    }
   }
 
   /**
@@ -469,16 +489,10 @@ export class AppSelectComponent
     SELECTED_OPTION.elementRef.nativeElement.scrollIntoView();
   }
 
-  /**
-   * @summary - Trigger select close.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _triggerClose(): void {
-    if (this._overlayReference) {
-      this._overlayReference.close();
-    }
+  public handleClickOnWrapper(event: MouseEvent) {
+    event.stopPropagation();
+
+    this._triggerClose();
   }
 
   @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
@@ -486,28 +500,27 @@ export class AppSelectComponent
 
     const CURRENT_TARGET = event.currentTarget as HTMLElement;
 
-    if (!this._selectOptionsContainer || !CURRENT_TARGET) {
+    if (!this._selectOptionsWrapper || !CURRENT_TARGET) {
       throw Error('Elements not found!');
     }
 
     if (this.focused) {
       this._triggerClose();
-
       return;
     }
 
     this.focused = true;
 
-    const OPTIONS_EMBEDDED_VIEW = this._createOptionsContainerEmbedded();
+    const OPTIONS_WRAPPER_EMBEDDED_VIEW = this._createOptionsWrapperEmbedded();
 
     this._setOptionsContainerStyle({
-      optionsContainer: OPTIONS_EMBEDDED_VIEW,
+      selectOptionsWrapper: OPTIONS_WRAPPER_EMBEDDED_VIEW,
       currentTarget: CURRENT_TARGET,
     });
 
-    this._overlayReference = this._overlayService.appendOverlay({
-      contentReferences: [OPTIONS_EMBEDDED_VIEW],
-      projectableNodes: [OPTIONS_EMBEDDED_VIEW.rootNodes],
+    this._overlayReference = this._appOverlayService.appendOverlay({
+      contentReferences: [OPTIONS_WRAPPER_EMBEDDED_VIEW],
+      projectableNodes: [OPTIONS_WRAPPER_EMBEDDED_VIEW.rootNodes],
       targetDOM: CURRENT_TARGET,
       instanceOptions: {
         noBackground: true,

@@ -4,6 +4,14 @@
 
 .row {
   display: grid;
-  grid-template-columns: repeat(2, max-content);
+  grid-template-columns: repeat(3, auto);
+  gap: spacing.$grid-gap-spacing;
+
+  overflow: hidden;
+}
+
+.budget-status-container {
+  display: grid;
+  grid-auto-rows: auto auto 1fr;
   gap: spacing.$grid-gap-spacing;
 }

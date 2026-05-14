@@ -1,13 +1,12 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'spacing' as *;
+@use 'spacing' as spacing;
 
 .router-container {
   & router-outlet + * {
     display: grid;
-    gap: map.get($spacing, 'md');
+    gap: spacing.$grid-gap-spacing;
 
-    padding: map.get($spacing, 'default');
+    padding: spacing.$default;
   }
 }

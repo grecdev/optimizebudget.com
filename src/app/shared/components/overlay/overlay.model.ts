@@ -25,7 +25,7 @@ interface AppOverlayContentInstances {
 interface AppendOverlayOptions<C> extends Pick<AppendToDOMOptions, 'targetDOM'> {
   projectableNodes: EmbeddedViewRef<C>['rootNodes'];
   contentReferences: ComponentReferencesState;
-  instanceOptions?: AppOverlayComponentInstances['options'];
+  instanceOptions: AppOverlayComponentInstances['options'];
 }
 
 interface SetReferenceInstancesOptions {
@@ -43,6 +43,10 @@ interface AppendToDOMOptions {
   targetDOM?: HTMLElement;
 }
 
+interface OverlayReferenceConstructorOptions {
+  overlayElement: HTMLElement | null;
+}
+
 type ComponentReference =
   | ComponentRef<unknown & AppOverlayContentInstances>
   | EmbeddedViewRef<unknown>
@@ -50,7 +54,6 @@ type ComponentReference =
   | null;
 
 type ComponentReferencesState = Array<ComponentReference>;
-
 type OverlayReferenceMapKey<C> = OverlayReference<ComponentRef<C>>;
 
 export type {
@@ -63,4 +66,5 @@ export type {
   AppendOverlayOptions,
   SaveOverlayReferenceOptions,
   AppendToDOMOptions,
+  OverlayReferenceConstructorOptions,
 };

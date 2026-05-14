@@ -1,7 +1,7 @@
 import { type EmbeddedViewRef } from '@angular/core';
 
 interface SetOptionsContainerStyleOptions {
-  optionsContainer: EmbeddedViewRef<void>;
+  selectOptionsWrapper: EmbeddedViewRef<void>;
   currentTarget: HTMLElement;
 }
 

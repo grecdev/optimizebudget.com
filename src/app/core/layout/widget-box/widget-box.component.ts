@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewEncapsulation,
+} from '@angular/core';
 
 @Component({
   selector: 'app-widget-box',
@@ -10,4 +15,10 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
     class: 'widget-box',
   },
 })
-export class WidgetBoxComponent {}
+export class WidgetBoxComponent {
+  public readonly elementRef: ElementRef<HTMLElement> | null = null;
+
+  constructor(elementRef: ElementRef<HTMLElement>) {
+    this.elementRef = elementRef;
+  }
+}

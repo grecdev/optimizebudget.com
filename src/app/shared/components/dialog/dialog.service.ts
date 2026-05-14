@@ -23,7 +23,7 @@ import { AppDialogModule, APP_DIALOG_COMPONENT_REFERENCE } from './dialog.module
 })
 export class AppDialogService {
   private readonly _injector: Injector;
-  private readonly _overlayService: AppOverlayService;
+  private readonly _appOverlayService: AppOverlayService;
   private readonly _componentFactoryResolver: ComponentFactoryResolver;
   private readonly _applicationReference: ApplicationRef;
 
@@ -41,7 +41,6 @@ export class AppDialogService {
     dialogModuleRef: null,
   };
 
-  constructor(...args: Array<unknown>);
   constructor(
     injector: Injector,
     overlayService: AppOverlayService,
@@ -49,7 +48,7 @@ export class AppDialogService {
     applicationReference: ApplicationRef
   ) {
     this._injector = injector;
-    this._overlayService = overlayService;
+    this._appOverlayService = overlayService;
     this._componentFactoryResolver = componentFactoryResolver;
     this._applicationReference = applicationReference;
   }
@@ -83,9 +82,12 @@ export class AppDialogService {
       this._componentReference.contentModuleRef,
     ];
 
-    const OVERLAY_REFERENCE = this._overlayService.appendOverlay({
+    const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
       contentReferences: CONTENT_REFERENCES,
       projectableNodes: DIALOG_ROOT_NODES,
+      instanceOptions: {
+        noBackground: false,
+      },
     });
 
     this._cleanup();

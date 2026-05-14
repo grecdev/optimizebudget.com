@@ -28,29 +28,34 @@ import { IconRegistryService } from '@shared/components/icon/icon-registry.servi
 })
 export class SomeComponent {
   /**
-   * @summary - Icon registry service.
-   *
-   * @type {IconRegistryService}
-   * @private
-   */
-  private readonly _iconRegistryService: IconRegistryService;
-
-  /**
    * @summary - Sanitize whatever inputs.
    *
    * @type {DomSanitizer}
+   *
    * @private
+   * @readonly
    */
   private readonly _domSanitizer: DomSanitizer;
+
+  /**
+   * @summary - Icon registry service.
+   *
+   * @type {IconRegistryService}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _iconRegistryService: IconRegistryService;
 
   /**
    * @summary - Icons state.
    *
    * @type {Record<string, string>}
    * @public
+   * @readonly
    */
   public readonly icons: Record<string, string> = {
-    'iconName': 'icon-name',
+    iconName: 'icon-name',
   };
 
   constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
@@ -82,5 +87,5 @@ export class SomeComponent {
 ```angular2html
 <!-- some.component.html -->
 
-<app-icon [svgIcon]="icons.someComponent"/>
+<app-icon [svgIcon]="icons['iconName']"/>
 ```

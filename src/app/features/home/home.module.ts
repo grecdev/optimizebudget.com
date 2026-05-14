@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { RemainingBudgetModule } from '@shared/components/remaining-budget/remaining-budget.module';
+
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 
 import { TotalBalanceModule } from './total-balance/total-balance.module';
 import { MonthlyBudgetModule } from './monthly-budget/monthly-budget.module';
-import { RemainingBudgetModule } from './remaining-budget/remaining-budget.module';
 import { TopExpensesModule } from './top-expenses/top-expenses.module';
 import { CategoryExpensesModule } from './category-expenses/category-expenses.module';
 import { MoneyStatisticsModule } from './money-statistics/money-statistics.module';
@@ -14,7 +15,9 @@ import { MoneyStatisticsModule } from './money-statistics/money-statistics.modul
 @NgModule({
   declarations: [HomeComponent],
   imports: [
+    // Angular specific
     CommonModule,
+    // Local components
     HomeRoutingModule,
     TotalBalanceModule,
     MonthlyBudgetModule,

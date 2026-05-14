@@ -122,7 +122,14 @@ export class AppOverlayService {
 
     const CONTENT_REFERENCES = [COMPONENT_REFERENCE, ...contentReferences];
 
-    this._lastOverlayReference = new OverlayReference<typeof COMPONENT_REFERENCE>();
+    const COMPONENT_HOST_VIEW =
+      COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>;
+
+    const COMPONENT_ROOT_NODES: Array<HTMLElement> = COMPONENT_HOST_VIEW.rootNodes;
+
+    this._lastOverlayReference = new OverlayReference<typeof COMPONENT_REFERENCE>({
+      overlayElement: COMPONENT_ROOT_NODES[0] || null,
+    });
 
     this._setReferenceInstances({
       overlayComponentReference: COMPONENT_REFERENCE,
@@ -135,7 +142,7 @@ export class AppOverlayService {
     });
 
     this._appendToDOM({
-      hostView: COMPONENT_REFERENCE.hostView as EmbeddedViewRef<AppOverlayComponent>,
+      hostView: COMPONENT_HOST_VIEW,
       targetDOM,
     });
 
