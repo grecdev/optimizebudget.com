@@ -14,7 +14,7 @@
   border-radius: shape.$default;
 
   padding: spacing.$default;
-  box-shadow: 0px 0px 5px 0px #ededed;
+  box-shadow: map.get(variables.$box-shadow, 'default');
   overflow: hidden;
 
   & [app-widget-box-title],
