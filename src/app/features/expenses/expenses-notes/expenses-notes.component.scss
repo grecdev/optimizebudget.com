@@ -1,0 +1,71 @@
+@use 'sass:map';
+@use 'sass:math';
+
+@use 'variables' as variables;
+@use 'color-palette' as color-palette;
+@use 'spacing' as spacing;
+@use 'shape' as shape;
+
+:host {
+  $corner-size: 25px;
+  $box-shadow-offset: 5px;
+  $box-shadow-offset-negative: calc(-1 * $box-shadow-offset);
+  //
+  position: relative;
+  padding: spacing.$sm spacing.$default spacing.$sm spacing.$sm;
+
+  background: map.get(color-palette.$yellow, 'variant-2');
+  box-shadow: map.get(variables.$box-shadow, 'default');
+
+  clip-path: polygon(
+    $box-shadow-offset-negative $box-shadow-offset-negative,
+    calc(100% + $box-shadow-offset) $box-shadow-offset-negative,
+    calc(100% + $box-shadow-offset) calc(100% - $corner-size),
+    calc(100% - $corner-size) calc(100% + $box-shadow-offset),
+    $box-shadow-offset-negative calc(100% + $box-shadow-offset)
+  );
+
+  &::before {
+    $color: map.get(color-palette.$yellow, 'variant-3');
+    //
+    content: '';
+    position: absolute;
+    right: $box-shadow-offset-negative;
+    bottom: $box-shadow-offset-negative;
+
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: $corner-size $corner-size 0 0;
+    border-color: $color transparent transparent transparent;
+    transform: rotate(0deg);
+  }
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: rgb(125 125 125 / 0.5);
+    border-radius: shape.$default;
+    cursor: auto;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgb(125 125 125);
+  }
+}

@@ -6,8 +6,6 @@
   display: grid;
   grid-template-columns: repeat(3, auto);
   gap: spacing.$grid-gap-spacing;
-
-  overflow: hidden;
 }
 
 .budget-status-container {
