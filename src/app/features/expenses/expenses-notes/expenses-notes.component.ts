@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-expenses-notes',
@@ -6,4 +7,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./expenses-notes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExpensesNotesComponent {}
+export class ExpensesNotesComponent {
+  value: FormControl<string | null> = new FormControl('');
+}
