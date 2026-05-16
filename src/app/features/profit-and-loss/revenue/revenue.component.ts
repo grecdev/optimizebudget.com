@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
+import { StatusType } from '../status-pill/status-pill.model';
+
 @Component({
   selector: 'app-revenue',
   templateUrl: './revenue.component.html',
@@ -8,6 +10,16 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class RevenueComponent {
   /**
+   * @summary - Status type used for the "pill" component.
+   *
+   * @type {StatusType}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly StatusType = StatusType;
+
+  /**
    * @summary - Dynamically fetched.
    *
    * @tpye {number}
@@ -15,9 +27,4 @@ export class RevenueComponent {
    * @public
    */
   public totalRevenue: number = 2000;
-
-  public statusSign = {
-    up: '+',
-    down: '-',
-  };
 }

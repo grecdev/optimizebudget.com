@@ -1,11 +1,23 @@
 import { Component } from '@angular/core';
 
+import { StatusType } from '../status-pill/status-pill.model';
+
 @Component({
   selector: 'app-expenses',
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
 })
 export class ExpensesComponent {
+  /**
+   * @summary - Status type used for the "pill" component.
+   *
+   * @type {StatusType}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly StatusType = StatusType;
+
   /**
    * @summary - Dynamically fetched.
    *
@@ -14,9 +26,4 @@ export class ExpensesComponent {
    * @public
    */
   public totalExpenses: number = 1569;
-
-  public statusSign = {
-    up: '+',
-    down: '-',
-  };
 }

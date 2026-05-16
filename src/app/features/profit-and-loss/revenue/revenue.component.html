@@ -3,6 +3,7 @@
 
   <div class="row">
     <h2>{{ totalRevenue | currency: 'EUR' }}</h2>
-    <p class="percentage-status highlight-green">{{ statusSign.up }}12%</p>
+
+    <app-status-pill [type]="StatusType.UP">5%</app-status-pill>
   </div>
 </app-widget-box>

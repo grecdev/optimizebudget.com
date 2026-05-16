@@ -17,7 +17,7 @@ import { StatusType } from './status-pill.model';
   },
 })
 export class StatusPillComponent {
-  protected readonly StatusType = StatusType;
+  public readonly StatusType = StatusType;
 
   /**
    * @summary - Sanitize whatever inputs.

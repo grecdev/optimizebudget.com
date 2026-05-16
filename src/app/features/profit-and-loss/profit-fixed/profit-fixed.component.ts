@@ -8,7 +8,15 @@ import { StatusType } from '../status-pill/status-pill.model';
   styleUrls: ['./profit-fixed.component.scss'],
 })
 export class ProfitFixedComponent {
-  protected readonly StatusType = StatusType;
+  /**
+   * @summary - Status type used for the "pill" component.
+   *
+   * @type {StatusType}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly StatusType = StatusType;
 
   /**
    * @summary - Dynamically fetched.

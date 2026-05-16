@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
+import { StatusPillModule } from '../status-pill/status-pill.module';
 import { RevenueComponent } from './revenue.component';
 
 @NgModule({
@@ -12,6 +13,7 @@ import { RevenueComponent } from './revenue.component';
     CommonModule,
     // App specific
     WidgetBoxModule,
+    StatusPillModule,
   ],
   exports: [RevenueComponent],
 })
