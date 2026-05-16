@@ -4,10 +4,6 @@
 @use 'typography' as typography;
 
 :host {
-  & app-widget-box {
-    background: map.get(color-palette.$green, 'variant-4');
-  }
-
   & .row {
     display: flex;
     align-items: center;
