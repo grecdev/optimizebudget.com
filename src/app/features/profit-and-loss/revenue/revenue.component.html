@@ -1,1 +1,8 @@
-<p>revenue works!</p>
+<app-widget-box>
+  <h4 app-widget-box-title>Total revenue</h4>
+
+  <div class="row">
+    <h2>{{ totalRevenue | currency: 'EUR' }}</h2>
+    <p class="percentage-status highlight-green">{{ statusSign.up }}12%</p>
+  </div>
+</app-widget-box>

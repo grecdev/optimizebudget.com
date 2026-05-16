@@ -1,0 +1,28 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+@use 'typography' as typography;
+
+:host {
+  & app-widget-box {
+    background: #fafffc;
+  }
+
+  & .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  & .percentage-status {
+    font-size: typography.$h4;
+  }
+
+  & .highlight-green {
+    color: map.get(color-palette.$green, 'variant-3');
+  }
+
+  & .highlight-red {
+    color: map.get(color-palette.$red, 'variant-2');
+  }
+}
