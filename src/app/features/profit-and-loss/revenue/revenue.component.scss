@@ -4,12 +4,6 @@
 @use 'typography' as typography;
 
 :host {
-  & .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   & .percentage-status {
     font-size: typography.$h4;
   }

@@ -5,7 +5,7 @@ import { StatusType } from '../status-pill/status-pill.model';
 @Component({
   selector: 'app-revenue',
   templateUrl: './revenue.component.html',
-  styleUrls: ['./revenue.component.scss'],
+  styleUrls: ['./revenue.component.scss', '../profit-and-loss-utility.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RevenueComponent {

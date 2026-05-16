@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { StatusType } from '../status-pill/status-pill.model';
 
 @Component({
   selector: 'app-profit-fixed',
   templateUrl: './profit-fixed.component.html',
-  styleUrls: ['./profit-fixed.component.scss'],
+  styleUrls: [
+    './profit-fixed.component.scss',
+    '../profit-and-loss-utility.component.scss',
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfitFixedComponent {
   /**
