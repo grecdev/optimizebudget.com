@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class RevenueComponent {
   /**
-   * @summary - Dynamically fetched revenue.
+   * @summary - Dynamically fetched.
    *
    * @tpye {number}
    *

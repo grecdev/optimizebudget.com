@@ -5,6 +5,7 @@ import { ProfitAndLossRoutingModule } from './profit-and-loss-routing.module';
 import { ProfitAndLossComponent } from './profit-and-loss.component';
 
 import { RevenueModule } from './revenue/revenue.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @NgModule({
   declarations: [ProfitAndLossComponent],
@@ -14,6 +15,7 @@ import { RevenueModule } from './revenue/revenue.module';
     // App specific
     ProfitAndLossRoutingModule,
     RevenueModule,
+    ExpensesModule,
   ],
 })
 export class ProfitAndLossModule {}
