@@ -1,4 +1,10 @@
-type RoutesName = 'overview' | 'login' | 'register' | 'forgotPassword' | 'expenses';
+type RoutesName =
+  | 'overview'
+  | 'login'
+  | 'register'
+  | 'forgotPassword'
+  | 'expenses'
+  | 'profitAndLoss';
 
 // Make sure these values match $theme-variant and vice versa
 type ThemeVariant = 'basic' | 'contained' | 'outlined';

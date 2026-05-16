@@ -30,6 +30,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./features/expenses/expenses.module').then(module => module.ExpensesModule),
   },
+  {
+    path: 'profit-and-loss',
+    loadChildren: () =>
+      import('./features/profit-and-loss/profit-and-loss.module').then(
+        module => module.ProfitAndLossModule
+      ),
+  },
   // {
   //   path: '**',
   //   loadChildren: () =>
