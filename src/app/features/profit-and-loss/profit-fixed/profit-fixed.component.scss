@@ -1,0 +1,14 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+@use 'typography' as typography;
+
+:host app-widget-box {
+  background: map.get(color-palette.$purple, 'variant-2');
+
+  & .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

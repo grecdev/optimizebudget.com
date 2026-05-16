@@ -14,7 +14,7 @@ export class RevenueComponent {
    *
    * @public
    */
-  public totalRevenue: number = 1234;
+  public totalRevenue: number = 2000;
 
   public statusSign = {
     up: '+',
