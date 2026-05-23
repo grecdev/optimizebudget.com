@@ -8,6 +8,7 @@ import { RevenueModule } from './revenue/revenue.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { ProfitFixedModule } from './profit-fixed/profit-fixed.module';
 import { ProfitMarginsModule } from './profit-margins/profit-margins.module';
+import { ProfitLossTableModule } from './profit-loss-table/profit-loss-table.module';
 
 @NgModule({
   declarations: [ProfitAndLossComponent],
@@ -20,6 +21,7 @@ import { ProfitMarginsModule } from './profit-margins/profit-margins.module';
     ExpensesModule,
     ProfitFixedModule,
     ProfitMarginsModule,
+    ProfitLossTableModule,
   ],
 })
 export class ProfitAndLossModule {}
