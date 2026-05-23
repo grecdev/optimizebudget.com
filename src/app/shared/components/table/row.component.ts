@@ -217,19 +217,11 @@ export class BaseRowDef implements OnChanges {
    * @returns {TemplateRef<TableRefElement> | null}
    */
   extractCellTemplate(column: ColumnDef): TemplateRef<TableRefElement> | null {
-    if (!column.headerCellDef) {
-      throw Error(`Header cell definition has not been found for column: ${column.name}!`);
-    }
-
-    if (!column.cellDef) {
-      throw Error(`Cell definition has not been found for column: ${column.name}!`);
-    }
-
-    if (this instanceof HeaderRowDef) {
+    if (column.headerCellDef && this instanceof HeaderRowDef) {
       return column.headerCellDef.template;
     }
 
-    return column.cellDef.template;
+    return column.cellDef && column.cellDef.template;
   }
 }
 

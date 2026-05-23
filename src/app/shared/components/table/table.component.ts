@@ -20,6 +20,7 @@ import {
   OnDestroy,
   AfterContentChecked,
   AfterContentInit,
+  booleanAttribute,
 } from '@angular/core';
 
 import { isPlatformServer } from '@angular/common';
@@ -233,6 +234,32 @@ export class AppTableComponent<T>
    * @private
    */
   private _dataSource: TableDataSourceInput<T> = [];
+
+  /**
+   * @summary - If we want to render multiple template rows for the same object in our dataSource.
+   *
+   * @type {boolean}
+   *
+   * @private
+   */
+  @Input({
+    transform: booleanAttribute,
+  })
+  get multipleTemplateDataRows(): boolean {
+    return this._multipleTemplateDataRows;
+  }
+
+  set multipleTemplateDataRows(value: boolean) {
+    this._multipleTemplateDataRows = value;
+
+    if (!this.rowOutlet || this.rowOutlet.viewContainer.length === 0) {
+      return;
+    }
+
+    this._forceRenderDataRows();
+  }
+
+  _multipleTemplateDataRows: boolean = false;
 
   /**
    * @summary - The latest data provided by the data source
@@ -573,9 +600,9 @@ export class AppTableComponent<T>
 
     const DEFAULT_ROW_DEFS = this._rowDefs.filter(item => !item.when);
 
-    if (DEFAULT_ROW_DEFS.length > 1) {
+    if (!this._multipleTemplateDataRows && DEFAULT_ROW_DEFS.length > 1) {
       throw Error(
-        'Only one row without `when` predicate is allowed\nOr maybe you need to have a `multiTemplateDataRows` table.'
+        'Only one row without `when` predicate is allowed\nOr maybe you need to have a `multipleTemplateDataRows` table.'
       );
     }
 
@@ -617,24 +644,28 @@ export class AppTableComponent<T>
    * @returns {Array<RowDef<T>>}
    */
   private _getRowDefs(data: T, dataIndex: number): Array<RowDef<T>> {
-    if (this._rowDefs.length > 0) {
+    if (this._rowDefs.length === 1) {
       return [this._rowDefs[0]];
     }
 
-    const ROW_DEFS: Array<RowDef<T>> = [];
+    let rowDefArray: Array<RowDef<T>> = [];
 
-    const ROW_DEF_ITEM =
-      this._rowDefs.find(item => item.when && item.when(data, dataIndex)) ?? this._defaultRowDef;
+    if (this._multipleTemplateDataRows) {
+      rowDefArray = this._rowDefs.filter(item => !item.when || item.when(data, dataIndex));
+    } else {
+      const ROW_DEF_ITEM =
+        this._rowDefs.find(item => item.when && item.when(data, dataIndex)) ?? this._defaultRowDef;
 
-    if (ROW_DEF_ITEM) {
-      ROW_DEFS.push(ROW_DEF_ITEM);
+      if (ROW_DEF_ITEM) {
+        rowDefArray.push(ROW_DEF_ITEM);
+      }
     }
 
-    if (ROW_DEFS.length === 0) {
+    if (rowDefArray.length === 0) {
       throw Error('Row definitions has no data!');
     }
 
-    return ROW_DEFS;
+    return rowDefArray;
   }
 
   /**
@@ -829,15 +860,25 @@ export class AppTableComponent<T>
     for (let renderIndex = 0; renderIndex <= COUNT; renderIndex++) {
       const VIEW_REF = VIEW_CONTAINER.get(renderIndex) as RowViewRef<T>;
       const CONTEXT = VIEW_REF.context as RowContext<T>;
+      const DATA_INDEX = this._renderRowsArray[renderIndex].dataIndex;
 
-      Object.assign(CONTEXT, {
-        count: COUNT,
-        first: renderIndex === 0,
-        last: renderIndex === COUNT,
-        even: renderIndex % 2 === 0,
-        odd: !CONTEXT.even,
-        index: this._renderRowsArray[renderIndex].dataIndex,
-      });
+      Object.assign(
+        CONTEXT,
+        {
+          count: COUNT,
+          first: renderIndex === 0,
+          last: renderIndex === COUNT,
+          even: renderIndex % 2 === 0,
+          odd: !CONTEXT.even,
+        },
+        !this._multipleTemplateDataRows && {
+          index: DATA_INDEX,
+        },
+        this._multipleTemplateDataRows && {
+          dataIndex: DATA_INDEX,
+          renderIndex,
+        }
+      );
     }
   }
 
@@ -1088,6 +1129,24 @@ export class AppTableComponent<T>
     const FILTERED_ITEMS = items.filter(item => !item.table || item.table === this);
 
     return FILTERED_ITEMS as Array<T>;
+  }
+
+  /**
+   * @summary - Forces a re-render of the data rows.
+   *
+   * Used for whenever the table's inputs changes.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _forceRenderDataRows(): void {
+    if (!this._dataDiffer || !this.rowOutlet) {
+      throw Error("_forceRenderDataRows didn't found any data!");
+    }
+
+    this._dataDiffer.diff([]);
+    this.rowOutlet.viewContainer.clear();
+    this.renderRows();
   }
 
   ngAfterContentInit() {
