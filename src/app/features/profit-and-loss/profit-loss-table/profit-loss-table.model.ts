@@ -14,14 +14,16 @@ enum Months {
 }
 
 enum RowType {
-  REVENUE = 'Revenue',
-  EXPENSES = 'Expenses',
+  REVENUE = 'REVENUE',
+  EXPENSES = 'EXPENSES',
+  GROSS_PROFIT = 'GROSS_PROFIT',
+  PROFIT_MARGINS = 'PROFIT_MARGINS',
 }
 
 type DataSourceItemKey = 'type' | 'yearlyTotal' | Months;
 type DataSourceItemValue = string | number;
 type DataSourceItem = Partial<Record<DataSourceItemKey, DataSourceItemValue>>;
-type DataSourceMonths = Record<Months, number>;
+type DataSourceMonths = Partial<Record<Months, number>>;
 
 type DataSource = Array<DataSourceItem>;
 type DisplayedColumns = Array<string>;
@@ -38,4 +40,5 @@ export type {
   DataSourceMonths,
   GetDataSourceItemOptions,
 };
+
 export { Months, RowType };

@@ -7,7 +7,6 @@
       [appColumnDef]="item"
     >
       <th *appHeaderCellDef>
-        <ng-container *ngIf="item === 'type'"></ng-container>
         <ng-container *ngIf="item !== 'type' && item !== 'yearlyTotal'">{{ item }}</ng-container>
         <ng-container *ngIf="item === 'yearlyTotal'">Yearly Total</ng-container>
       </th>

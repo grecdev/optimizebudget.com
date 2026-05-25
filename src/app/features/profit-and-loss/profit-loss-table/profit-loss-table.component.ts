@@ -50,6 +50,28 @@ export class ProfitLossTableComponent {
     [Months.DECEMBER]: 12,
   };
 
+  /**
+   * @summary - Used for the table cell's text content.
+   *
+   * @type {Record<RowType, string>}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly rowTypeDict: Record<RowType, string> = {
+    [RowType.REVENUE]: 'Revenue',
+    [RowType.EXPENSES]: 'Expenses',
+    [RowType.GROSS_PROFIT]: 'Gross Profit',
+    [RowType.PROFIT_MARGINS]: 'Profit Margins',
+  };
+
+  /**
+   * @summary - Actual data used by our table component.
+   *
+   * @type {DataSource}
+   *
+   * @public
+   */
   public dataSource: DataSource = [];
 
   /**
@@ -98,10 +120,79 @@ export class ProfitLossTableComponent {
   }
 
   /**
+   * @summary - Calculate the profit based on monthly revenue and add the new columns to the table's dataSource.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initSetGrossProfit(): void {
+    const GROSS_PROFIT: DataSourceMonths = {};
+
+    Object.keys(this._dataSourceRevenue).forEach(key => {
+      const REVENUE_VALUE = this._dataSourceRevenue[key as keyof typeof this._dataSourceRevenue];
+      const EXPENSE_VALUE = this._dataSourceExpenses[key as keyof typeof this._dataSourceExpenses];
+
+      if (!REVENUE_VALUE || !EXPENSE_VALUE) {
+        return;
+      }
+
+      const GROSS_PROFIT_VALUE = REVENUE_VALUE - EXPENSE_VALUE;
+
+      GROSS_PROFIT[key as keyof typeof GROSS_PROFIT] = GROSS_PROFIT_VALUE;
+    });
+
+    const YEARLY_TOTAL = Object.values(GROSS_PROFIT).reduce((total, current) => total + current, 0);
+
+    const ITEM: DataSourceItem = {
+      type: RowType.GROSS_PROFIT,
+      ...GROSS_PROFIT,
+      yearlyTotal: YEARLY_TOTAL,
+    };
+
+    this.dataSource.push(ITEM);
+  }
+
+  /**
+   * @summary - Calculate the profit based on monthly revenue and add the new columns to the table's dataSource.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initSetProfitMargins(): void {
+    const PROFIT_MARGINS: DataSourceMonths = {};
+
+    Object.keys(this._dataSourceRevenue).forEach(key => {
+      const REVENUE_VALUE = this._dataSourceRevenue[key as keyof typeof this._dataSourceRevenue];
+      const EXPENSE_VALUE = this._dataSourceExpenses[key as keyof typeof this._dataSourceExpenses];
+
+      if (!REVENUE_VALUE || !EXPENSE_VALUE) {
+        return;
+      }
+
+      const PROFIT_MARGIN_VALUES = (REVENUE_VALUE - EXPENSE_VALUE) / REVENUE_VALUE;
+
+      PROFIT_MARGINS[key as keyof typeof PROFIT_MARGINS] = PROFIT_MARGIN_VALUES;
+    });
+
+    const YEARLY_TOTAL = Object.values(PROFIT_MARGINS).reduce(
+      (total, current) => total + current,
+      0
+    );
+
+    const ITEM: DataSourceItem = {
+      type: RowType.PROFIT_MARGINS,
+      ...PROFIT_MARGINS,
+      yearlyTotal: YEARLY_TOTAL,
+    };
+
+    this.dataSource.push(ITEM);
+  }
+
+  /**
    * @summary - Basically calculate the data source item for revenue and expenses rows.
    *
    * @param {GetDataSourceItemOptions['type']} options.type - The row type.
-   * @param {GetDataSourceItemOptions['data']} options.data - The month data.
+   * @param {GetDataSourceItemOptions['data']} options.data - The month's data.
    *
    * @private
    * @returns {DataSourceItem}
@@ -123,5 +214,7 @@ export class ProfitLossTableComponent {
   constructor() {
     this._initDisplayedColumns();
     this._initSetDataSource();
+    this._initSetGrossProfit();
+    this._initSetProfitMargins();
   }
 }
