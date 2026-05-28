@@ -31,6 +31,12 @@ const allRoutes: Record<RoutesName, Route> = {
     textContent: 'Expenses',
     ariaLabel: 'Expenses page path',
   },
+  profitAndLoss: {
+    id: 5,
+    path: 'profit-and-loss',
+    textContent: 'Profit and Loss',
+    ariaLabel: 'Profit and Loss path',
+  },
 };
 
 const adminData = {

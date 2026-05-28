@@ -1,0 +1,11 @@
+@use 'spacing' as spacing;
+
+.divider {
+  & .app-cell {
+    padding: spacing.$default 0;
+  }
+
+  &:hover {
+    background: transparent;
+  }
+}

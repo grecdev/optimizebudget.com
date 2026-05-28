@@ -45,7 +45,7 @@ interface RenderRow<T> {
 /**
  * @summary - Context provided to the row cells when `multipleTemplateDataRows` is false.
  */
-interface RowContext<T> {
+interface CellOutletRowContext<T> {
   // Data for the row this cell is located within.
   $implicit?: T;
   // Index of the data object in the provided data array.
@@ -61,6 +61,25 @@ interface RowContext<T> {
   // True if this cell is contained in a row with an odd-numbered index.
   odd?: boolean;
 }
+
+interface CellOutletMultipleRowContext<T> {
+  // Data for the row this cell is located within.
+  $implicit?: T;
+  // Index of the data object in the provided data array.
+  dataIndex?: number;
+  // Length of the number of total rows.
+  count?: number;
+  // True if this cell is contained in the first row.
+  first?: boolean;
+  // True if this cell is contained in the last row.
+  last?: boolean;
+  // True if this cell is contained in a row with an even-numbered index.
+  even?: boolean;
+  // True if this cell is contained in a row with an odd-numbered index.
+  odd?: boolean;
+}
+
+interface RowContext<T> extends CellOutletRowContext<T>, CellOutletMultipleRowContext<T> {}
 
 /**
  * @summary - Possible types that can be set as the data source.

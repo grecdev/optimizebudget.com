@@ -1,0 +1,62 @@
+<app-widget-box>
+  <h4 app-widget-box-title>P&L report</h4>
+
+  <table app-table [dataSource]="dataSource">
+    <ng-container
+      *ngFor="let item of displayedColumns; trackBy: trackByFnDisplayedColumns"
+      [appColumnDef]="item"
+    >
+      <th *appHeaderCellDef>
+        <ng-container *ngIf="item !== 'type' && item !== 'yearlyTotal'">{{ item }}</ng-container>
+        <ng-container *ngIf="item === 'yearlyTotal'">Yearly Total</ng-container>
+      </th>
+
+      <td app-cell *appCellDef="let cellItem">
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isNumberType
+          "
+        >
+          {{ cellItem[item] | currency: 'EUR' }}
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isInfoCell
+          "
+        >
+          {{
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | rowTypeValue
+          }}
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isProfitMargin
+          "
+        >
+          {{ cellItem[item] | number: '1.0-2' }}&percnt;
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
+    <tr
+      app-row
+      *appRowDef="let row; columns: displayedColumns"
+      [class.divider]="row.type === RowType.DIVIDER"
+    ></tr>
+  </table>
+</app-widget-box>

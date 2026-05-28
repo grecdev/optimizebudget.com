@@ -1,0 +1,11 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+
+.highlight-green {
+  color: map.get(color-palette.$green, 'variant-3');
+}
+
+.highlight-red {
+  color: map.get(color-palette.$red, 'default');
+}

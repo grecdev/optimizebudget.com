@@ -1,0 +1,27 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { ProfitAndLossRoutingModule } from './profit-and-loss-routing.module';
+import { ProfitAndLossComponent } from './profit-and-loss.component';
+
+import { RevenueModule } from './revenue/revenue.module';
+import { ExpensesModule } from './expenses/expenses.module';
+import { ProfitFixedModule } from './profit-fixed/profit-fixed.module';
+import { ProfitMarginsModule } from './profit-margins/profit-margins.module';
+import { ProfitLossTableModule } from './profit-loss-table/profit-loss-table.module';
+
+@NgModule({
+  declarations: [ProfitAndLossComponent],
+  imports: [
+    // Angular specific
+    CommonModule,
+    // App specific
+    ProfitAndLossRoutingModule,
+    RevenueModule,
+    ExpensesModule,
+    ProfitFixedModule,
+    ProfitMarginsModule,
+    ProfitLossTableModule,
+  ],
+})
+export class ProfitAndLossModule {}

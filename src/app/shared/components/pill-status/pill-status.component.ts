@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
@@ -20,7 +25,7 @@ import { StatusType } from './pill-status.model';
   },
 })
 export class PillStatusComponent {
-  protected readonly StatusType = StatusType;
+  public readonly StatusType = StatusType;
 
   /**
    * @summary - Status type, used to change styling.

@@ -1,0 +1,9 @@
+<app-widget-box>
+  <h4 app-widget-box-title>Gross Profit</h4>
+
+  <div class="row">
+    <h2>{{ totalProfit | currency: 'EUR' }}</h2>
+
+    <app-status-pill [type]="StatusType.UP">21.55%</app-status-pill>
+  </div>
+</app-widget-box>

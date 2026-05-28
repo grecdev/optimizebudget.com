@@ -1,0 +1,48 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+@use 'variables' as variables;
+@use 'shape' as shape;
+@use 'spacing' as spacing;
+@use 'typography' as typography;
+
+:host {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  padding: 0.25rem spacing.$sm;
+  border: variables.$layout-border;
+  border-radius: shape.$sm;
+  user-select: none;
+  font-size: typography.$body-sm;
+
+  & .app-icon {
+    $size: 14px;
+    //
+    width: $size;
+    height: $size;
+  }
+
+  &.highlight-green {
+    $color: map.get(color-palette.$green, 'variant-3');
+    //
+    background: map.get(color-palette.$green, 'variant-2');
+
+    color: $color;
+
+    & .app-icon {
+      fill: $color;
+    }
+  }
+
+  &.highlight-red {
+    $color: map.get(color-palette.$red, 'default');
+    //
+    background: map.get(color-palette.$red, 'variant-3');
+    color: $color;
+
+    & .app-icon {
+      fill: $color;
+    }
+  }
+}

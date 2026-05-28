@@ -9,7 +9,7 @@ import { Route } from '@shared/models/interfaces';
   styleUrls: ['../sidebar.component.scss', './body.component.scss'],
 })
 export class BodyComponent {
-  links: Array<Route> = [allRoutes.overview, allRoutes.expenses];
+  links: Array<Route> = [allRoutes.overview, allRoutes.expenses, allRoutes.profitAndLoss];
 
   trackByLinks(_index: number, link: Route) {
     return link.id;
