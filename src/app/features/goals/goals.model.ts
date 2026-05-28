@@ -3,4 +3,9 @@ interface GetDaysInMonthOptions {
   year: number;
 }
 
-export type { GetDaysInMonthOptions };
+interface GetFirstDayOfMonthOptions {
+  month: number;
+  year: number;
+}
+
+export type { GetDaysInMonthOptions, GetFirstDayOfMonthOptions };
