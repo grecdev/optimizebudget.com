@@ -3,9 +3,14 @@ interface GetDaysInMonthOptions {
   year: number;
 }
 
-interface GetFirstDayOfMonthOptions {
+interface GetFirstWeekDayOptions {
   month: number;
   year: number;
 }
 
-export type { GetDaysInMonthOptions, GetFirstDayOfMonthOptions };
+interface GetLastWeekDayOptions {
+  month: number;
+  year: number;
+}
+
+export type { GetDaysInMonthOptions, GetFirstWeekDayOptions, GetLastWeekDayOptions };
