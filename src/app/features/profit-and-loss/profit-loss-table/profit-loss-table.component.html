@@ -12,11 +12,43 @@
       </th>
 
       <td app-cell *appCellDef="let cellItem">
-        <ng-container *ngIf="!isNaN(cellItem[item])">
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isNumberType
+          "
+        >
           {{ cellItem[item] | currency: 'EUR' }}
         </ng-container>
 
-        <ng-container *ngIf="isNaN(cellItem[item])">{{ cellItem[item] }}</ng-container>
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isInfoCell
+          "
+        >
+          {{
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | rowTypeValue
+          }}
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            {
+              cellItem,
+              displayedColumnsItem: item,
+            } | isProfitMargin
+          "
+        >
+          {{ cellItem[item] | number: '1.0-2' }}&percnt;
+        </ng-container>
       </td>
     </ng-container>
 

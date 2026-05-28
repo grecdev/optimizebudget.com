@@ -39,6 +39,7 @@ export type {
   DataSourceItem,
   DataSourceMonths,
   GetDataSourceItemOptions,
+  DataSourceItemKey,
 };
 
 export { Months, RowType };

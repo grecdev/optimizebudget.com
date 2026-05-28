@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import {
   Months,
@@ -14,9 +14,9 @@ import {
   selector: 'app-profit-loss-table',
   templateUrl: './profit-loss-table.component.html',
   styleUrls: ['./profit-loss-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfitLossTableComponent {
-  public readonly isNaN = isNaN;
   public readonly Months = Months;
   public displayedColumns: DisplayedColumns = [];
 
@@ -51,21 +51,6 @@ export class ProfitLossTableComponent {
   };
 
   /**
-   * @summary - Used for the table cell's text content.
-   *
-   * @type {Record<RowType, string>}
-   *
-   * @public
-   * @readonly
-   */
-  public readonly rowTypeDict: Record<RowType, string> = {
-    [RowType.REVENUE]: 'Revenue',
-    [RowType.EXPENSES]: 'Expenses',
-    [RowType.GROSS_PROFIT]: 'Gross Profit',
-    [RowType.PROFIT_MARGINS]: 'Profit Margins',
-  };
-
-  /**
    * @summary - Actual data used by our table component.
    *
    * @type {DataSource}
@@ -75,7 +60,7 @@ export class ProfitLossTableComponent {
   public dataSource: DataSource = [];
 
   /**
-   * @summary - Track by fn for displayed columns
+   * @summary - Track by fn for displayed columns.
    *
    * @param {number} _index - Current index.
    * @param {string} item - Current item in loop.
