@@ -20,6 +20,8 @@ export class GoalsComponent implements OnInit {
   /**
    * @summary - The first day of the given month.
    *
+   * It should be Monday.
+   *
    * @type {number}
    *
    * @private
@@ -51,7 +53,9 @@ export class GoalsComponent implements OnInit {
   private _getDaysInMonth(options: GetDaysInMonthOptions): void {
     const { month, year } = options;
 
-    const TOTAL_DAYS = new Date(month, year, 0).getDate();
+    // Get day 0 of target month
+    // If target month is June, then get the last day of previous month (May).
+    const TOTAL_DAYS = new Date(year, month + 1, 0).getDate();
 
     this._totalDaysInMonth = TOTAL_DAYS;
   }
@@ -69,8 +73,10 @@ export class GoalsComponent implements OnInit {
     const { month, year } = options;
 
     const FIRST_DAY = new Date(year, month, 1).getDay();
+    const LAST_DAY_INDEX = 6;
+    const TOTAL_DAYS_IN_WEEK = 7;
 
-    this._firstDayOfMonth = FIRST_DAY;
+    this._firstDayOfMonth = (FIRST_DAY + LAST_DAY_INDEX) % TOTAL_DAYS_IN_WEEK;
   }
 
   ngOnInit() {
@@ -90,9 +96,5 @@ export class GoalsComponent implements OnInit {
       month: CURRENT_MONTH,
       year: CURRENT_YEAR,
     });
-
-    const tst = ['duminica', 'luni', 'marti', 'miercuri', 'joi', 'vineri', 'sambata'];
-
-    console.log(tst[this._firstDayOfMonth]);
   }
 }
