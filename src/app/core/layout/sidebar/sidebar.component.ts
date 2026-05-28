@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
   host: {
     class: 'sidebar',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {}
