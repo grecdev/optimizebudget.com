@@ -7,9 +7,7 @@ const routes: Routes = [
   {
     path: allRoutes.login.path,
     loadChildren: () =>
-      import('./features/authentication/login/login.module').then(
-        module => module.LoginModule
-      ),
+      import('./features/authentication/login/login.module').then(module => module.LoginModule),
   },
   {
     path: allRoutes.register.path,
@@ -31,11 +29,15 @@ const routes: Routes = [
       import('./features/expenses/expenses.module').then(module => module.ExpensesModule),
   },
   {
-    path: 'profit-and-loss',
+    path: allRoutes.profitAndLoss.path,
     loadChildren: () =>
       import('./features/profit-and-loss/profit-and-loss.module').then(
         module => module.ProfitAndLossModule
       ),
+  },
+  {
+    path: allRoutes.goals.path,
+    loadChildren: () => import('./features/goals/goals.module').then(module => module.GoalsModule),
   },
   // {
   //   path: '**',

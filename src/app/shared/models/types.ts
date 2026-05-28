@@ -4,7 +4,8 @@ type RoutesName =
   | 'register'
   | 'forgotPassword'
   | 'expenses'
-  | 'profitAndLoss';
+  | 'profitAndLoss'
+  | 'goals';
 
 // Make sure these values match $theme-variant and vice versa
 type ThemeVariant = 'basic' | 'contained' | 'outlined';
