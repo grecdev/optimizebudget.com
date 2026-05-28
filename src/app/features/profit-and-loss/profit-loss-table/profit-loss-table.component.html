@@ -53,6 +53,10 @@
     </ng-container>
 
     <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
-    <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+      app-row
+      *appRowDef="let row; columns: displayedColumns"
+      [class.divider]="row.type === RowType.DIVIDER"
+    ></tr>
   </table>
 </app-widget-box>

@@ -18,6 +18,7 @@ import {
 })
 export class ProfitLossTableComponent {
   public readonly Months = Months;
+  public readonly RowType = RowType;
   public displayedColumns: DisplayedColumns = [];
 
   private _dataSourceRevenue: DataSourceMonths = {
@@ -134,7 +135,12 @@ export class ProfitLossTableComponent {
       yearlyTotal: YEARLY_TOTAL,
     };
 
-    this.dataSource.push(ITEM);
+    this.dataSource.push(
+      {
+        type: RowType.DIVIDER,
+      },
+      ITEM
+    );
   }
 
   /**

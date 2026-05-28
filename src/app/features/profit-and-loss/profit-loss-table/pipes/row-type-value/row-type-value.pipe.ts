@@ -21,6 +21,7 @@ export class RowTypeValuePipe implements PipeTransform {
     [RowType.EXPENSES]: 'Expenses',
     [RowType.GROSS_PROFIT]: 'Gross Profit',
     [RowType.PROFIT_MARGINS]: 'Profit Margins',
+    [RowType.DIVIDER]: '',
   };
 
   /**
@@ -38,7 +39,7 @@ export class RowTypeValuePipe implements PipeTransform {
     const CELL_ITEM_VALUE = cellItem[displayedColumnsItem as keyof typeof cellItem];
 
     if (!CELL_ITEM_VALUE) {
-      return 'none';
+      return '';
     }
 
     return this._rowTypeDict[CELL_ITEM_VALUE as keyof typeof this._rowTypeDict];

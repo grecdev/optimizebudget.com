@@ -18,6 +18,7 @@ enum RowType {
   EXPENSES = 'EXPENSES',
   GROSS_PROFIT = 'GROSS_PROFIT',
   PROFIT_MARGINS = 'PROFIT_MARGINS',
+  DIVIDER = 'DIVIDER',
 }
 
 type DataSourceItemKey = 'type' | 'yearlyTotal' | Months;
