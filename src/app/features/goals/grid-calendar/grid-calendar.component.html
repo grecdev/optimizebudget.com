@@ -1,1 +1,5 @@
-<p>grid-calendar works!</p>
+<h2 class="mb-default">{{ currentDate | date: 'MMMM' }}</h2>
+
+<app-widget-box class="calendar-container">
+  <div class="month-item" *ngFor="let item of dataSource; trackBy: trackByFnDataSource"></div>
+</app-widget-box>

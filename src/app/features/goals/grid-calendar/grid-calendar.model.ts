@@ -1,3 +1,8 @@
+enum DataSourceItemKey {
+  ID = 'id',
+  DAY = 'day',
+}
+
 interface GetDaysInMonthOptions {
   month: number;
   year: number;
@@ -13,4 +18,19 @@ interface GetLastWeekDayOptions {
   year: number;
 }
 
-export type { GetDaysInMonthOptions, GetFirstWeekDayOptions, GetLastWeekDayOptions };
+interface DataSourceItem {
+  [DataSourceItemKey.ID]: number;
+  [DataSourceItemKey.DAY]: number | null;
+}
+
+type DataSource = Array<DataSourceItem>;
+
+export type {
+  GetDaysInMonthOptions,
+  GetFirstWeekDayOptions,
+  GetLastWeekDayOptions,
+  DataSourceItem,
+  DataSource,
+};
+
+export { DataSourceItemKey };
