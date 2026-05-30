@@ -16,22 +16,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GridCalendarComponent implements OnInit {
-  // REMOVE THIS AFTER YOU FINISH!
-  monthsDictArray = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
   /**
    * @summary - Current date.
    *
@@ -53,6 +37,16 @@ export class GridCalendarComponent implements OnInit {
   public dataSource: DataSource = [];
 
   /**
+   * @summary - So I can access it in the template.
+   *
+   * @type {DataSourceItemKey}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly DataSourceItemKey: typeof DataSourceItemKey = DataSourceItemKey;
+
+  /**
    * @summary - How many days are in a week, with or without weekends.
    *
    * @type {number}
@@ -60,17 +54,6 @@ export class GridCalendarComponent implements OnInit {
    * @private
    */
   private readonly _totalDaysInWeek: number = 7;
-
-  /**
-   * @summary - Zero-based indexing representing the last day of the week.
-   *
-   * Which is calculated based on how many week days you want to have.
-   *
-   * @type {number}
-   *
-   * @private
-   */
-  private readonly _lastWeekDayIndex: number = -1;
 
   /**
    * @summary - Zero-based indexing representing the first day of the week.
@@ -82,13 +65,15 @@ export class GridCalendarComponent implements OnInit {
   private readonly _firstWeekDayIndex: number = 0;
 
   /**
-   * @summary- Total days in a month.
+   * @summary - Zero-based indexing representing the last day of the week.
+   *
+   * Which is calculated based on how many week days you want to have.
    *
    * @type {number}
    *
    * @private
    */
-  private _totalDaysInMonth: number = -1;
+  private readonly _lastWeekDayIndex: number = -1;
 
   /**
    * @summary - The first day of the given month.
@@ -129,7 +114,7 @@ export class GridCalendarComponent implements OnInit {
   private _remainingDaysAfterMonth: number = -1;
 
   constructor() {
-    this.currentDate = new Date(2026, 6);
+    this.currentDate = new Date();
 
     this._lastWeekDayIndex = this._totalDaysInWeek - 1;
   }
@@ -226,12 +211,12 @@ export class GridCalendarComponent implements OnInit {
     if (this._firstWeekDay === this._firstWeekDayIndex) {
       this._remainingDaysBeforeMonth = 0;
     } else {
-      this._remainingDaysBeforeMonth = this._firstWeekDay;
+      this._remainingDaysBeforeMonth = this._firstWeekDay - 1;
     }
 
     for (
-      let i = TOTAL_MONTH_DAYS - this._firstWeekDay + 1; // zero-based remember?
-      i <= TOTAL_MONTH_DAYS;
+      let i = TOTAL_MONTH_DAYS - this._remainingDaysBeforeMonth;
+      i <= TOTAL_MONTH_DAYS && this._remainingDaysBeforeMonth > 0;
       i++
     ) {
       const ID: number = this.dataSource.length;
@@ -276,6 +261,35 @@ export class GridCalendarComponent implements OnInit {
     }
   }
 
+  /**
+   * @summary - Set the remaining days after the current month.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setAfterRemainingDays(): void {
+    if (!this.currentDate) {
+      throw Error('Current date not found!');
+    }
+
+    if (this._lastWeekDay === this._lastWeekDayIndex) {
+      this._remainingDaysAfterMonth = 0;
+    } else {
+      this._remainingDaysAfterMonth = this._lastWeekDayIndex - this._lastWeekDay;
+    }
+
+    for (let i = 1; i <= this._remainingDaysAfterMonth && this._remainingDaysAfterMonth > 0; i++) {
+      const ID: number = this.dataSource.length;
+
+      const ITEM: DataSourceItem = {
+        [DataSourceItemKey.ID]: ID,
+        [DataSourceItemKey.DAY]: i,
+      };
+
+      this.dataSource.push(ITEM);
+    }
+  }
+
   ngOnInit() {
     if (!this.currentDate) {
       throw Error('Current date not found!');
@@ -283,11 +297,6 @@ export class GridCalendarComponent implements OnInit {
 
     const CURRENT_MONTH = this.currentDate.getMonth();
     const CURRENT_YEAR = this.currentDate.getFullYear();
-
-    // this._getDaysInMonth({
-    //   month: CURRENT_MONTH,
-    //   year: CURRENT_YEAR,
-    // });
 
     this._getFirstWeekDay({
       month: CURRENT_MONTH,
@@ -301,7 +310,6 @@ export class GridCalendarComponent implements OnInit {
 
     this._setBeforeRemainingDays();
     this._setDaysInCurrentMonth();
-
-    console.log(this.dataSource);
+    this._setAfterRemainingDays();
   }
 }
