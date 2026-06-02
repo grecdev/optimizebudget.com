@@ -1,2 +1,28 @@
+@use 'variables' as variables;
+@use 'spacing' as spacing;
+
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
 .calendar-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: 1fr;
+  gap: 0;
+  padding: 0;
+
+  & .month-item {
+    padding: spacing.$sm;
+
+    &:not(:nth-child(7n)) {
+      border-right: variables.$layout-border;
+    }
+
+    &:not(:nth-last-child(-n + 7)) {
+      border-bottom: variables.$layout-border;
+    }
+  }
 }
