@@ -1,5 +1,10 @@
+@use 'sass:map';
+
 @use 'variables' as variables;
 @use 'spacing' as spacing;
+@use 'color-palette' as color-palette;
+@use 'typography' as typography;
+@use 'shape' as shape;
 
 :host {
   display: grid;
@@ -25,10 +30,34 @@
       border-bottom: variables.$layout-border;
     }
 
-    & .day {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    & .day-header {
+      gap: spacing.$sm;
+
+      &,
+      & .day {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      & .day {
+        $size: 25px;
+        //
+        width: $size;
+        height: $size;
+
+        font-size: typography.$body-sm;
+        vertical-align: middle;
+        text-align: center;
+
+        justify-content: center;
+        border-radius: shape.$rounded;
+      }
+
+      &.current .day {
+        color: map.get(color-palette.$common, 'white');
+        background: map.get(color-palette.$blue, 'default');
+      }
     }
   }
 }

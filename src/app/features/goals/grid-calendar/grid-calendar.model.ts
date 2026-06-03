@@ -1,6 +1,9 @@
 enum DataSourceItemKey {
   ID = 'id',
+  YEAR = 'year',
   DAY = 'day',
+  MONTH = 'month',
+  CURRENT_DAY = 'currentDay',
 }
 
 interface GetDaysInMonthOptions {
@@ -20,7 +23,10 @@ interface GetLastWeekDayOptions {
 
 interface DataSourceItem {
   [DataSourceItemKey.ID]: number;
-  [DataSourceItemKey.DAY]: number | null;
+  [DataSourceItemKey.YEAR]: number;
+  [DataSourceItemKey.MONTH]: number;
+  [DataSourceItemKey.DAY]: number;
+  [DataSourceItemKey.CURRENT_DAY]?: boolean;
 }
 
 type DataSource = Array<DataSourceItem>;

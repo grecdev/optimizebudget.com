@@ -7,12 +7,12 @@
     class="day-item"
     *ngFor="let item of dataSource; index as index; trackBy: trackByFnDataSource"
   >
-    <div class="day">
-      <span *ngIf="index < 7">
+    <div class="day-header" [class.current]="item[DataSourceItemKey.CURRENT_DAY]">
+      <span class="week" *ngIf="index < 7">
         {{ index | dayOfWeek }}
       </span>
 
-      <span>
+      <span class="day">
         {{ item[DataSourceItemKey.DAY] }}
       </span>
     </div>

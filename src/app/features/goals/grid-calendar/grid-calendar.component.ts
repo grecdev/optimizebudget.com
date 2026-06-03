@@ -57,6 +57,24 @@ export class GridCalendarComponent implements OnInit {
   private readonly _totalDaysInWeek: number = 7;
 
   /**
+   * @summary - Zero-based indexing representing the first month of the year.
+   *
+   * @type {number}
+   *
+   * @private
+   */
+  private readonly _firstMonthOfYearIndex: number = 0;
+
+  /**
+   * @summary - Zero-based indexing representing the last month of the year.
+   *
+   * @type {number}
+   *
+   * @private
+   */
+  private readonly _lastMonthOfYearIndex: number = 11;
+
+  /**
    * @summary - Zero-based indexing representing the first day of the week.
    *
    * @type {number}
@@ -214,12 +232,17 @@ export class GridCalendarComponent implements OnInit {
       throw Error('Current date not found!');
     }
 
+    let targetYear = this.currentDate.getFullYear();
+
     const TARGET_MONTH = this.currentDate.getMonth() - 1;
-    const TARGET_YEAR = this.currentDate.getFullYear();
+
+    if (TARGET_MONTH === this._firstMonthOfYearIndex) {
+      targetYear -= 1;
+    }
 
     const TOTAL_MONTH_DAYS = this._getDaysInMonth({
+      year: targetYear,
       month: TARGET_MONTH,
-      year: TARGET_YEAR,
     });
 
     if (this._firstWeekDay === this._firstWeekDayIndex) {
@@ -237,6 +260,8 @@ export class GridCalendarComponent implements OnInit {
 
       const ITEM: DataSourceItem = {
         [DataSourceItemKey.ID]: ID,
+        [DataSourceItemKey.YEAR]: targetYear,
+        [DataSourceItemKey.MONTH]: TARGET_MONTH,
         [DataSourceItemKey.DAY]: i,
       };
 
@@ -255,12 +280,12 @@ export class GridCalendarComponent implements OnInit {
       throw Error('Current date not found!');
     }
 
+    const TARGET_YEAR = this.currentDate.getFullYear();
     const TARGET_MONTH = this.currentDate.getMonth();
-    const CURRENT_YEAR = this.currentDate.getFullYear();
 
     const TOTAL_MONTH_DAYS = this._getDaysInMonth({
+      year: TARGET_YEAR,
       month: TARGET_MONTH,
-      year: CURRENT_YEAR,
     });
 
     for (let i = 1; i <= TOTAL_MONTH_DAYS; i++) {
@@ -268,6 +293,8 @@ export class GridCalendarComponent implements OnInit {
 
       const ITEM: DataSourceItem = {
         [DataSourceItemKey.ID]: ID,
+        [DataSourceItemKey.YEAR]: TARGET_YEAR,
+        [DataSourceItemKey.MONTH]: TARGET_MONTH,
         [DataSourceItemKey.DAY]: i,
       };
 
@@ -286,6 +313,14 @@ export class GridCalendarComponent implements OnInit {
       throw Error('Current date not found!');
     }
 
+    let targetYear = this.currentDate.getFullYear();
+
+    const TARGET_MONTH = this.currentDate.getMonth() + 1;
+
+    if (TARGET_MONTH === this._lastMonthOfYearIndex) {
+      targetYear += 1;
+    }
+
     if (this._lastWeekDay === this._lastWeekDayIndex) {
       this._remainingDaysAfterMonth = 0;
     } else {
@@ -297,11 +332,47 @@ export class GridCalendarComponent implements OnInit {
 
       const ITEM: DataSourceItem = {
         [DataSourceItemKey.ID]: ID,
+        [DataSourceItemKey.YEAR]: targetYear,
+        [DataSourceItemKey.MONTH]: TARGET_MONTH,
         [DataSourceItemKey.DAY]: i,
       };
 
       this.dataSource.push(ITEM);
     }
+  }
+
+  /**
+   * @summary - Check for current day.
+   *
+   * @returns {boolean}
+   * @private
+   */
+  private _setCurrentDayOfTheMonth(): void {
+    if (!this.currentDate) {
+      throw Error('Current date not found!');
+    }
+
+    const CURRENT_YEAR = this.currentDate.getFullYear();
+    const CURRENT_MONTH = this.currentDate.getMonth();
+    const CURRENT_DAY = this.currentDate.getDate();
+
+    const NEW_DATA_SOURCE = this.dataSource.map(item => {
+      const IS_CURRENT_DAY =
+        item[DataSourceItemKey.YEAR] === CURRENT_YEAR &&
+        item[DataSourceItemKey.MONTH] === CURRENT_MONTH &&
+        item[DataSourceItemKey.DAY] === CURRENT_DAY;
+
+      if (!IS_CURRENT_DAY) {
+        return item;
+      }
+
+      return {
+        ...item,
+        [DataSourceItemKey.CURRENT_DAY]: true,
+      };
+    });
+
+    this.dataSource = NEW_DATA_SOURCE;
   }
 
   ngOnInit() {
@@ -325,5 +396,6 @@ export class GridCalendarComponent implements OnInit {
     this._setBeforeRemainingDays();
     this._setDaysInCurrentMonth();
     this._setAfterRemainingDays();
+    this._setCurrentDayOfTheMonth();
   }
 }
