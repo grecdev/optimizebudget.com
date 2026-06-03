@@ -1,7 +1,13 @@
-<h2 class="mb-default">{{ currentDate | date: 'MMMM' }}</h2>
+<div class="calendar-header">
+  <h2 class="mb-default">{{ currentDate | date: 'MMMM' }}</h2>
+</div>
 
 <app-widget-box class="calendar-container">
-  <div class="month-item" *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
-    {{ item[DataSourceItemKey.DAY] }}
+  <div class="week-item" *ngFor="let item of daysOfWeek; trackBy: trackByFnDaysOfWeek">
+    {{ item }}
+  </div>
+
+  <div class="day-item" *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
+    <p class="day">{{ item[DataSourceItemKey.DAY] }}</p>
   </div>
 </app-widget-box>

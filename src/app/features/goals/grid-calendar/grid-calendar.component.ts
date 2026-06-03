@@ -22,8 +22,19 @@ export class GridCalendarComponent implements OnInit {
    * @type {Date | null}
    *
    * @public
+   * @readonly
    */
   public readonly currentDate: Date | null = null;
+
+  /**
+   * @summary - Static text content for days of the week.
+   *
+   * @type {Array<string>}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly daysOfWeek: Array<string> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   /**
    * @summary - An array containing all the days in given month.
@@ -130,6 +141,19 @@ export class GridCalendarComponent implements OnInit {
    */
   public trackByFnDataSource(_index: number, item: DataSourceItem): number {
     return item[DataSourceItemKey.ID];
+  }
+
+  /**
+   * @summary - For an optimized loop block.
+   *
+   * @param {number} [_index] - Current index.
+   * @param {string} item - Current item in iteration.
+   *
+   * @returns {string}
+   * @public
+   */
+  public trackByFnDaysOfWeek(_index: number, item: string): string {
+    return item;
   }
 
   /**

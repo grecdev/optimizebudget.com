@@ -9,13 +9,27 @@
 .calendar-container {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: none;
+  grid-template-rows: max-content;
   grid-auto-rows: 1fr;
   gap: 0;
   padding: 0;
 
-  & .month-item {
+  & .week-item,
+  & .day-item {
     padding: spacing.$sm;
+  }
+
+  & .week-item {
+    padding-bottom: 0;
+  }
+
+  & .day-item .day,
+  & .week-item {
+    text-align: center;
+  }
+
+  & .day-item {
+    padding-top: 0;
 
     &:not(:nth-child(7n)) {
       border-right: variables.$layout-border;
