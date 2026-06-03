@@ -25,6 +25,14 @@ $input-spacing-default: map.get($spacing, 'sm');
     max-width: $input-maximum-size;
   }
 
+  &.app-form-field-full-width {
+    &,
+    & .app-input,
+    & .app-select {
+      max-width: none;
+    }
+  }
+
   & .app-label,
   & .app-input,
   & .app-select {

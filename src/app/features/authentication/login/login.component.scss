@@ -1,5 +1,15 @@
+@use 'breakpoints' as breakpoints;
+
+@use '../authentication-common' as authentication-common;
+
 .label-password-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+@media screen and (max-width: breakpoints.$md) {
+  :host {
+    @include authentication-common.host-style;
+  }
 }
