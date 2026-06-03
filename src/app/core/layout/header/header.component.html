@@ -1,7 +1,9 @@
 <header>
   <h4>{{ pageTitle }}</h4>
 
-  <ng-container *ngIf="isMobile; else desktopHeader">mobile header</ng-container>
+  <ng-container *ngIf="isMobile; else desktopHeader">
+    <app-mobile-header />
+  </ng-container>
 
   <ng-template #desktopHeader>
     <app-desktop-header />

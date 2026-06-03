@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AppButtonModule } from '@shared/components/button/button.module';
 import { AppIconModule } from '@shared/components/icon/icon.module';
 
 import { DesktopHeaderModule } from './desktop-header/desktop-header.module';
+import { MobileHeaderModule } from './mobile-header/mobile-header.module';
 
 import { HeaderComponent } from './header.component';
 
@@ -16,6 +16,7 @@ import { HeaderComponent } from './header.component';
     // App specific
     AppIconModule,
     DesktopHeaderModule,
+    MobileHeaderModule,
   ],
   exports: [HeaderComponent],
 })

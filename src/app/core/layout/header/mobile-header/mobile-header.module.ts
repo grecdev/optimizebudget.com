@@ -6,11 +6,11 @@ import { AppIconModule } from '@shared/components/icon/icon.module';
 
 import { UserAvatarModule } from '../user-avatar/user-avatar.module';
 
-import { DesktopHeaderComponent } from './desktop-header.component';
+import { MobileHeaderComponent } from './mobile-header.component';
 
 @NgModule({
-  declarations: [DesktopHeaderComponent],
+  declarations: [MobileHeaderComponent],
   imports: [CommonModule, AppButtonModule, AppIconModule, UserAvatarModule],
-  exports: [DesktopHeaderComponent],
+  exports: [MobileHeaderComponent],
 })
-export class DesktopHeaderModule {}
+export class MobileHeaderModule {}

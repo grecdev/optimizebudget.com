@@ -5,7 +5,7 @@
     alt="avatar-profile-picture"
   />
 
-  <div class="user-info-container">
+  <div *ngIf="!isMobile" class="user-info-container">
     <p>
       <strong>{{ fullName }}</strong>
     </p>
