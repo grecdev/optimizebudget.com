@@ -17,6 +17,10 @@
   & .week-item,
   & .day-item {
     padding: spacing.$sm;
+
+    &:not(:nth-child(7n)) {
+      border-right: variables.$layout-border;
+    }
   }
 
   & .week-item {
@@ -30,10 +34,6 @@
 
   & .day-item {
     padding-top: 0;
-
-    &:not(:nth-child(7n)) {
-      border-right: variables.$layout-border;
-    }
 
     &:not(:nth-last-child(-n + 7)) {
       border-bottom: variables.$layout-border;
