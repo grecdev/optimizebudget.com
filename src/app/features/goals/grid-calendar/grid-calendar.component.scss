@@ -1,0 +1,63 @@
+@use 'sass:map';
+
+@use 'variables' as variables;
+@use 'spacing' as spacing;
+@use 'color-palette' as color-palette;
+@use 'typography' as typography;
+@use 'shape' as shape;
+
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.calendar-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: 1fr;
+  gap: 0;
+  padding: 0;
+
+  & .day-item {
+    padding: spacing.$sm;
+
+    &:not(:nth-child(7n)) {
+      border-right: variables.$layout-border;
+    }
+
+    &:not(:nth-last-child(-n + 7)) {
+      border-bottom: variables.$layout-border;
+    }
+
+    & .day-header {
+      gap: spacing.$sm;
+
+      &,
+      & .day {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      & .day {
+        $size: 25px;
+        //
+        width: $size;
+        height: $size;
+
+        font-size: typography.$body-sm;
+        vertical-align: middle;
+        text-align: center;
+
+        justify-content: center;
+        border-radius: shape.$rounded;
+      }
+
+      &.current .day {
+        color: map.get(color-palette.$common, 'white');
+        background: map.get(color-palette.$blue, 'default');
+      }
+    }
+  }
+}

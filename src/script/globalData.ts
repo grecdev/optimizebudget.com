@@ -37,6 +37,12 @@ const allRoutes: Record<RoutesName, Route> = {
     textContent: 'Profit and Loss',
     ariaLabel: 'Profit and Loss path',
   },
+  goals: {
+    id: 6,
+    path: 'goals',
+    textContent: 'Goals',
+    ariaLabel: 'Goals path',
+  },
 };
 
 const adminData = {
