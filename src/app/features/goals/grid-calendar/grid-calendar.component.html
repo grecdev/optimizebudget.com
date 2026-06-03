@@ -3,11 +3,18 @@
 </div>
 
 <app-widget-box class="calendar-container">
-  <div class="week-item" *ngFor="let item of daysOfWeek; trackBy: trackByFnDaysOfWeek">
-    {{ item }}
-  </div>
+  <div
+    class="day-item"
+    *ngFor="let item of dataSource; index as index; trackBy: trackByFnDataSource"
+  >
+    <div class="day">
+      <span *ngIf="index < 7">
+        {{ index | dayOfWeek }}
+      </span>
 
-  <div class="day-item" *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
-    <p class="day">{{ item[DataSourceItemKey.DAY] }}</p>
+      <span>
+        {{ item[DataSourceItemKey.DAY] }}
+      </span>
+    </div>
   </div>
 </app-widget-box>

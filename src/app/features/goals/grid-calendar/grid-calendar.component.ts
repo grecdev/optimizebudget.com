@@ -27,16 +27,6 @@ export class GridCalendarComponent implements OnInit {
   public readonly currentDate: Date | null = null;
 
   /**
-   * @summary - Static text content for days of the week.
-   *
-   * @type {Array<string>}
-   *
-   * @public
-   * @readonly
-   */
-  public readonly daysOfWeek: Array<string> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  /**
    * @summary - An array containing all the days in given month.
    *
    * Basically, what we create our grid on.

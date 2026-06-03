@@ -3,10 +3,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
+import { DayOfWeekPipe } from './pipes/dayOfWeek/day-of-week.pipe';
+
 import { GridCalendarComponent } from './grid-calendar.component';
 
 @NgModule({
-  declarations: [GridCalendarComponent],
+  declarations: [GridCalendarComponent, DayOfWeekPipe],
   imports: [
     // Angular specific
     CommonModule,
