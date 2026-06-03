@@ -1,0 +1,9 @@
+@use 'breakpoints' as breakpoints;
+
+@use '../authentication-common' as authentication-common;
+
+@media screen and (max-width: breakpoints.$md) {
+  :host {
+    @include authentication-common.host-style;
+  }
+}
