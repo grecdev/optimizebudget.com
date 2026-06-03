@@ -3,9 +3,9 @@ import {
   Component,
   Input,
   ViewEncapsulation,
-  ElementRef,
   ContentChild,
   ViewChild,
+  booleanAttribute,
 } from '@angular/core';
 
 import { type ThemeVariant, type ThemeColor } from '@shared/models/types';
@@ -51,6 +51,7 @@ import { AppFormFieldControl } from './form-field-control';
     '[class.app-form-field-variant-outlined]': 'variant === "outlined"',
     '[class.app-form-field-focused]': 'formFieldControl.focused',
     '[class.app-form-field-has-value]': 'formFieldControl.hasValue',
+    '[class.app-form-field-full-width]': 'fullWidth',
   },
 })
 export class AppFormField {
@@ -58,6 +59,24 @@ export class AppFormField {
   @Input({ required: true }) color!: ThemeColor;
   @Input({ required: true }) labelOptions!: TextFieldLabelOptions;
   @Input() error!: string;
+
+  /**
+   * @summary - Remove max width if needed.
+   *
+   * @type {boolean}
+   */
+  @Input({
+    transform: booleanAttribute,
+  })
+  get fullWidth(): boolean {
+    return this._fullWidth;
+  }
+
+  set fullWidth(value: boolean) {
+    this._fullWidth = value;
+  }
+
+  private _fullWidth: boolean = false;
 
   @ContentChild(AppFormFieldControl)
   public formFieldControl!: AppFormFieldControl;

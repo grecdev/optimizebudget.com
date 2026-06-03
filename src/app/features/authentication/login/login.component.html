@@ -20,10 +20,11 @@
     <app-form-field
       variant="outlined"
       color="primary-default"
+      class="mb-default"
+      fullWidth
       [labelOptions]="{
         position: 'top',
       }"
-      class="mb-default"
     >
       <app-input-label>Email</app-input-label>
 
@@ -33,16 +34,17 @@
     <app-form-field
       variant="outlined"
       color="primary-default"
+      class="mb-default"
+      fullWidth
       [labelOptions]="{
         position: 'top',
       }"
-      class="mb-default"
     >
       <app-input-label>
         <span class="label-password-container">
           Password
 
-          <a routerLink="/{{paths.forgotPassword.path}}" class="redirect-link">
+          <a routerLink="/{{ paths.forgotPassword.path }}" class="redirect-link">
             Forgot your password?
           </a>
         </span>
@@ -56,7 +58,7 @@
 
   <p>
     Don't have an account?
-    <a routerLink="/{{paths.register.path}}" class="redirect-link underline">Sign Up</a>
+    <a routerLink="/{{ paths.register.path }}" class="redirect-link underline">Sign Up</a>
   </p>
 </div>
 
