@@ -1,18 +1,18 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'spacing' as *;
+@use 'variables' as variables;
+@use 'spacing' as spacing;
 
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: map.get($spacing, 'sm') map.get($spacing, 'default');
-  border-bottom: $layout-border;
+  padding: spacing.$sm spacing.$default;
+  border-bottom: variables.$layout-border;
 }
 
 .right-side {
   display: flex;
   align-items: center;
-  gap: map.get($spacing, 'default');
+  gap: spacing.$default;
 }

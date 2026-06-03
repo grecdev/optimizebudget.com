@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
@@ -7,6 +7,7 @@ import { IconRegistryService } from '@shared/components/icon/icon-registry.servi
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   pageTitle: string = 'Hello world!';
