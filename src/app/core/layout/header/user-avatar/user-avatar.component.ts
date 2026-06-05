@@ -128,6 +128,13 @@ export class UserAvatarComponent {
   public handleClickOnWrapper(event: MouseEvent): void {
     event.stopPropagation();
 
+    const WRAPPER_CLICKED = event.target === event.currentTarget;
+
+    if (!WRAPPER_CLICKED) {
+      event.preventDefault();
+      return;
+    }
+
     this._triggerClose();
   }
 
@@ -228,6 +235,7 @@ export class UserAvatarComponent {
 
     const WRAPPER_ELEMENT = wrapper.rootNodes[0] as HTMLElement;
     const CONTAINER = WRAPPER_ELEMENT.querySelector<HTMLElement>('.user-info-container');
+    const SPACING_PX = 16;
 
     if (!CONTAINER) {
       throw Error('Container not found!');
@@ -235,7 +243,7 @@ export class UserAvatarComponent {
 
     Object.assign(CONTAINER.style, {
       top: `${top + height}px`,
-      left: `${left}px`,
+      right: `${SPACING_PX}px`,
     });
   }
 

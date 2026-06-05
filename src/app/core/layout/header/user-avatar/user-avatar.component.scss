@@ -26,8 +26,6 @@
 }
 
 .user-info-wrapper-mobile {
-  border: 3px solid red;
-
   position: fixed;
   top: 0;
   right: 0;
@@ -38,9 +36,8 @@
   & .user-info-container {
     position: fixed;
 
+    padding: spacing.$sm;
     background: map.get(color-palette.$common, 'white');
     box-shadow: map.get(variables.$box-shadow, 'variant-3');
-
-    border: 3px solid blue;
   }
 }
