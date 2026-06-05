@@ -1,25 +1,43 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'spacing' as *;
-@use 'shape' as *;
+@use 'variables' as variables;
+@use 'spacing' as spacing;
+@use 'shape' as shape;
+@use 'color-palette' as color-palette;
 
 .user-avatar-btn {
   display: flex;
   align-items: center;
-  gap: map.get($spacing, 'sm');
+  gap: spacing.$sm;
 
   & .avatar-profile-image {
     $image-size: 40px;
 
     width: $image-size;
     height: $image-size;
-    border-radius: map.get($border-radius, 'rounded');
+    border-radius: shape.$rounded;
   }
 
   & .user-info-container {
     text-align: left;
     display: flex;
     flex-direction: column;
+  }
+}
+
+.user-info-wrapper-mobile {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: auto;
+
+  & .user-info-container {
+    position: fixed;
+
+    padding: spacing.$sm;
+    background: map.get(color-palette.$common, 'white');
+    box-shadow: map.get(variables.$box-shadow, 'variant-3');
   }
 }

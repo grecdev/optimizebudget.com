@@ -20,5 +20,5 @@ export class AppComponent {
 
   // isMobile: boolean = false;
 
-  userIsLoggedIn: boolean = false;
+  userIsLoggedIn: boolean = true;
 }

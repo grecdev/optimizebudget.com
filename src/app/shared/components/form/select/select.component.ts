@@ -333,9 +333,7 @@ export class AppSelectComponent
     Object.values(this.icons).forEach(item => {
       this._iconRegistryService.addSvgIconConfig({
         name: item,
-        url: this._domSanitizer.bypassSecurityTrustResourceUrl(
-          `assets/icons/${item}.svg`
-        ),
+        url: this._domSanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${item}.svg`),
       });
     });
   }
@@ -365,7 +363,7 @@ export class AppSelectComponent
   /**
    * @summary - Set styling for the native element.
    *
-   * @param {SetOptionsContainerStyleOptions['optionsContainer']} options.optionsContainer - HTML container of all option elements.
+   * @param {SetOptionsContainerStyleOptions['selectOptionsWrapper']} options.selectOptionsWrapper - HTML container of all option elements.
    * @param {SetOptionsContainerStyleOptions['currentTarget']} options.currentTarget - Clicked target.
    *
    * @private
@@ -438,9 +436,7 @@ export class AppSelectComponent
 
     const VALUES = this._childrenOptions.map(item => item.value);
 
-    const HAS_DUPLICATED_VALUES = VALUES.some(
-      (item, index, self) => self.indexOf(item) !== index
-    );
+    const HAS_DUPLICATED_VALUES = VALUES.some((item, index, self) => self.indexOf(item) !== index);
 
     if (HAS_DUPLICATED_VALUES) {
       throw Error('Duplicated values found for select options!');

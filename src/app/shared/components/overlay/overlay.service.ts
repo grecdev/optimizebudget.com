@@ -13,7 +13,7 @@ import {
 
 import { DOCUMENT } from '@angular/common';
 
-import { filter, fromEvent, takeUntil, Subject } from 'rxjs';
+import { filter, fromEvent, takeUntil } from 'rxjs';
 
 import {
   type ComponentReferencesState,
@@ -44,8 +44,7 @@ export class AppOverlayService {
    *
    * @private
    */
-  private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null =
-    null;
+  private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null = null;
 
   /**
    * @summary - We need to check if the current ID has reached its threshold right?
@@ -76,8 +75,10 @@ export class AppOverlayService {
    *
    * @private
    */
-  private _overlayReferenceStack: Map<typeof this._currentID, ComponentReferencesState> =
-    new Map<typeof this._currentID, ComponentReferencesState>();
+  private _overlayReferenceStack: Map<typeof this._currentID, ComponentReferencesState> = new Map<
+    typeof this._currentID,
+    ComponentReferencesState
+  >();
 
   constructor(...args: Array<unknown>);
   constructor(
