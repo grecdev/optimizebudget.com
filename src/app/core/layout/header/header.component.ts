@@ -1,14 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { DomSanitizer } from '@angular/platform-browser';
-
-import { Subject, takeUntil } from 'rxjs';
 
 import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
@@ -19,7 +11,7 @@ import { MediaQueryService } from '@shared/services/media-query/media-query.serv
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit {
   pageTitle: string = 'Hello world!';
 
   /**
@@ -33,16 +25,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _mediaQueryService: MediaQueryService;
-
-  /**
-   * @summary - Subject to unsubscribe on component destroy.
-   *
-   * @type {Subject<void>}
-   *
-   * @private
-   * @readonly
-   */
-  private readonly _mediaQueryDestroy$: Subject<void> = new Subject();
 
   constructor(
     iconRegistryService: IconRegistryService,
@@ -66,23 +48,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * @private
    */
   private _initMediaQuerySubscription(): void {
-    this._mediaQueryService
-      .mediaQuery('max', 'md')
-      .pipe(takeUntil(this._mediaQueryDestroy$))
-      .subscribe({
-        next: value => {
-          this.isMobile = value;
+    this._mediaQueryService.mediaQuery('max', 'md').subscribe({
+      next: value => {
+        this.isMobile = value;
 
-          this._changeDetectorRef.markForCheck();
-        },
-      });
+        this._changeDetectorRef.markForCheck();
+      },
+    });
   }
 
   ngOnInit(): void {
     this._initMediaQuerySubscription();
-  }
-
-  ngOnDestroy(): void {
-    this._mediaQueryDestroy$.complete();
   }
 }
