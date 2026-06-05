@@ -4,19 +4,23 @@ import {
   ChangeDetectorRef,
   Component,
   ViewChild,
-  HostListener,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import { type SetOptionsContainerStyleOptions } from './user-avatar.model';
+import {
+  type SetOptionsContainerStyleOptions,
+  type UserInfoWrapperMobileContext,
+} from './user-avatar.model';
 
 @Component({
   selector: 'app-user-avatar',
   templateUrl: './user-avatar.component.html',
   styleUrls: ['./user-avatar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserAvatarComponent {
   fullName: string = 'Grecu Alexandru';
@@ -54,7 +58,7 @@ export class UserAvatarComponent {
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   @ViewChild('userInfoWrapperMobile')
-  private readonly _userInfoWrapperMobile: TemplateRef<void> | null = null;
+  private readonly _userInfoWrapperMobile: TemplateRef<UserInfoWrapperMobileContext> | null = null;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
@@ -69,13 +73,18 @@ export class UserAvatarComponent {
   /**
    * @summary - Event to trigger whenever we want to open the menu
    *
-   * @param {MouseEvent} event - The evento object
+   * @param {MouseEvent} event - The event object
    *
    * @public
    * @returns {void}
    */
-  @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
+  public handleOpenUserAvatarMenu(event: MouseEvent): void {
     event.stopPropagation();
+
+    if (!this.isMobile) {
+      event.preventDefault();
+      return;
+    }
 
     const CURRENT_TARGET = event.currentTarget as HTMLElement;
 
@@ -144,12 +153,20 @@ export class UserAvatarComponent {
    * @private
    * @returns {EmbeddedViewRef<void>}
    */
-  private _initUserInfoWrapperMobileEmbedded(): EmbeddedViewRef<void> {
+  private _initUserInfoWrapperMobileEmbedded(): EmbeddedViewRef<UserInfoWrapperMobileContext> {
     if (!this._userInfoWrapperMobile) {
       throw Error('Wrapper not found!');
     }
 
-    const VIEW = this._userInfoWrapperMobile.createEmbeddedView();
+    const CONTEXT_DATA = {
+      fullName: this.fullName,
+      email: this.email,
+    };
+
+    const VIEW = this._userInfoWrapperMobile.createEmbeddedView(CONTEXT_DATA);
+
+    VIEW.detectChanges();
+
     const ROOT_NODES = VIEW.rootNodes;
 
     if (!ROOT_NODES || ROOT_NODES.length === 0) {

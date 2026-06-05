@@ -1,4 +1,4 @@
-<button class="user-avatar-btn" type="button">
+<button class="user-avatar-btn" type="button" (click)="handleOpenUserAvatarMenu($event)">
   <img
     class="avatar-profile-image"
     src="https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1906669723.jpg"
@@ -16,6 +16,12 @@
 
 <ng-template #userInfoWrapperMobile>
   <div class="user-info-wrapper-mobile" (click)="handleClickOnWrapper($event)">
-    <div class="user-info-container"></div>
+    <div class="user-info-container">
+      <p>
+        <strong>{{ fullName }}</strong>
+      </p>
+
+      <p>{{ email }}</p>
+    </div>
   </div>
 </ng-template>
