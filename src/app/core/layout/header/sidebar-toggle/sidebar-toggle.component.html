@@ -1,5 +1,10 @@
 <button class="sidebar-toggle-btn" type="button" (click)="handleSidebarToggle($event)">
-  <div class="bar top"></div>
-  <div class="bar mid"></div>
-  <div class="bar bottom"></div>
+  <div class="bar top" [@topBarAnimation]="sidebarService.sidebarOpen ? 'open' : 'closed'"></div>
+
+  <div class="bar mid" [@middleBarAnimation]="sidebarService.sidebarOpen ? 'open' : 'closed'"></div>
+
+  <div
+    class="bar bottom"
+    [@bottomBarAnimation]="sidebarService.sidebarOpen ? 'open' : 'closed'"
+  ></div>
 </button>
