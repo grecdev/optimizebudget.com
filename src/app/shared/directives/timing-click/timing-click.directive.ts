@@ -32,8 +32,8 @@ export class TimingClickDirective implements OnInit {
     };
 
     this.subscription = this.clickSubject
-      .pipe(timingType[this.timingType()])
-      .subscribe((data) => this.timingClick.emit(data as MouseEvent));
+      .pipe(timingType[this.timingType() as keyof typeof timingType])
+      .subscribe(data => this.timingClick.emit(data as MouseEvent));
 
     this.destroyRef.onDestroy(() => {
       if (this.subscription) {
