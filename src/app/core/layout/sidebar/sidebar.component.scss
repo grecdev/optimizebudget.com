@@ -29,7 +29,7 @@
   }
 }
 
-@media screen and (max-width: breakpoints.$xl) {
+@media screen and (max-width: breakpoints.$md) {
   :host.sidebar {
     position: fixed;
     right: 0;
