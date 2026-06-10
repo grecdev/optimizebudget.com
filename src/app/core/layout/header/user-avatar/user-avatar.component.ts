@@ -250,6 +250,4 @@ export class UserAvatarComponent {
   ngOnInit(): void {
     this._initMediaQuerySubscription();
   }
-
-  ngAfterViewInit(): void {}
 }

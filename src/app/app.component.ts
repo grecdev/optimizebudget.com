@@ -6,6 +6,8 @@ import {
   ViewChild,
 } from '@angular/core';
 
+import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -21,19 +23,13 @@ export class AppComponent implements AfterViewInit {
    */
   userIsLoggedIn: boolean = true;
 
-  /**
-   * @summary - Used to change layout.
-   *
-   * @type {number}
-   *
-   * @public
-   */
-  public appHeaderHeightPX: number = -1;
-
   @ViewChild('appHeader', {
     read: ElementRef<HTMLElement>,
   })
   private readonly _appHeader: ElementRef<HTMLElement> | null = null;
+
+  @ViewChild('appSidebar')
+  private readonly _appSidebar: SidebarComponent | null = null;
 
   /**
    * @summary - Set global variable to change layout's boxes positions.
@@ -42,15 +38,15 @@ export class AppComponent implements AfterViewInit {
    * @returns {void}
    */
   private _setHeaderHeight(): void {
-    const NATIVE_ELEMENT = this._appHeader && this._appHeader.nativeElement;
+    const NATIVE_ELEMENT_HEADER = this._appHeader && this._appHeader.nativeElement;
 
-    if (!NATIVE_ELEMENT) {
-      return;
+    if (!NATIVE_ELEMENT_HEADER || !this._appSidebar) {
+      throw Error('Elements not found!');
     }
 
-    const HEIGHT = NATIVE_ELEMENT.getBoundingClientRect().height;
+    const HEIGHT = NATIVE_ELEMENT_HEADER.getBoundingClientRect().height;
 
-    this.appHeaderHeightPX = HEIGHT;
+    this._appSidebar.headerHeight = HEIGHT;
   }
 
   ngAfterViewInit(): void {
