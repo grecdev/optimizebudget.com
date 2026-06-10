@@ -1,0 +1,7 @@
+@use 'spacing' as spacing;
+
+@mixin links-container {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$sm;
+}

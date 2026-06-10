@@ -1,12 +1,12 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'spacing' as *;
+@use 'variables' as variables;
+@use 'spacing' as spacing;
 
-@use '../sidebar.component' as *;
+@use '../sidebar-utils.component' as sidebar-utils;
 
 :host {
-  @include links-container;
+  @include sidebar-utils.links-container;
 
-  padding: map.get($spacing, 'sm') map.get($spacing, 'default') 0;
+  padding: spacing.$sm spacing.$default 0;
 }

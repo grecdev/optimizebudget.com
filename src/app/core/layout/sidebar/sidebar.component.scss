@@ -1,17 +1,10 @@
 @use 'sass:map';
 
 @use 'variables' as variables;
-@use 'spacing' as spacing;
 @use 'color-palette' as color-palette;
 @use 'breakpoints' as breakpoints;
 
-@mixin links-container {
-  display: flex;
-  flex-direction: column;
-  gap: spacing.$sm;
-}
-
-:host.sidebar {
+:host {
   display: grid;
   grid-template-rows: auto 1fr auto;
 
@@ -30,7 +23,7 @@
 }
 
 @media screen and (max-width: breakpoints.$md) {
-  :host.sidebar {
+  :host {
     position: fixed;
     right: 0;
     bottom: 0;

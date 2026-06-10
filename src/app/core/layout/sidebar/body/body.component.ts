@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { allRoutes } from '@script/globalData';
 import { Route } from '@shared/models/interfaces';
@@ -6,7 +6,8 @@ import { Route } from '@shared/models/interfaces';
 @Component({
   selector: 'app-sidebar-body',
   templateUrl: './body.component.html',
-  styleUrls: ['../sidebar.component.scss', './body.component.scss'],
+  styleUrls: ['./body.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BodyComponent {
   links: Array<Route> = [

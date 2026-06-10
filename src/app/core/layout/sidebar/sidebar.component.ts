@@ -8,7 +8,7 @@ import {
 
 import { filter, of, switchMap, tap, BehaviorSubject } from 'rxjs';
 
-import { SidebarService } from '@shared/services/sidebar/sidebar.service';
+// import { SidebarService } from '@shared/services/sidebar/sidebar.service';
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import { type SetSidebarStyleOptions } from './sidebar.model';
@@ -18,9 +18,6 @@ import { type SetSidebarStyleOptions } from './sidebar.model';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'sidebar',
-  },
 })
 export class SidebarComponent {
   /**
