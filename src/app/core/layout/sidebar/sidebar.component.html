@@ -1,18 +1,14 @@
 <ng-container *ngIf="!isMobile; else mobileWrapperTemplate">
   <app-sidebar-logo />
-
   <app-sidebar-body />
-
   <app-sidebar-footer />
 </ng-container>
 
 <ng-template #mobileWrapperTemplate>
-  <div class="wrapper" #mobileWrapper>
-    <div class="container" [@containerAnimation]="sidebarOpen ? 'enter' : 'exit'">
+  <div class="wrapper" *ngIf="sidebarState.parentOpen">
+    <div class="container" *ngIf="sidebarState.childOpen" @containerAnimation>
       <app-sidebar-logo />
-
       <app-sidebar-body />
-
       <app-sidebar-footer />
     </div>
   </div>

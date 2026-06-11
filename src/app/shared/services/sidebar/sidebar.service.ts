@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject, Observable, Subject, throttleTime } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+
+import { type SidebarObservableState, type ToggleSidebarOptions } from './sidebar.service.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,42 +11,47 @@ export class SidebarService {
   /**
    * @summary - So we don't expose the main stream.
    *
-   * @type {Observable<boolean>}
+   * @type {Observable<SidebarObservableState>}
    *
    * @public
    * @readonly
    */
-  public readonly sidebarOpen$: Observable<boolean> | null = null;
+  public readonly sidebarOpen$: Observable<SidebarObservableState> | null = null;
 
   /**
-   * @summary - Used to throttle the events.
+   * @summary - Whenever I want to prevent multiple trigger events.
    *
    * @type {number}
    *
-   * @private
+   * @public
    * @readonly
    */
-  private readonly _toggleDelayMS: number = 1000;
+  public readonly toggleDelayMS: number = 1000;
 
   /**
    * @summary - Stream to track the state.
    *
-   * @type {BehaviorSubject<boolean>}
+   * @type {BehaviorSubject<SidebarObservableState>}
    *
    * @private
    * @readonly
    */
-  private readonly _sidebarOpen: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private readonly _sidebarOpen: BehaviorSubject<SidebarObservableState> =
+    new BehaviorSubject<SidebarObservableState>({
+      childOpen: false,
+      parentOpen: false,
+    });
 
   /**
    * @summary - Stream to trigger events.
    *
-   * @type {Subject<void>}
+   * @type {Subject<SidebarObservableState>}
    *
    * @private
    * @readonly
    */
-  private readonly _toggleSidebar: Subject<void> = new Subject<void>();
+  private readonly _toggleSidebar: Subject<SidebarObservableState> =
+    new Subject<SidebarObservableState>();
 
   constructor() {
     this.sidebarOpen$ = this._sidebarOpen.asObservable();
@@ -59,11 +66,11 @@ export class SidebarService {
    * @returns {void}
    */
   private _initToggleSidebar(): void {
-    this._toggleSidebar.pipe(throttleTime(this._toggleDelayMS)).subscribe({
-      next: () => {
-        const CURRENT_VALUE = this._sidebarOpen.getValue();
+    this._toggleSidebar.pipe().subscribe({
+      next: (data: SidebarObservableState) => {
+        const DATA = Object.assign({}, this._sidebarOpen.getValue(), data);
 
-        this._sidebarOpen.next(!CURRENT_VALUE);
+        this._sidebarOpen.next(DATA);
       },
     });
   }
@@ -71,10 +78,13 @@ export class SidebarService {
   /**
    * @summary - Change  the sidebar state stream.
    *
+   * @param {ToggleSidebarOptions['parentOpen']} options.parentOpen - The parent state.
+   * @param {ToggleSidebarOptions['childrenOpen']} options.parentOpen - The children state.
+   *
    * @public
    * @returns {void}
    */
-  public toggleSidebar(): void {
-    this._toggleSidebar.next();
+  public toggleSidebar(options: ToggleSidebarOptions): void {
+    this._toggleSidebar.next(options);
   }
 }

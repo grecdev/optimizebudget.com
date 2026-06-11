@@ -11,6 +11,8 @@ import {
 import { filter, of, switchMap, tap, BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 import { SidebarService } from '@shared/services/sidebar/sidebar.service';
+import { type SidebarObservableState } from '@shared/services/sidebar/sidebar.service.model';
+
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import { type SetSidebarStyleOptions } from './sidebar.model';
@@ -36,11 +38,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
   /**
    * @summary - State of the sidebar.
    *
-   * @type {boolean}
+   * @type {SidebarObservableState}
    *
    * @public
    */
-  public sidebarOpen: boolean = false;
+  public sidebarState: SidebarObservableState = {
+    parentOpen: false,
+    childOpen: false,
+  };
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _elementRef: ElementRef<HTMLElement>;
@@ -172,7 +177,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     sidebarOpenSubscriber.pipe(takeUntil(this._destroy$)).subscribe({
       next: data => {
-        this.sidebarOpen = data;
+        this.sidebarState = data;
         this._changeDetectorRef.markForCheck();
       },
     });

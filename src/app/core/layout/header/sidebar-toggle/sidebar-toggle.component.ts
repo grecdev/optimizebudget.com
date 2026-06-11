@@ -1,14 +1,26 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import {
+  type AfterViewInit,
+  type OnInit,
+  type OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 
-import { Subject, takeUntil } from 'rxjs';
+import { fromEvent, Subject, takeUntil, throttleTime } from 'rxjs';
 
 import { SidebarService } from '@shared/services/sidebar/sidebar.service';
+import { type SidebarObservableState } from '@shared/services/sidebar/sidebar.service.model';
 
 import {
   topBarAnimation,
   middleBarAnimation,
   bottomBarAnimation,
 } from './sidebar-toggle-animations.component';
+
+import { TRANSITION_DURATION_MS } from '@core/layout/sidebar/sidebar-animations.component';
 
 @Component({
   selector: 'app-sidebar-toggle',
@@ -17,15 +29,20 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [topBarAnimation, middleBarAnimation, bottomBarAnimation],
 })
-export class SidebarToggleComponent {
+export class SidebarToggleComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * @summary - State of the sidebar.
    *
-   * @type {boolean}
+   * @type {SidebarObservableState}
    *
    * @public
    */
-  public sidebarOpen: boolean = false;
+  public sidebarState: SidebarObservableState = {
+    parentOpen: false,
+    childOpen: false,
+  };
+
+  private _clickTimeout: ReturnType<typeof setInterval> | null = null;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _sidebarService: SidebarService;
@@ -40,6 +57,9 @@ export class SidebarToggleComponent {
    */
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
+  @ViewChild('sidebarToggleBtn')
+  private readonly _sidebarToggleBtn: ElementRef<HTMLElement> | null = null;
+
   constructor(sidebarService: SidebarService, changeDetectorRef: ChangeDetectorRef) {
     this._sidebarService = sidebarService;
     this._changeDetectorRef = changeDetectorRef;
@@ -48,15 +68,36 @@ export class SidebarToggleComponent {
   /**
    * @summary - Click event handler to toggle the sidebar state.
    *
-   * @param {MouseEvent} event - Event object.
-   *
    * @public
    * @returns {void}
    */
-  public handleSidebarToggle(event: MouseEvent): void {
-    event.stopPropagation();
+  public handleSidebarToggle(): void {
+    const SIDEBAR_IS_CLOSED = [this.sidebarState.parentOpen, this.sidebarState.childOpen].every(
+      item => !item
+    );
 
-    this._sidebarService.toggleSidebar();
+    if (SIDEBAR_IS_CLOSED) {
+      this._sidebarService.toggleSidebar({
+        parentOpen: true,
+        childOpen: true,
+      });
+
+      return;
+    }
+
+    this._sidebarService.toggleSidebar({
+      childOpen: false,
+    });
+
+    if (this._clickTimeout) {
+      clearTimeout(this._clickTimeout);
+    }
+
+    this._clickTimeout = setTimeout(() => {
+      this._sidebarService.toggleSidebar({
+        parentOpen: false,
+      });
+    }, TRANSITION_DURATION_MS);
   }
 
   /**
@@ -74,10 +115,33 @@ export class SidebarToggleComponent {
 
     sidebarOpenSubscriber.pipe(takeUntil(this._destroy$)).subscribe({
       next: data => {
-        this.sidebarOpen = data;
+        this.sidebarState = data;
         this._changeDetectorRef.markForCheck();
       },
     });
+  }
+
+  /**
+   * @summary - Init the click event.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initClickEvent(): void {
+    const NATIVE_ELEMENT = this._sidebarToggleBtn && this._sidebarToggleBtn.nativeElement;
+
+    if (!NATIVE_ELEMENT) {
+      throw Error('this._sidebarToggleBtn not found!');
+    }
+
+    fromEvent(NATIVE_ELEMENT, 'click')
+      .pipe(takeUntil(this._destroy$), throttleTime(this._sidebarService.toggleDelayMS))
+      .subscribe({
+        next: (event: Event) => {
+          event.stopPropagation();
+          this.handleSidebarToggle();
+        },
+      });
   }
 
   /**
@@ -93,6 +157,10 @@ export class SidebarToggleComponent {
 
   ngOnInit(): void {
     this._initSidebarOpenSubscription();
+  }
+
+  ngAfterViewInit(): void {
+    this._initClickEvent();
   }
 
   ngOnDestroy(): void {
