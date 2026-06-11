@@ -1,5 +1,19 @@
-<app-sidebar-logo />
+<ng-container *ngIf="!isMobile; else mobileWrapperTemplate">
+  <app-sidebar-logo />
 
-<app-sidebar-body />
+  <app-sidebar-body />
 
-<app-sidebar-footer />
+  <app-sidebar-footer />
+</ng-container>
+
+<ng-template #mobileWrapperTemplate>
+  <div class="wrapper" #mobileWrapper>
+    <div class="container">
+      <app-sidebar-logo />
+
+      <app-sidebar-body />
+
+      <app-sidebar-footer />
+    </div>
+  </div>
+</ng-template>

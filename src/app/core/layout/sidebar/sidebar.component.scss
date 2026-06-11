@@ -10,8 +10,6 @@
 
   border-right: variables.$layout-border;
   overflow: hidden;
-
-  background: map.get(color-palette.$common, 'white');
 }
 
 .link {
@@ -30,6 +28,13 @@
     left: 0;
     z-index: variables.$overlap-index-everything;
 
-    width: max-content;
+    & .wrapper {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    & .container {
+      background: map.get(color-palette.$common, 'white');
+      width: max-content;
+    }
   }
 }

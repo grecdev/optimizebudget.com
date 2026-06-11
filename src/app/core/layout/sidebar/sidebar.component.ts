@@ -33,7 +33,7 @@ export class SidebarComponent {
   private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _mediaQueryService: MediaQueryService;
 
-  private readonly _elementRef: ElementRef<HTMLElement> | null = null;
+  private readonly _elementRef: ElementRef<HTMLElement>;
 
   /**
    * @summary - I am getting the height from its parent component.
@@ -43,7 +43,7 @@ export class SidebarComponent {
    * @private
    * @readonly
    */
-  private readonly _headerHeight$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  private readonly _headerHeightSubject$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
 
   /**
    * @summary - Header's dynamically height.
@@ -57,7 +57,7 @@ export class SidebarComponent {
   }
 
   public set headerHeight(value: number) {
-    this._headerHeight$.next(value);
+    this._headerHeightSubject$.next(value);
     this._headerHeight = value;
   }
 
@@ -67,12 +67,11 @@ export class SidebarComponent {
     // sidebarService: SidebarService,
     mediaQueryService: MediaQueryService,
     changeDetectorRef: ChangeDetectorRef,
-    elementRef: ElementRef<HTMLElement>
+    elementRef: ElementRef
   ) {
     // this._sidebarService = sidebarService;
     this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
-
     this._elementRef = elementRef;
   }
 
@@ -124,13 +123,13 @@ export class SidebarComponent {
             return of(-1);
           }
 
-          return this._headerHeight$.pipe(filter(data => data !== -1));
+          return this._headerHeightSubject$.pipe(filter(data => data !== -1));
         })
       )
       .subscribe({
-        next: data => {
+        next: (height: number) => {
           this._setSidebarStyle({
-            height: data,
+            height,
           });
         },
       });
