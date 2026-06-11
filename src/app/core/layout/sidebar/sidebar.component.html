@@ -8,7 +8,7 @@
 
 <ng-template #mobileWrapperTemplate>
   <div class="wrapper" #mobileWrapper>
-    <div class="container">
+    <div class="container" [@containerAnimation]="sidebarOpen ? 'enter' : 'exit'">
       <app-sidebar-logo />
 
       <app-sidebar-body />

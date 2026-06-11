@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 
-import { Subject, throttleTime } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, throttleTime } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SidebarService {
   /**
-   * @summary - Track if sidebar is open.
+   * @summary - So we don't expose the main stream.
    *
-   * @type {boolean}
+   * @type {Observable<boolean>}
    *
    * @public
+   * @readonly
    */
-  sidebarOpen: boolean = false;
+  public readonly sidebarOpen$: Observable<boolean> | null = null;
 
   /**
    * @summary - Used to throttle the events.
@@ -26,7 +27,17 @@ export class SidebarService {
   private readonly _toggleDelayMS: number = 1000;
 
   /**
-   * @summary - Main stream for state changes.
+   * @summary - Stream to track the state.
+   *
+   * @type {BehaviorSubject<boolean>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _sidebarOpen: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  /**
+   * @summary - Stream to trigger events.
    *
    * @type {Subject<void>}
    *
@@ -36,6 +47,8 @@ export class SidebarService {
   private readonly _toggleSidebar: Subject<void> = new Subject<void>();
 
   constructor() {
+    this.sidebarOpen$ = this._sidebarOpen.asObservable();
+
     this._initToggleSidebar();
   }
 
@@ -48,7 +61,9 @@ export class SidebarService {
   private _initToggleSidebar(): void {
     this._toggleSidebar.pipe(throttleTime(this._toggleDelayMS)).subscribe({
       next: () => {
-        this.sidebarOpen = !this.sidebarOpen;
+        const CURRENT_VALUE = this._sidebarOpen.getValue();
+
+        this._sidebarOpen.next(!CURRENT_VALUE);
       },
     });
   }

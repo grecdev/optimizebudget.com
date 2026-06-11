@@ -4,22 +4,26 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 
-import { filter, of, switchMap, tap, BehaviorSubject } from 'rxjs';
+import { filter, of, switchMap, tap, BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
-// import { SidebarService } from '@shared/services/sidebar/sidebar.service';
+import { SidebarService } from '@shared/services/sidebar/sidebar.service';
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import { type SetSidebarStyleOptions } from './sidebar.model';
+import { containerAnimation } from './sidebar-animations.component';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [containerAnimation],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
   /**
    * @summary - Based on this member, render our components, inside the template.
    *
@@ -29,11 +33,19 @@ export class SidebarComponent {
    */
   public isMobile: boolean = false;
 
-  // private readonly _sidebarService: SidebarService;
-  private readonly _changeDetectorRef: ChangeDetectorRef;
-  private readonly _mediaQueryService: MediaQueryService;
+  /**
+   * @summary - State of the sidebar.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public sidebarOpen: boolean = false;
 
+  private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _elementRef: ElementRef<HTMLElement>;
+  private readonly _sidebarService: SidebarService;
+  private readonly _mediaQueryService: MediaQueryService;
 
   /**
    * @summary - I am getting the height from its parent component.
@@ -44,6 +56,16 @@ export class SidebarComponent {
    * @readonly
    */
   private readonly _headerHeightSubject$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+
+  /**
+   * @summary - For cleanup purposes.
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _destroy$: Subject<void> = new Subject<void>();
 
   /**
    * @summary - Header's dynamically height.
@@ -64,12 +86,12 @@ export class SidebarComponent {
   private _headerHeight: number = -1;
 
   constructor(
-    // sidebarService: SidebarService,
+    sidebarService: SidebarService,
     mediaQueryService: MediaQueryService,
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef
   ) {
-    // this._sidebarService = sidebarService;
+    this._sidebarService = sidebarService;
     this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
     this._elementRef = elementRef;
@@ -135,7 +157,44 @@ export class SidebarComponent {
       });
   }
 
+  /**
+   * @summary - Init the sidebar service subscription
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initSidebarOpenSubscription(): void {
+    const sidebarOpenSubscriber = this._sidebarService.sidebarOpen$;
+
+    if (!sidebarOpenSubscriber) {
+      throw Error('sidebarOpenSubscriber not found!');
+    }
+
+    sidebarOpenSubscriber.pipe(takeUntil(this._destroy$)).subscribe({
+      next: data => {
+        this.sidebarOpen = data;
+        this._changeDetectorRef.markForCheck();
+      },
+    });
+  }
+
+  /**
+   * @summary - Cleanup whatever you need.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCleanup(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
   ngOnInit(): void {
     this._initMediaQuerySubscription();
+    this._initSidebarOpenSubscription();
+  }
+
+  ngOnDestroy(): void {
+    this._initCleanup();
   }
 }
