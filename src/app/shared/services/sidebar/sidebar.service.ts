@@ -29,6 +29,19 @@ export class SidebarService {
   public readonly toggleDelayMS: number = 1000;
 
   /**
+   * @summary - Check if the sidebar is opened or closed.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public get isClosed(): boolean {
+    const { childOpen, parentOpen } = this._sidebarOpen.getValue();
+
+    return !childOpen && !parentOpen;
+  }
+
+  /**
    * @summary - Stream to track the state.
    *
    * @type {BehaviorSubject<SidebarObservableState>}

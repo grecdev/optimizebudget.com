@@ -81,11 +81,7 @@ export class SidebarToggleComponent implements OnInit, AfterViewInit, OnDestroy 
    * @returns {void}
    */
   public handleSidebarToggle(): void {
-    const SIDEBAR_IS_CLOSED = [this.sidebarState.parentOpen, this.sidebarState.childOpen].every(
-      item => !item
-    );
-
-    if (SIDEBAR_IS_CLOSED) {
+    if (this._sidebarService.isClosed) {
       this._sidebarService.toggleSidebar({
         parentOpen: true,
         childOpen: true,

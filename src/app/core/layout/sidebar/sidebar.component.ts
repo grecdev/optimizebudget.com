@@ -301,10 +301,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this.sidebarState = data;
           this._changeDetectorRef.markForCheck();
         }),
-        switchMap(data => {
-          const SIDEBAR_IS_CLOSED = [data.parentOpen, data.childOpen].every(item => !item);
-
-          if (SIDEBAR_IS_CLOSED) {
+        switchMap(() => {
+          if (this._sidebarService.isClosed) {
             this._initDestroyOverlayClick();
 
             return EMPTY;
