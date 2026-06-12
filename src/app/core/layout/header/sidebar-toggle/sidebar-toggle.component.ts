@@ -11,16 +11,18 @@ import {
 
 import { fromEvent, Subject, takeUntil, throttleTime } from 'rxjs';
 
+import { type ClearTimeoutOptions } from '@shared/models/interfaces';
+
 import { SidebarService } from '@shared/services/sidebar/sidebar.service';
 import { type SidebarObservableState } from '@shared/services/sidebar/sidebar.service.model';
+
+import { TRANSITION_DURATION_MS } from '@core/layout/sidebar/sidebar-animations.component';
 
 import {
   topBarAnimation,
   middleBarAnimation,
   bottomBarAnimation,
 } from './sidebar-toggle-animations.component';
-
-import { TRANSITION_DURATION_MS } from '@core/layout/sidebar/sidebar-animations.component';
 
 @Component({
   selector: 'app-sidebar-toggle',
@@ -42,6 +44,13 @@ export class SidebarToggleComponent implements OnInit, AfterViewInit, OnDestroy 
     childOpen: false,
   };
 
+  /**
+   * @summary - To remove the timeout after wards.
+   *
+   * @type {ReturnType<typeof setTimeout> | null}
+   *
+   * @readonly
+   */
   private _clickTimeout: ReturnType<typeof setInterval> | null = null;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
@@ -89,15 +98,31 @@ export class SidebarToggleComponent implements OnInit, AfterViewInit, OnDestroy 
       childOpen: false,
     });
 
-    if (this._clickTimeout) {
-      clearTimeout(this._clickTimeout);
-    }
+    this._clearTimeout({
+      timeout: this._clickTimeout,
+    });
 
     this._clickTimeout = setTimeout(() => {
       this._sidebarService.toggleSidebar({
         parentOpen: false,
       });
     }, TRANSITION_DURATION_MS);
+  }
+
+  /**
+   * @summary - Clear timeout.
+   *
+   * @type {ClearTimeoutOptions["timeout"]} options.timeout - Timeout executed.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _clearTimeout(options: ClearTimeoutOptions): void {
+    const { timeout } = options;
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
   }
 
   /**
@@ -153,6 +178,10 @@ export class SidebarToggleComponent implements OnInit, AfterViewInit, OnDestroy 
   private _initCleanup(): void {
     this._destroy$.next();
     this._destroy$.complete();
+
+    if (this._clickTimeout) {
+      clearTimeout(this._clickTimeout);
+    }
   }
 
   ngOnInit(): void {

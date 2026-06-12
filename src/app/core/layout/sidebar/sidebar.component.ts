@@ -1,14 +1,27 @@
 import {
+  type OnInit,
+  type OnDestroy,
   ElementRef,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   Component,
   Input,
-  OnDestroy,
-  OnInit,
+  ViewChild,
 } from '@angular/core';
 
-import { filter, of, switchMap, tap, BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import {
+  filter,
+  of,
+  switchMap,
+  tap,
+  BehaviorSubject,
+  Subject,
+  takeUntil,
+  throttleTime,
+  EMPTY,
+} from 'rxjs';
+
+import { type ClearTimeoutOptions } from '@shared/models/interfaces';
 
 import { SidebarService } from '@shared/services/sidebar/sidebar.service';
 import { type SidebarObservableState } from '@shared/services/sidebar/sidebar.service.model';
@@ -16,7 +29,7 @@ import { type SidebarObservableState } from '@shared/services/sidebar/sidebar.se
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import { type SetSidebarStyleOptions } from './sidebar.model';
-import { containerAnimation } from './sidebar-animations.component';
+import { containerAnimation, TRANSITION_DURATION_MS } from './sidebar-animations.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -63,6 +76,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private readonly _headerHeightSubject$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
 
   /**
+   * @summary - Needs to be destroyed on each click (sidebar closing event).
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   * @readonly
+   */
+  private _overlayClickDestroySubject$: Subject<void> = new Subject<void>();
+
+  /**
    * @summary - For cleanup purposes.
    *
    * @type {Subject<void>}
@@ -70,7 +93,26 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * @private
    * @readonly
    */
-  private readonly _destroy$: Subject<void> = new Subject<void>();
+  private readonly _destroySubject$: Subject<void> = new Subject<void>();
+
+  /**
+   * @summary - To trigger the click events on the overlay.
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _handleOverlayClickSubject$: Subject<void> = new Subject<void>();
+
+  /**
+   * @summary - To remove the timeout after wards.
+   *
+   * @type {ReturnType<typeof setTimeout> | null}
+   *
+   * @readonly
+   */
+  private _clickTimeout: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * @summary - Header's dynamically height.
@@ -82,6 +124,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   @Input() public get headerHeight(): number {
     return this._headerHeight;
   }
+
+  /**
+   * @summay - Used to click on the overlay.
+   *
+   * @type {ElementRef<HTMLElement>}
+   *
+   * @private
+   * @readonly
+   */
+  @ViewChild('mobileWrapper') private readonly _mobileWrapper: ElementRef<HTMLElement> | null =
+    null;
 
   public set headerHeight(value: number) {
     this._headerHeightSubject$.next(value);
@@ -103,6 +156,31 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * @summary - Handle click event on overlay element.
+   *
+   * @param {Event} event - The DOM event object.
+   *
+   * @public
+   * @returns {void}
+   */
+  public handleOverlayClick(event: Event): void {
+    event.stopPropagation();
+
+    const NATIVE_ELEMENT = this._mobileWrapper && this._mobileWrapper.nativeElement;
+
+    if (!NATIVE_ELEMENT) {
+      console.warn('this._mobileWrapper not found!');
+      return;
+    }
+
+    if (event.target !== NATIVE_ELEMENT) {
+      return;
+    }
+
+    this._handleOverlayClickSubject$.next();
+  }
+
+  /**
    * @summary - Dynamically set the sidebar style.
    *
    * @param {SetSidebarStyleOptions['height']} options.height - Header's height.
@@ -118,7 +196,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const NATIVE_ELEMENT = this._elementRef && this._elementRef.nativeElement;
 
     if (!NATIVE_ELEMENT) {
-      throw Error('Native element not found!');
+      console.warn('Native element not found!');
+      return;
     }
 
     if (height !== -1) {
@@ -126,6 +205,44 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     NATIVE_ELEMENT.style.top = heightStyle;
+  }
+
+  /**
+   * @summary - Clear timeout.
+   *
+   * @type {ClearTimeoutOptions["timeout"]} options.timeout - Timeout executed.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _clearTimeout(options: ClearTimeoutOptions): void {
+    const { timeout } = options;
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * @summary - Event handler for overlay #mobileWrapper.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _closeSidebar(): void {
+    this._sidebarService.toggleSidebar({
+      childOpen: false,
+    });
+
+    this._clearTimeout({
+      timeout: this._clickTimeout,
+    });
+
+    this._clickTimeout = setTimeout(() => {
+      this._sidebarService.toggleSidebar({
+        parentOpen: false,
+      });
+    }, TRANSITION_DURATION_MS);
   }
 
   /**
@@ -175,12 +292,46 @@ export class SidebarComponent implements OnInit, OnDestroy {
       throw Error('sidebarOpenSubscriber not found!');
     }
 
-    sidebarOpenSubscriber.pipe(takeUntil(this._destroy$)).subscribe({
-      next: data => {
-        this.sidebarState = data;
-        this._changeDetectorRef.markForCheck();
-      },
-    });
+    sidebarOpenSubscriber
+      .pipe(
+        takeUntil(this._destroySubject$),
+        tap(data => {
+          this.sidebarState = data;
+          this._changeDetectorRef.markForCheck();
+        }),
+        switchMap(data => {
+          const SIDEBAR_IS_CLOSED = [data.parentOpen, data.childOpen].every(item => !item);
+
+          if (SIDEBAR_IS_CLOSED) {
+            this._initDestroyOverlayClick();
+
+            return EMPTY;
+          }
+
+          this._overlayClickDestroySubject$ = new Subject<void>();
+
+          return this._handleOverlayClickSubject$.pipe(
+            throttleTime(this._sidebarService.toggleDelayMS),
+            takeUntil(this._overlayClickDestroySubject$)
+          );
+        })
+      )
+      .subscribe({
+        next: () => {
+          this._closeSidebar();
+        },
+      });
+  }
+
+  /**
+   * @summary - Destroy the overlay click subject.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initDestroyOverlayClick(): void {
+    this._overlayClickDestroySubject$.next();
+    this._overlayClickDestroySubject$.complete();
   }
 
   /**
@@ -190,8 +341,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * @returns {void}
    */
   private _initCleanup(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
+    this._destroySubject$.next();
+    this._destroySubject$.complete();
+
+    this._clearTimeout({
+      timeout: this._clickTimeout,
+    });
+
+    this._initDestroyOverlayClick();
   }
 
   ngOnInit(): void {

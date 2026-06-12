@@ -7,4 +7,8 @@ interface Route {
   icon?: any;
 }
 
-export type { Route };
+interface ClearTimeoutOptions {
+  timeout: ReturnType<typeof setTimeout> | null;
+}
+
+export type { Route, ClearTimeoutOptions };

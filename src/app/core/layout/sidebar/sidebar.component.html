@@ -5,7 +5,12 @@
 </ng-container>
 
 <ng-template #mobileWrapperTemplate>
-  <div class="wrapper" *ngIf="sidebarState.parentOpen">
+  <div
+    #mobileWrapper
+    class="wrapper"
+    *ngIf="sidebarState.parentOpen"
+    (click)="handleOverlayClick($event)"
+  >
     <div class="container" *ngIf="sidebarState.childOpen" @containerAnimation>
       <app-sidebar-logo />
       <app-sidebar-body />
