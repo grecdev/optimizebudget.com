@@ -37,6 +37,9 @@ import { containerAnimation, TRANSITION_DURATION_MS } from './sidebar-animations
   styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [containerAnimation],
+  host: {
+    '[style]': '_sidebarStyle',
+  },
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   /**
@@ -60,8 +63,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
     childOpen: false,
   };
 
+  /**
+   * @summray - Sidebar's inline style.
+   *
+   * @type {Partial<CSSStyleDeclaration>}
+   *
+   * @public
+   */
+  public _sidebarStyle: Partial<CSSStyleDeclaration> = {};
+
   private readonly _changeDetectorRef: ChangeDetectorRef;
-  private readonly _elementRef: ElementRef<HTMLElement>;
   private readonly _sidebarService: SidebarService;
   private readonly _mediaQueryService: MediaQueryService;
 
@@ -146,13 +157,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(
     sidebarService: SidebarService,
     mediaQueryService: MediaQueryService,
-    changeDetectorRef: ChangeDetectorRef,
-    elementRef: ElementRef
+    changeDetectorRef: ChangeDetectorRef
   ) {
     this._sidebarService = sidebarService;
     this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
-    this._elementRef = elementRef;
   }
 
   /**
@@ -191,20 +200,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private _setSidebarStyle(options: SetSidebarStyleOptions): void {
     const { height } = options;
 
-    let heightStyle = '';
-
-    const NATIVE_ELEMENT = this._elementRef && this._elementRef.nativeElement;
-
-    if (!NATIVE_ELEMENT) {
-      console.warn('Native element not found!');
-      return;
-    }
-
     if (height !== -1) {
-      heightStyle = `${height}px`;
+      this._sidebarStyle = {
+        top: `${height}px`,
+      };
+    } else {
+      this._sidebarStyle = {};
     }
-
-    NATIVE_ELEMENT.style.top = heightStyle;
   }
 
   /**
