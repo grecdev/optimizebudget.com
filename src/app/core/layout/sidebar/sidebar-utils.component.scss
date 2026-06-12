@@ -1,7 +1,23 @@
+@use 'sass:map';
+
 @use 'spacing' as spacing;
+@use 'breakpoints' as breakpoints;
+@use 'color-palette' as color-palette;
 
 @mixin links-container {
   display: flex;
   flex-direction: column;
   gap: spacing.$sm;
+
+  @media screen and (max-width: breakpoints.$md) {
+    gap: 0;
+  }
+}
+
+.link {
+  &.active {
+    background: map.get(color-palette.$secondary, 'variant-2');
+    color: map.get(color-palette.$secondary, 'default');
+    font-weight: 500;
+  }
 }

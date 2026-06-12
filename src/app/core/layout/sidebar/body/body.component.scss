@@ -9,4 +9,5 @@
   @include sidebar-utils.links-container;
 
   padding: spacing.$sm spacing.$default 0;
+  overflow: auto;
 }
