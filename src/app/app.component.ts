@@ -32,7 +32,9 @@ export class AppComponent implements AfterViewInit {
   private readonly _appSidebar: SidebarComponent | null = null;
 
   /**
-   * @summary - Set global variable to change layout's boxes positions.
+   * @summary - Dynamically change the sidebar position based on header height.
+   *
+   * Only on mobile version, though.
    *
    * @private
    * @returns {void}
