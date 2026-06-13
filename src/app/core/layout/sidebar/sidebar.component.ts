@@ -137,6 +137,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return this._headerHeight;
   }
 
+  public set headerHeight(value: number) {
+    this._headerHeightSubject$.next(value);
+    this._headerHeight = value;
+  }
+
+  private _headerHeight: number = -1;
+
   /**
    * @summay - Used to click on the overlay.
    *
@@ -147,13 +154,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
    */
   @ViewChild('mobileWrapper') private readonly _mobileWrapper: ElementRef<HTMLElement> | null =
     null;
-
-  public set headerHeight(value: number) {
-    this._headerHeightSubject$.next(value);
-    this._headerHeight = value;
-  }
-
-  private _headerHeight: number = -1;
 
   constructor(
     sidebarService: SidebarService,
