@@ -17,8 +17,4 @@
   body {
     overflow: auto;
   }
-
-  .container {
-    padding: map.get($spacing, 'default');
-  }
 }

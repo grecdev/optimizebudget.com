@@ -1,34 +1,39 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'spacing' as *;
-@use 'color-palette' as *;
-@use 'breakpoints' as *;
+@use 'variables' as variables;
+@use 'color-palette' as color-palette;
+@use 'breakpoints' as breakpoints;
 
-@mixin links-container {
-  display: flex;
-  flex-direction: column;
-  gap: map.get($spacing, 'sm');
-}
-
-:host.sidebar {
+:host {
   display: grid;
   grid-template-rows: auto 1fr auto;
 
-  border-right: $layout-border;
+  border-right: variables.$layout-border;
   overflow: hidden;
 }
 
-.link {
-  &.active {
-    background: map.get($color-palette, 'secondary', 'variant-2');
-    color: map.get($color-palette, 'secondary', 'default');
-    font-weight: 500;
-  }
-}
+@media screen and (max-width: breakpoints.$xl) {
+  :host {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: variables.$overlap-index-everything;
 
-@media screen and (max-width: map.get($breakpoints, 'xl')) {
-  :host.sidebar {
-    display: none;
+    & .wrapper {
+      background: rgba(0, 0, 0, 0.5);
+
+      width: 100%;
+      height: 100%;
+    }
+
+    & .container {
+      background: map.get(color-palette.$common, 'white');
+      width: max-content;
+      height: 100%;
+
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
   }
 }

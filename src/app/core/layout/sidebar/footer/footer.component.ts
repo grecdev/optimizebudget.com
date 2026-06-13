@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
 import { Route } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-sidebar-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['../sidebar.component.scss', './footer.component.scss'],
+  styleUrls: ['./footer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
   links: Array<Route> = [

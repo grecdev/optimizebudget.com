@@ -38,7 +38,7 @@ export class MediaQueryService {
    */
   mediaQuery(rangeLimit: BreakpointRangeLimit, breakPoint: BreakpointLevel): Observable<boolean> {
     const mediaId = `${rangeLimit}-${breakPoint}`;
-    const mediaQueryString = `(${rangeLimit}-width: ${this.breakpoints[breakPoint]})`;
+    const mediaQueryString = `screen and  (${rangeLimit}-width: ${this.breakpoints[breakPoint]})`;
 
     const mediaQuery = window.matchMedia(mediaQueryString);
 

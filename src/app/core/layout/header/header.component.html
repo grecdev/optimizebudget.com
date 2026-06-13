@@ -1,5 +1,11 @@
 <header>
-  <h4>{{ pageTitle }}</h4>
+  <div class="left-side">
+    <ng-container *ngIf="isMobile">
+      <app-sidebar-toggle />
+    </ng-container>
+
+    <h4>{{ pageTitle }}</h4>
+  </div>
 
   <ng-container *ngIf="isMobile; else desktopHeader">
     <app-mobile-header />

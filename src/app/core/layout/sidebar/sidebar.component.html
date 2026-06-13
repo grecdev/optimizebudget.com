@@ -1,5 +1,20 @@
-<app-sidebar-logo />
+<ng-container *ngIf="!isMobile; else mobileWrapperTemplate">
+  <app-sidebar-logo />
+  <app-sidebar-body />
+  <app-sidebar-footer />
+</ng-container>
 
-<app-sidebar-body />
-
-<app-sidebar-footer />
+<ng-template #mobileWrapperTemplate>
+  <div
+    #mobileWrapper
+    class="wrapper"
+    *ngIf="sidebarState.parentOpen"
+    (click)="handleOverlayClick($event)"
+  >
+    <div class="container" *ngIf="sidebarState.childOpen" @containerAnimation>
+      <app-sidebar-logo />
+      <app-sidebar-body />
+      <app-sidebar-footer />
+    </div>
+  </div>
+</ng-template>

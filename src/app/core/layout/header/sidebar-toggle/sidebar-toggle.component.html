@@ -1,0 +1,16 @@
+<button class="sidebar-toggle-btn" type="button" #sidebarToggleBtn>
+  <div
+    class="bar top"
+    [@topBarAnimation]="sidebarState.parentOpen && sidebarState.childOpen ? 'open' : 'closed'"
+  ></div>
+
+  <div
+    class="bar mid"
+    [@middleBarAnimation]="sidebarState.parentOpen && sidebarState.childOpen ? 'open' : 'closed'"
+  ></div>
+
+  <div
+    class="bar bottom"
+    [@bottomBarAnimation]="sidebarState.parentOpen && sidebarState.childOpen ? 'open' : 'closed'"
+  ></div>
+</button>

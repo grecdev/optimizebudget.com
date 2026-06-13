@@ -1,17 +1,24 @@
 @use 'sass:map';
 
-@use 'spacing' as *;
-@use 'variables' as *;
+@use 'spacing' as spacing;
+@use 'variables' as variables;
+@use 'breakpoints' as breakpoints;
 
 :host {
   display: flex;
   align-items: center;
-  gap: map.get($spacing, 'sm');
+  gap: spacing.$sm;
 
-  padding: map.get($spacing, 'sm') map.get($spacing, 'default');
-  border-bottom: $layout-border;
+  padding: spacing.$sm spacing.$default;
+  border-bottom: variables.$layout-border;
 }
 
 #logo {
   width: 40px;
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  :host {
+    border-bottom: none;
+  }
 }
