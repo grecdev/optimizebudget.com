@@ -9,7 +9,7 @@
   flex-direction: column;
   gap: spacing.$sm;
 
-  @media screen and (max-width: breakpoints.$md) {
+  @media screen and (max-width: breakpoints.$xl) {
     gap: 0;
   }
 }

@@ -267,7 +267,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
    */
   private _initMediaQuerySubscription(): void {
     this._mediaQueryService
-      .mediaQuery('max', 'md')
+      .mediaQuery('max', 'xl')
       .pipe(
         tap(isMobile => {
           this.isMobile = isMobile;

@@ -145,7 +145,7 @@ export class UserAvatarComponent {
    * @returns {void}
    */
   private _initMediaQuerySubscription(): void {
-    this._mediaQueryService.mediaQuery('max', 'md').subscribe({
+    this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
       next: value => {
         this.isMobile = value;
 
