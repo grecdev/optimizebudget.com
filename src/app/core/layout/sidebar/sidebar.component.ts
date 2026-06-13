@@ -39,6 +39,7 @@ import { containerAnimation, TRANSITION_DURATION_MS } from './sidebar-animations
   animations: [containerAnimation],
   host: {
     '[style]': '_sidebarStyle',
+    '[style.display]': 'setDisplayMobile()',
   },
 })
 export class SidebarComponent implements OnInit, OnDestroy {
@@ -72,8 +73,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
    */
   public _sidebarStyle: Partial<CSSStyleDeclaration> = {};
 
-  private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _sidebarService: SidebarService;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _mediaQueryService: MediaQueryService;
 
   /**
@@ -190,23 +191,31 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * @summary - Change display style on mobile devices only.
+   *
+   * @public
+   * @returns {string}
+   */
+  public setDisplayMobile(): string {
+    if (!this.isMobile) {
+      return '';
+    }
+
+    return this._sidebarService.isClosed ? 'none' : 'block';
+  }
+
+  /**
    * @summary - Dynamically set the sidebar style.
    *
-   * @param {SetSidebarStyleOptions['height']} options.height - Header's height.
+   * @param {SetSidebarStyleOptions} style - CSS styles.
    *
    * @private
    * @returns {void}
    */
-  private _setSidebarStyle(options: SetSidebarStyleOptions): void {
-    const { height } = options;
+  private _setSidebarStyle(style: SetSidebarStyleOptions): void {
+    const STYLE = Object.assign({}, this._sidebarStyle, style);
 
-    if (height !== -1) {
-      this._sidebarStyle = {
-        top: `${height}px`,
-      };
-    } else {
-      this._sidebarStyle = {};
-    }
+    this._sidebarStyle = STYLE;
   }
 
   /**
@@ -274,9 +283,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (height: number) => {
-          this._setSidebarStyle({
-            height,
-          });
+          const STYLE = {
+            top: height === -1 ? '' : `${height}px`,
+          };
+
+          this._setSidebarStyle(STYLE);
         },
       });
   }

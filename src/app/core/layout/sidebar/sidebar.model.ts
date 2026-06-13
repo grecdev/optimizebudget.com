@@ -1,5 +1,3 @@
-interface SetSidebarStyleOptions {
-  height: number;
-}
+type SetSidebarStyleOptions = Partial<CSSStyleDeclaration>;
 
 export type { SetSidebarStyleOptions };
