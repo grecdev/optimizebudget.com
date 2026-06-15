@@ -1,15 +1,22 @@
 @use 'sass:map';
 
-@use 'spacing' as *;
+@use 'spacing' as spacing;
+@use 'breakpoints' as breakpoints;
 
 .row-1 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: map.get($spacing, 'md');
+  gap: spacing.$md;
 }
 
 .row-2 {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: map.get($spacing, 'md');
+  gap: spacing.$md;
+}
+
+@media screen and (max-width: breakpoints.$sm) {
+  .row-1 {
+    grid-template-columns: 1fr;
+  }
 }
