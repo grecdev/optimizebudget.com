@@ -1,55 +1,48 @@
-import { type AfterViewInit, Component, type ElementRef, ViewChild } from '@angular/core';
+import {
+  type AfterViewInit,
+  type OnDestroy,
+  ElementRef,
+  Component,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+
+import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 
 import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
 
+import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import {
-  DataSourceItemKey,
   type DataSourceOptions,
   type GraphConfiguration,
+  type CanvasStyle,
+  DataSourceItemKey,
 } from './money-statistics.model';
 
 @Component({
   selector: 'app-money-statistics',
   templateUrl: './money-statistics.component.html',
   styleUrls: ['./money-statistics.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MoneyStatisticsComponent implements AfterViewInit {
-  /**
-   * @summary - Get the pixel ratio for current device.
-   *
-   * In order to fix the blurry canvas.
-   *
-   * @type {number}
-   * @private
-   */
-  private readonly _devicePixelRatio: number = window.devicePixelRatio || 1;
+export class MoneyStatisticsComponent implements AfterViewInit, OnDestroy {
+  private readonly _mediaQueryService: MediaQueryService;
 
   /**
    * @summary - Canvas styling.
    *
    * Sizes are always in pixels.
    *
-   * @type {{
-   *     width: number;
-   *     height: number;
-   *     spacing: number;
-   *     textSize: number;
-   *     font: string;
-   *   }}
+   * @type {CanvasStyle}
    * @private
    */
-  private readonly _canvasStyle: {
-    width: number;
-    height: number;
-    spacing: number;
-    fontSize: number;
-    font: string;
-  } = {
-    width: 800,
-    height: 350,
-    spacing: 16,
-    fontSize: 16,
-    font: "1rem 'Roboto', sans-serif",
+  private readonly _canvasStyle: CanvasStyle = {
+    spacingPXDefault: 16,
+    spacingPX: 16,
+    fontSizePXDefault: 18,
+    fontSizePX: 18,
+    fontFamily: "'Roboto', sans-serif",
   };
 
   /**
@@ -173,13 +166,29 @@ export class MoneyStatisticsComponent implements AfterViewInit {
   private _startingPositionX: number = 0;
 
   /**
+   * @summary - Destroy on cleanup.
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _resizeEventDestroy$: Subject<void> = new Subject<void>();
+
+  /**
    * @summary - Element reference to the HTML Canvas element.
    *
    * @type {ElementRef<HTMLCanvasElement> | null}
    * @public
    */
-  @ViewChild('lineChart') public canvasElement: ElementRef<HTMLCanvasElement> | null =
+  @ViewChild('lineChart') public canvasElement: ElementRef<HTMLCanvasElement> | null = null;
+
+  @ViewChild('canvasWrapper') private readonly _canvasWrapper: ElementRef<HTMLDivElement> | null =
     null;
+
+  constructor(mediaQueryService: MediaQueryService) {
+    this._mediaQueryService = mediaQueryService;
+  }
 
   /**
    * @summary - Render initial canvas element, with basic configuration.
@@ -189,16 +198,31 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    */
   private _renderInitialCanvas(): void {
     const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
+    const CANVAS_WRAPPER = this._canvasWrapper && this._canvasWrapper.nativeElement;
 
-    if (!CANVAS_ELEMENT || !this._canvasContext) {
+    if (!this._canvasContext || !CANVAS_ELEMENT || !CANVAS_WRAPPER) {
       throw Error('Canvas element not found!');
     }
 
-    CANVAS_ELEMENT.style.width = `${this._canvasStyle.width}px`;
-    CANVAS_ELEMENT.style.height = `${this._canvasStyle.height}px`;
+    const { width: wrapperWidth, height: wrapperHeight } = CANVAS_WRAPPER.getBoundingClientRect();
 
-    CANVAS_ELEMENT.width = this._canvasStyle.width * this._devicePixelRatio;
-    CANVAS_ELEMENT.height = this._canvasStyle.height * this._devicePixelRatio;
+    const isMobile = this._isMobile();
+    const DEVICE_PIXEL_RATIO = window.devicePixelRatio || 1;
+
+    let size = 1;
+
+    if (isMobile) {
+      size = 2;
+    }
+
+    this._canvasStyle.fontSizePX = this._canvasStyle.fontSizePXDefault * size;
+    this._canvasStyle.spacingPX = this._canvasStyle.spacingPXDefault * size;
+
+    CANVAS_ELEMENT.style.width = `${wrapperWidth}px`;
+    CANVAS_ELEMENT.style.height = `${wrapperHeight}px`;
+
+    CANVAS_ELEMENT.width = wrapperWidth * DEVICE_PIXEL_RATIO;
+    CANVAS_ELEMENT.height = wrapperHeight * DEVICE_PIXEL_RATIO;
 
     this._canvasContext.clearRect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
 
@@ -253,11 +277,10 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
 
-      this._canvasContext.font = this._canvasStyle.font;
+      this._canvasContext.font = `${this._canvasStyle.fontSizePX}px ${this._canvasStyle.fontFamily}`;
       this._canvasContext.fillText(FORMATTED_ITEM, -999, -999);
 
-      const ITEM_WIDTH_AFTER_RENDER =
-        this._canvasContext.measureText(FORMATTED_ITEM).width;
+      const ITEM_WIDTH_AFTER_RENDER = this._canvasContext.measureText(FORMATTED_ITEM).width;
 
       TEXT_SIZES.push(ITEM_WIDTH_AFTER_RENDER);
     }
@@ -268,17 +291,13 @@ export class MoneyStatisticsComponent implements AfterViewInit {
     for (let i = 0; i < DATA_LENGTH; i++) {
       const ITEM = niceNumberValues[i];
       const FORMATTED_ITEM = formatNumber.format(ITEM);
-      const POSITION_Y = ROW_WIDTH * i + this._canvasStyle.spacing;
+      const POSITION_Y = ROW_WIDTH * i + this._canvasStyle.spacingPX;
 
-      this._canvasContext.font = this._canvasStyle.font;
+      this._canvasContext.font = `${this._canvasStyle.fontSizePX}px ${this._canvasStyle.fontFamily}`;
       this._canvasContext.fillStyle = '#000';
       this._canvasContext.textAlign = 'right';
       this._canvasContext.textBaseline = 'middle';
-      this._canvasContext.fillText(
-        FORMATTED_ITEM,
-        this._startingPositionX,
-        Math.abs(POSITION_Y)
-      );
+      this._canvasContext.fillText(FORMATTED_ITEM, this._startingPositionX, Math.abs(POSITION_Y));
     }
 
     this._renderBackgroundLines(DATA_LENGTH, ROW_WIDTH, CANVAS_ELEMENT.width);
@@ -304,14 +323,8 @@ export class MoneyStatisticsComponent implements AfterViewInit {
 
     const graphConfiguration = this._getGraphConfiguration();
 
-    const {
-      DATA_SOURCE,
-      PADDING_X,
-      RENDERING_AREA_X,
-      DATA_LENGTH,
-      AREA_Y_WIDTH,
-      COLUMN_WIDTH,
-    } = graphConfiguration;
+    const { DATA_SOURCE, PADDING_X, RENDERING_AREA_X, DATA_LENGTH, AREA_Y_WIDTH, COLUMN_WIDTH } =
+      graphConfiguration;
 
     const TEXT_SIZES: Array<number> = DATA_SOURCE.map(
       item => canvasContext.measureText(item).width + PADDING_X
@@ -325,16 +338,12 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       const ITEM = DATA_SOURCE[i];
       const POSITION_X = AREA_Y_WIDTH + i * COLUMN_WIDTH + COLUMN_WIDTH / 2;
 
-      canvasContext.font = this._canvasStyle.font;
+      canvasContext.font = `${this._canvasStyle.fontSizePX}px ${this._canvasStyle.fontFamily}`;
       canvasContext.fillStyle = '#000';
       canvasContext.textAlign = 'center';
       canvasContext.textBaseline = 'bottom';
 
-      canvasContext.fillText(
-        ITEM,
-        i % STEP === 0 ? POSITION_X : -999,
-        CANVAS_ELEMENT.height
-      );
+      canvasContext.fillText(ITEM, i % STEP === 0 ? POSITION_X : -999, CANVAS_ELEMENT.height);
     }
   }
 
@@ -348,24 +357,17 @@ export class MoneyStatisticsComponent implements AfterViewInit {
    * @private
    * @returns {void}
    */
-  private _renderBackgroundLines(
-    dataLength: number,
-    rowWidth: number,
-    canvasWidth: number
-  ): void {
+  private _renderBackgroundLines(dataLength: number, rowWidth: number, canvasWidth: number): void {
     if (!this._canvasContext) {
       throw Error('Canvas context not found!');
     }
 
     for (let i = 0; i < dataLength; i++) {
-      const POSITION_Y = rowWidth * i + this._canvasStyle.spacing;
+      const POSITION_Y = rowWidth * i + this._canvasStyle.spacingPX;
 
       this._canvasContext.beginPath();
 
-      this._canvasContext.moveTo(
-        this._startingPositionX + this._canvasStyle.spacing,
-        POSITION_Y
-      );
+      this._canvasContext.moveTo(this._startingPositionX + this._canvasStyle.spacingPX, POSITION_Y);
       this._canvasContext.lineTo(canvasWidth, POSITION_Y);
       this._canvasContext.strokeStyle = '#c9c9c9';
       this._canvasContext.lineWidth = 1;
@@ -414,9 +416,9 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       const CURRENT_POSITION_Y =
         RENDERING_AREA_Y -
         (CURRENT_PERCENT / FULL_PERCENT) * RENDERING_AREA_Y +
-        this._canvasStyle.fontSize;
+        this._canvasStyle.fontSizePX;
 
-      // lines
+      // Lines
       const NEXT_VALUE = ALL_VALUES[i + 1];
       const NEXT_PERCENT = (NEXT_VALUE / MAXIMUM_VALUE) * FULL_PERCENT;
       const NEXT_POSITION_X = AREA_Y_WIDTH + (i + 1) * COLUMN_WIDTH + COLUMN_WIDTH / 2;
@@ -424,7 +426,7 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       const NEXT_POSITION_Y =
         RENDERING_AREA_Y -
         (NEXT_PERCENT / FULL_PERCENT) * RENDERING_AREA_Y +
-        this._canvasStyle.fontSize;
+        this._canvasStyle.fontSizePX;
 
       this._canvasContext.beginPath();
 
@@ -468,24 +470,29 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
+    let arcRadius = 4.5;
+
+    const isMobile = this._isMobile();
+
     const DATA_SOURCE = this._dataSource.xAxis.data;
-    const ALL_VALUES = this._dataSource.series
-      .map(item => item[DataSourceItemKey.VALUE])
-      .flat();
+    const ALL_VALUES = this._dataSource.series.map(item => item[DataSourceItemKey.VALUE]).flat();
     const DATA_LENGTH = ALL_VALUES.length;
     const MAXIMUM_VALUE = Math.max(...ALL_VALUES);
 
-    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacing;
+    const AREA_Y_WIDTH = this._startingPositionX + this._canvasStyle.spacingPX;
     const RENDERING_AREA_X = CANVAS_ELEMENT.width - AREA_Y_WIDTH;
     const COLUMN_WIDTH = RENDERING_AREA_X / DATA_SOURCE.length;
     const RENDERING_AREA_Y =
-      CANVAS_ELEMENT.height - this._canvasStyle.spacing * 2 - this._canvasStyle.fontSize;
-    const PADDING_X = this._canvasStyle.spacing * 2;
+      CANVAS_ELEMENT.height - this._canvasStyle.spacingPX * 2 - this._canvasStyle.fontSizePX;
+    const PADDING_X = this._canvasStyle.spacingPX * 2;
 
     const FULL_PERCENT = 100;
-    const ARC_RADIUS = 4.5;
     const START_ANGLE = 0;
     const END_ANGLE = Math.PI * 2; // 360° means a complete circle
+
+    if (isMobile) {
+      arcRadius = 10;
+    }
 
     return {
       DATA_SOURCE,
@@ -500,26 +507,83 @@ export class MoneyStatisticsComponent implements AfterViewInit {
       PADDING_X,
 
       FULL_PERCENT,
-      ARC_RADIUS,
+      ARC_RADIUS: arcRadius,
       START_ANGLE,
       END_ANGLE,
     };
   }
 
-  ngAfterViewInit() {
-    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
-    const CANVAS_CONTEXT =
-      CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
+  /**
+   * @summary - Check if device is mobile.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _isMobile(): boolean {
+    return (
+      window.innerWidth <= this._mediaQueryService.breakpointsPX.xl &&
+      window.innerHeight <= this._mediaQueryService.breakpointsPX.xl
+    );
+  }
 
-    if (!CANVAS_ELEMENT || !CANVAS_CONTEXT) {
+  /**
+   * @summary - Paint canvas, all functions stacked together.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _paintCanvas(): void {
+    requestAnimationFrame(() => {
+      this._renderInitialCanvas();
+      this._renderLegendY();
+      this._renderLegendX();
+      this._renderDataGraph();
+    });
+  }
+
+  /**
+   * @summary - Initialize the canvas context.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCanvasContext(): void {
+    const CANVAS_ELEMENT = this.canvasElement && this.canvasElement.nativeElement;
+
+    const CANVAS_CONTEXT = CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
+
+    if (!CANVAS_CONTEXT) {
       throw Error('Canvas element not queried!');
     }
 
     this._canvasContext = CANVAS_CONTEXT;
+  }
 
-    this._renderInitialCanvas();
-    this._renderLegendY();
-    this._renderLegendX();
-    this._renderDataGraph();
+  /**
+   * @summary - For whenever we destroy the component.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCleanup(): void {
+    this._resizeEventDestroy$.next();
+    this._resizeEventDestroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this._initCanvasContext();
+    this._paintCanvas();
+
+    fromEvent(window, 'resize')
+      .pipe(takeUntil(this._resizeEventDestroy$), debounceTime(300))
+      .subscribe({
+        next: () => {
+          this._paintCanvas();
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._initCleanup();
   }
 }

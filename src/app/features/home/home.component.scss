@@ -11,12 +11,13 @@
 
 .row-2 {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: spacing.$md;
 }
 
-@media screen and (max-width: breakpoints.$sm) {
-  .row-1 {
+@media screen and (max-width: breakpoints.$lg) {
+  .row-1,
+  .row-2 {
     grid-template-columns: 1fr;
   }
 }

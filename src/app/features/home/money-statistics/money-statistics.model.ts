@@ -33,5 +33,13 @@ interface GraphConfiguration {
   END_ANGLE: number;
 }
 
-export type { DataSourceItem, DataSourceOptions, GraphConfiguration };
+interface CanvasStyle {
+  spacingPX: number;
+  spacingPXDefault: number;
+  fontSizePX: number;
+  fontSizePXDefault: number;
+  fontFamily: string;
+}
+
+export type { DataSourceItem, DataSourceOptions, GraphConfiguration, CanvasStyle };
 export { DataSourceItemKey };
