@@ -4,16 +4,32 @@ import { fromEvent, map, Observable, startWith } from 'rxjs';
 
 import { Breakpoint, BreakpointLevel, BreakpointRangeLimit } from './media-query.model';
 
+/**
+ * @summary - For mobile responsiveness.
+ *
+ * @implements
+ *
+ * ```
+ * private _initMediaQuerySubscription(): void {
+ *     this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
+ *       next: value => {
+ *         this.isMobile = value;
+ *         this._changeDetectorRef.markForCheck();
+ *       },
+ *     });
+ *   }
+ * ```
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class MediaQueryService {
-  private readonly breakpoints: Breakpoint = {
-    sm: '570px',
-    md: '768px',
-    lg: '850px',
-    xl: '1024px',
-    xxl: '1280px',
+  public readonly breakpointsPX: Breakpoint = {
+    sm: 570,
+    md: 768,
+    lg: 850,
+    xl: 1024,
+    xxl: 1280,
   };
 
   private activeMediaQueries: { [key: string]: Observable<boolean> } = {};
@@ -38,7 +54,7 @@ export class MediaQueryService {
    */
   mediaQuery(rangeLimit: BreakpointRangeLimit, breakPoint: BreakpointLevel): Observable<boolean> {
     const mediaId = `${rangeLimit}-${breakPoint}`;
-    const mediaQueryString = `screen and  (${rangeLimit}-width: ${this.breakpoints[breakPoint]})`;
+    const mediaQueryString = `screen and  (${rangeLimit}-width: ${this.breakpointsPX[breakPoint]}px)`;
 
     const mediaQuery = window.matchMedia(mediaQueryString);
 

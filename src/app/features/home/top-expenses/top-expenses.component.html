@@ -1,32 +1,60 @@
 <app-widget-box>
   <h4 app-widget-box-title>Top expenses last month</h4>
 
-  <table app-table [dataSource]="dataSource">
-    <ng-container [appColumnDef]="expenseItemKey.NAME">
+  <table app-table [dataSource]="dataSource" *ngIf="!isMobile; else mobileCardsContainer">
+    <ng-container [appColumnDef]="ExpenseItemKey.NAME">
       <th app-header-cell *appHeaderCellDef>Name</th>
-      <td app-cell *appCellDef="let element">{{ element[expenseItemKey.NAME] }}</td>
+      <td app-cell *appCellDef="let element">{{ element[ExpenseItemKey.NAME] }}</td>
     </ng-container>
 
-    <ng-container [appColumnDef]="expenseItemKey.CATEGORY">
+    <ng-container [appColumnDef]="ExpenseItemKey.CATEGORY">
       <th app-header-cell *appHeaderCellDef>Category</th>
-      <td app-cell *appCellDef="let element">{{ element[expenseItemKey.CATEGORY] }}</td>
+      <td app-cell *appCellDef="let element">{{ element[ExpenseItemKey.CATEGORY] }}</td>
     </ng-container>
 
-    <ng-container [appColumnDef]="expenseItemKey.PRICE">
+    <ng-container [appColumnDef]="ExpenseItemKey.PRICE">
       <th app-header-cell *appHeaderCellDef>Price</th>
       <td app-cell *appCellDef="let element">
-        {{ element[expenseItemKey.PRICE] | currency: 'USD' }}
+        {{ element[ExpenseItemKey.PRICE] | currency: 'USD' }}
       </td>
     </ng-container>
 
-    <ng-container [appColumnDef]="expenseItemKey.TIMESTAMP">
+    <ng-container [appColumnDef]="ExpenseItemKey.TIMESTAMP">
       <th app-header-cell *appHeaderCellDef>Date</th>
       <td app-cell *appCellDef="let element">
-        {{ element[expenseItemKey.TIMESTAMP] | date: 'dd MMMM yyy' }}
+        {{ element[ExpenseItemKey.TIMESTAMP] | date: 'dd MMMM yyy' }}
       </td>
     </ng-container>
 
     <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
     <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
   </table>
+
+  <ng-template #mobileCardsContainer>
+    <div class="mobile-cards-container">
+      <app-card *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
+        <app-card-row>
+          <app-card-key>Name</app-card-key>
+          <app-card-value>{{ item[ExpenseItemKey.NAME] }}</app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Category</app-card-key>
+          <app-card-value>{{ item[ExpenseItemKey.CATEGORY] }}</app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Price</app-card-key>
+          <app-card-value>{{ item[ExpenseItemKey.PRICE] | currency: 'USD' }}</app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Date</app-card-key>
+          <app-card-value>
+            {{ item[ExpenseItemKey.TIMESTAMP] | date: 'dd MMMM yyy' }}
+          </app-card-value>
+        </app-card-row>
+      </app-card>
+    </div>
+  </ng-template>
 </app-widget-box>

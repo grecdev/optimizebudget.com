@@ -1,0 +1,30 @@
+@use 'variables' as variables;
+@use 'spacing' as spacing;
+
+.app-card {
+  & .app-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: spacing.$sm;
+    border-bottom: variables.$layout-border;
+    padding: spacing.$sm 0;
+  }
+
+  &:not(&:first-of-type) .app-card-row:first-of-type {
+    border-top: variables.$layout-border;
+  }
+
+  &:first-of-type .app-card-row:first-of-type {
+    padding-top: 0;
+  }
+
+  &:last-of-type .app-card-row:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  & .app-card-key {
+    font-weight: 500;
+  }
+}

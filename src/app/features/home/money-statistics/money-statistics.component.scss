@@ -1,3 +1,26 @@
+@use 'breakpoints' as breakpoints;
+
 app-widget-box {
   height: 100%;
+}
+
+.canvas-wrapper {
+  overflow: hidden;
+
+  aspect-ratio: 16 / 6;
+
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  display: block;
+  image-rendering: crisp-edges;
+  object-fit: cover;
+}
+
+@media screen and (max-width: breakpoints.$xl) and (orientation: portrait) {
+  .canvas-wrapper {
+    aspect-ratio: 4 / 3;
+  }
 }

@@ -32,8 +32,8 @@ export class CategoryExpensesComponent implements AfterViewInit {
     width: number;
     height: number;
   } = {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
   };
 
   /**
@@ -87,17 +87,13 @@ export class CategoryExpensesComponent implements AfterViewInit {
    * @type {ElementRef<HTMLCanvasElement> | null}
    * @public
    */
-  @ViewChild('pieChart') public canvasElement: ElementRef<HTMLCanvasElement> | null =
-    null;
+  @ViewChild('pieChart') public canvasElement: ElementRef<HTMLCanvasElement> | null = null;
 
   constructor(...args: Array<unknown>);
   constructor() {
     this._dataOnlyValues = this.data.map(item => item.value);
 
-    this._totalValues = this._dataOnlyValues.reduce(
-      (total, currentItem) => total + currentItem,
-      0
-    );
+    this._totalValues = this._dataOnlyValues.reduce((total, currentItem) => total + currentItem, 0);
   }
 
   trackByCustom(_index: number, item: CategoryExpenseItem) {
