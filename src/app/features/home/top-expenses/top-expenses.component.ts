@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 
 import { CategoryType } from '@shared/models/enums';
+
+import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import { type ExpenseItem, ExpenseItemKey } from './top-expenses.model';
 
 const TOP_EXPENSES: Array<ExpenseItem> = [
@@ -38,10 +41,60 @@ const DISPLAYED_COLUMNS: Array<string> = [
   selector: 'app-top-expenses',
   templateUrl: './top-expenses.component.html',
   styleUrls: ['./top-expenses.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopExpensesComponent {
-  public readonly expenseItemKey = ExpenseItemKey;
+  public readonly ExpenseItemKey = ExpenseItemKey;
 
   public dataSource = TOP_EXPENSES;
   public displayedColumns = DISPLAYED_COLUMNS;
+
+  /**
+   * @summary - Render mobile components based on this state.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public isMobile: boolean = false;
+
+  private readonly _mediaQueryService: MediaQueryService;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  constructor(mediaQueryService: MediaQueryService, changeDetectorRef: ChangeDetectorRef) {
+    this._mediaQueryService = mediaQueryService;
+    this._changeDetectorRef = changeDetectorRef;
+  }
+
+  /**
+   * @summary - Init the media query subscription.
+   *
+   * @returns {void}
+   * @private
+   */
+  private _initMediaQuerySubscription(): void {
+    this._mediaQueryService.mediaQuery('max', 'lg').subscribe({
+      next: value => {
+        this.isMobile = value;
+        this._changeDetectorRef.markForCheck();
+      },
+    });
+  }
+
+  /**
+   * @summary - Optimize loop fn.
+   *
+   * @param {number} _ - Not used.
+   * @param {ExpenseItem} item - Iteration item.
+   *
+   * @public
+   * @returns {number}
+   */
+  public trackByFnDataSource(_: number, item: ExpenseItem): number {
+    return item[ExpenseItemKey.ID];
+  }
+
+  ngOnInit(): void {
+    this._initMediaQuerySubscription();
+  }
 }

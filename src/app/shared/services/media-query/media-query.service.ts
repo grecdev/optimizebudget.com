@@ -4,6 +4,22 @@ import { fromEvent, map, Observable, startWith } from 'rxjs';
 
 import { Breakpoint, BreakpointLevel, BreakpointRangeLimit } from './media-query.model';
 
+/**
+ * @summary - For mobile responsiveness.
+ *
+ * @implements
+ *
+ * ```
+ * private _initMediaQuerySubscription(): void {
+ *     this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
+ *       next: value => {
+ *         this.isMobile = value;
+ *         this._changeDetectorRef.markForCheck();
+ *       },
+ *     });
+ *   }
+ * ```
+ */
 @Injectable({
   providedIn: 'root',
 })

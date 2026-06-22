@@ -1,0 +1,6 @@
+@use 'spacing' as spacing;
+
+.mobile-cards-container {
+  display: grid;
+  gap: spacing.$lg;
+}
