@@ -38,12 +38,11 @@ interface GraphConfiguration {
 }
 
 interface CanvasStyle {
-  width: number;
-  height: number;
-  spacing: number;
-  fontSize: number;
-  lineHeight: number;
-  font: string;
+  spacingPX: number;
+  spacingPXDefault: number;
+  fontSizePX: number;
+  fontSizePXDefault: number;
+  fontFamily: string;
   color: string;
 }
 

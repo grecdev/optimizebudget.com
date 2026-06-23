@@ -2,6 +2,7 @@
 
 @use 'spacing' as spacing;
 @use 'color-palette' as color-palette;
+@use 'breakpoints' as breakpoints;
 
 @mixin generate-name-color($color) {
   & .category-item__name {
@@ -13,46 +14,23 @@
   }
 }
 
-.category-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: spacing.$default;
+canvas {
+  display: block;
+  image-rendering: crisp-edges;
+  object-fit: cover;
 }
 
-.category-item {
-  $color: inherit;
+.canvas-wrapper {
+  overflow: hidden;
 
-  &,
-  &__name {
-    display: flex;
-    align-items: center;
-  }
+  aspect-ratio: 16 / 8;
 
-  &__name {
-    font-weight: 500;
-  }
+  width: 100%;
+  height: 100%;
+}
 
-  &--Food {
-    $color: map.get(color-palette.$orange, 'default');
-
-    @include generate-name-color($color);
-  }
-
-  &--Gadgets {
-    $color: map.get(color-palette.$blue, 'default');
-
-    @include generate-name-color($color);
-  }
-
-  &--Clothing {
-    $color: map.get(color-palette.$purple, 'default');
-
-    @include generate-name-color($color);
-  }
-
-  &--Home {
-    $color: map.get(color-palette.$green, 'variant-3');
-
-    @include generate-name-color($color);
+@media screen and (max-width: breakpoints.$xl) and (orientation: portrait) {
+  .canvas-wrapper {
+    aspect-ratio: 4 / 3;
   }
 }
