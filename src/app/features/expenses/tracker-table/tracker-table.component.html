@@ -1,9 +1,9 @@
 <app-widget-box>
-  <div class="header">
-    <h4 app-widget-box-title>Expenses tracker</h4>
+  <app-widget-box-header>
+    <app-widget-box-title>Expenses tracker</app-widget-box-title>
 
     <app-add-expense-dialog />
-  </div>
+  </app-widget-box-header>
 
   <table app-table [dataSource]="dataSource">
     <ng-container [appColumnDef]="ExpenseItemKey.TIMESTAMP">
@@ -22,17 +22,11 @@
           Paid
         </app-pill-status>
 
-        <app-pill-status
-          *ngSwitchCase="ExpenseStatus.PENDING"
-          [type]="StatusType.WARNING"
-        >
+        <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
           Pending
         </app-pill-status>
 
-        <app-pill-status
-          *ngSwitchCase="ExpenseStatus.CANCELLED"
-          [type]="StatusType.ERROR"
-        >
+        <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
           Cancelled
         </app-pill-status>
 

@@ -17,15 +17,22 @@
   box-shadow: map.get(variables.$box-shadow, 'default');
   overflow: hidden;
 
-  & [app-widget-box-title],
-  & [app-widget-box-title-info] {
-    white-space: nowrap;
-    text-transform: capitalize;
-  }
+  & .app-widget-box-header .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: spacing.$default;
 
-  & [app-widget-box-title-info] {
-    color: map.get(color-palette.$gray, 'variant-4');
-    font-size: 0.8rem;
-    font-style: italic;
+    & .app-widget-box-title,
+    & .app-widget-box-title-info {
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+
+    & .app-widget-box-title-info {
+      color: map.get(color-palette.$gray, 'variant-4');
+      font-size: 0.8rem;
+      font-style: italic;
+    }
   }
 }
