@@ -1,10 +1,11 @@
 @use 'sass:map';
 
-@use 'color-palette' as *;
-@use 'typography' as *;
+@use 'color-palette' as color-palette;
+@use 'typography' as typography;
+@use 'spacing' as spacing;
 
 @mixin faded {
-  color: map.get($color-palette, 'gray', 'variant-4');
+  color: map.get(color-palette.$gray, 'variant-4');
 }
 
 .header {
@@ -20,5 +21,16 @@
 .category {
   @include faded;
 
-  font-size: map.get($font-size, 'body-sm');
+  font-size: typography.$body-sm;
+}
+
+.mobile-cards-container {
+  display: grid;
+  gap: spacing.$lg;
+
+  & .app-pill-status {
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
 }

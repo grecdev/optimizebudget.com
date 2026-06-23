@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 
 import { CategoryType, ExpenseStatus } from '@shared/models/enums';
 import { StatusType } from '@shared/components/pill-status/pill-status.model';
 
 import { type ExpenseItem, ExpenseItemKey } from './tracker-table.model';
+import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 @Component({
   selector: 'app-tracker-table',
@@ -24,6 +25,7 @@ export class TrackerTableComponent {
 
   public dataSource: Array<ExpenseItem> = [
     {
+      [ExpenseItemKey.ID]: 0,
       [ExpenseItemKey.TIMESTAMP]: 1706102400000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
@@ -31,6 +33,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 82.37,
     },
     {
+      [ExpenseItemKey.ID]: 1,
       [ExpenseItemKey.TIMESTAMP]: 1706188800000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
@@ -38,6 +41,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 59.99,
     },
     {
+      [ExpenseItemKey.ID]: 2,
       [ExpenseItemKey.TIMESTAMP]: 1706275200000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PENDING,
       [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
@@ -45,6 +49,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 27.45,
     },
     {
+      [ExpenseItemKey.ID]: 3,
       [ExpenseItemKey.TIMESTAMP]: 1706361600000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
@@ -52,6 +57,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 18.9,
     },
     {
+      [ExpenseItemKey.ID]: 4,
       [ExpenseItemKey.TIMESTAMP]: 1706448000000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
@@ -59,6 +65,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 22.99,
     },
     {
+      [ExpenseItemKey.ID]: 5,
       [ExpenseItemKey.TIMESTAMP]: 1706534400000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.CANCELLED,
       [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
@@ -66,6 +73,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 34.5,
     },
     {
+      [ExpenseItemKey.ID]: 6,
       [ExpenseItemKey.TIMESTAMP]: 1706620800000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
@@ -73,6 +81,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 7.85,
     },
     {
+      [ExpenseItemKey.ID]: 7,
       [ExpenseItemKey.TIMESTAMP]: 1706707200000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PENDING,
       [ExpenseItemKey.CATEGORY]: CategoryType.CLOTHING,
@@ -80,6 +89,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 25.0,
     },
     {
+      [ExpenseItemKey.ID]: 8,
       [ExpenseItemKey.TIMESTAMP]: 1706793600000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
@@ -87,6 +97,7 @@ export class TrackerTableComponent {
       [ExpenseItemKey.TOTAL]: 16.78,
     },
     {
+      [ExpenseItemKey.ID]: 9,
       [ExpenseItemKey.TIMESTAMP]: 1706880000000,
       [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
       [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
@@ -95,5 +106,52 @@ export class TrackerTableComponent {
     },
   ];
 
-  constructor() {}
+  /**
+   * @summary - Render mobile components based on this state.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public isMobile: boolean = false;
+
+  private readonly _mediaQueryService: MediaQueryService;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  constructor(mediaQueryService: MediaQueryService, changeDetectorRef: ChangeDetectorRef) {
+    this._mediaQueryService = mediaQueryService;
+    this._changeDetectorRef = changeDetectorRef;
+  }
+
+  /**
+   * @summary - Init the media query subscription.
+   *
+   * @returns {void}
+   * @private
+   */
+  private _initMediaQuerySubscription(): void {
+    this._mediaQueryService.mediaQuery('max', 'lg').subscribe({
+      next: value => {
+        this.isMobile = value;
+        this._changeDetectorRef.markForCheck();
+      },
+    });
+  }
+
+  /**
+   * @summary - Optimize loop fn.
+   *
+   * @param {number} _ - Not used.
+   * @param {ExpenseItem} item - Iteration item.
+   *
+   * @public
+   * @returns {number}
+   */
+  public trackByFnDataSource(_: number, item: ExpenseItem): number {
+    return item[ExpenseItemKey.ID];
+  }
+
+  ngOnInit(): void {
+    this._initMediaQuerySubscription();
+  }
 }

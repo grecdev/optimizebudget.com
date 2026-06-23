@@ -1,6 +1,7 @@
 import { CategoryType, ExpenseStatus } from '@shared/models/enums';
 
 enum ExpenseItemKey {
+  ID = 'ID',
   TIMESTAMP = 'TIMESTAMP',
   STATUS = 'STATUS',
   CATEGORY = 'CATEGORY',
@@ -9,6 +10,7 @@ enum ExpenseItemKey {
 }
 
 interface ExpenseItem {
+  [ExpenseItemKey.ID]: number;
   [ExpenseItemKey.TIMESTAMP]: number;
   [ExpenseItemKey.STATUS]: ExpenseStatus;
   [ExpenseItemKey.CATEGORY]: CategoryType;

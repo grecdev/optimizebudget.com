@@ -7,6 +7,7 @@ import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
 import { TrackerTableComponent } from './tracker-table.component';
 import { AddExpenseDialogModule } from '../add-expense-dialog/add-expense-dialog.module';
+import { AppCardModule } from '@shared/components/card/card.module';
 
 @NgModule({
   declarations: [TrackerTableComponent],
@@ -16,6 +17,7 @@ import { AddExpenseDialogModule } from '../add-expense-dialog/add-expense-dialog
     WidgetBoxModule,
     PillStatusModule,
     AddExpenseDialogModule,
+    AppCardModule,
   ],
   exports: [TrackerTableComponent],
 })
