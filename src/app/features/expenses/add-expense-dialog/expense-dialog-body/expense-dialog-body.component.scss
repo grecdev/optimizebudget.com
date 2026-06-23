@@ -1,15 +1,18 @@
 @use 'sass:map';
-@use 'spacing' as *;
-@use 'variables' as *;
+
+@use 'spacing' as spacing;
+@use 'variables' as variables;
+@use 'breakpoints' as breakpoints;
 
 :host,
 form {
   display: grid;
-  gap: map.get($spacing, 'default');
+  gap: spacing.$default;
 }
 
 .form-inputs-container {
-  $spacing: map.get($spacing, 'default');
+  $spacing: spacing.$default;
+  $input-maximum-size: variables.$input-maximum-size;
   //
   display: grid;
   grid-template-columns: repeat(2, calc(($input-maximum-size - $spacing) / 2));
@@ -24,5 +27,11 @@ form {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: map.get($spacing, 'default');
+  gap: spacing.$default;
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  .form-inputs-container {
+    grid-template-columns: 1fr;
+  }
 }
