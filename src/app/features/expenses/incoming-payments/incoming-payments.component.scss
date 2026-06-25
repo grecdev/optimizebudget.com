@@ -3,6 +3,7 @@
 @use 'color-palette' as color-palette;
 @use 'spacing' as spacing;
 @use 'shape' as shape;
+@use 'breakpoints' as breakpoints;
 
 .wrapper {
   height: 100%;
@@ -45,5 +46,11 @@
         fill: map.get(color-palette.$red, 'variant-2');
       }
     }
+  }
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  .body .body__item .name__text__content {
+    max-width: none;
   }
 }

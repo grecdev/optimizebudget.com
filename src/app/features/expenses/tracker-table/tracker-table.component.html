@@ -1,11 +1,11 @@
 <app-widget-box>
-  <div class="header">
-    <h4 app-widget-box-title>Expenses tracker</h4>
+  <app-widget-box-header>
+    <app-widget-box-title>Expenses tracker</app-widget-box-title>
 
     <app-add-expense-dialog />
-  </div>
+  </app-widget-box-header>
 
-  <table app-table [dataSource]="dataSource">
+  <table app-table [dataSource]="dataSource" *ngIf="!isMobile; else mobileCardsContainer">
     <ng-container [appColumnDef]="ExpenseItemKey.TIMESTAMP">
       <th app-header-cell *appHeaderCellDef>Date added</th>
 
@@ -22,17 +22,11 @@
           Paid
         </app-pill-status>
 
-        <app-pill-status
-          *ngSwitchCase="ExpenseStatus.PENDING"
-          [type]="StatusType.WARNING"
-        >
+        <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
           Pending
         </app-pill-status>
 
-        <app-pill-status
-          *ngSwitchCase="ExpenseStatus.CANCELLED"
-          [type]="StatusType.ERROR"
-        >
+        <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
           Cancelled
         </app-pill-status>
 
@@ -54,11 +48,57 @@
     <ng-container [appColumnDef]="ExpenseItemKey.TOTAL">
       <th app-header-cell *appHeaderCellDef>Total</th>
       <td app-cell *appCellDef="let item">
-        {{ item[ExpenseItemKey.TOTAL] | currency: 'USD' }}
+        {{ item[ExpenseItemKey.TOTAL] | currency: 'EUR' }}
       </td>
     </ng-container>
 
     <tr app-header-row *appHeaderRowDef="displayedColumns"></tr>
     <tr app-row *appRowDef="let row; columns: displayedColumns"></tr>
   </table>
+
+  <ng-template #mobileCardsContainer>
+    <div class="mobile-cards-container">
+      <app-card *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
+        <app-card-row>
+          <app-card-key>Date added</app-card-key>
+          <app-card-value>{{ item[ExpenseItemKey.TIMESTAMP] | date: 'mediumDate' }}</app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Description</app-card-key>
+          <app-card-value>{{ item[ExpenseItemKey.CATEGORY] }}</app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Status</app-card-key>
+
+          <app-card-value [ngSwitch]="item[ExpenseItemKey.STATUS]">
+            <app-pill-status *ngSwitchCase="ExpenseStatus.PAID" [type]="StatusType.SUCCESS">
+              Paid
+            </app-pill-status>
+
+            <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
+              Pending
+            </app-pill-status>
+
+            <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
+              Cancelled
+            </app-pill-status>
+
+            <app-pill-status *ngSwitchDefault [type]="StatusType.DEFAULT">
+              {{ item[ExpenseItemKey.STATUS] }}
+            </app-pill-status>
+          </app-card-value>
+        </app-card-row>
+
+        <app-card-row>
+          <app-card-key>Total</app-card-key>
+
+          <app-card-value>
+            {{ item[ExpenseItemKey.TOTAL] | currency: 'EUR' }}
+          </app-card-value>
+        </app-card-row>
+      </app-card>
+    </div>
+  </ng-template>
 </app-widget-box>

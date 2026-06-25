@@ -1,15 +1,23 @@
 @use 'sass:map';
 
 @use 'spacing' as spacing;
+@use 'breakpoints' as breakpoints;
 
 .row {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: auto 1fr auto;
   gap: spacing.$grid-gap-spacing;
 }
 
 .budget-status-container {
   display: grid;
-  grid-auto-rows: auto auto 1fr;
+  grid-template-rows: auto auto 1fr;
   gap: spacing.$grid-gap-spacing;
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  .row,
+  .budget-status-container {
+    grid-template-columns: 1fr;
+  }
 }

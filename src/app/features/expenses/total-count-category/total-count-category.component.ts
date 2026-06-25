@@ -3,17 +3,20 @@
  */
 
 import {
-  AfterViewInit,
+  type AfterViewInit,
+  type OnDestroy,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   ViewChild,
 } from '@angular/core';
 
+import { debounceTime, fromEvent, Subject } from 'rxjs';
+
+import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import { CategoryType } from '@shared/models/enums';
 import { DEFAULT_TICKS, generateNiceNumbersArray } from '@script/nice-numbers';
-
-import { type WidgetBoxComponent } from '@core/layout/widget-box/widget-box.component';
 
 import {
   DataSourceItemKey,
@@ -28,25 +31,25 @@ import {
   styleUrls: ['./total-count-category.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TotalCountCategoryComponent implements AfterViewInit {
+export class TotalCountCategoryComponent implements AfterViewInit, OnDestroy {
+  private readonly _mediaQueryService: MediaQueryService;
+
+  /**
+   * @summary - Destroy on cleanup.
+   *
+   * @type {Subject<void>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _resizeEventDestroy$: Subject<void> = new Subject<void>();
+
   /**
    * @summary - Reference to be used outside its component, in order to obtain a "fluid" layout.
    *
    * @type {ElementRef<HTMLElement> | null}
    * @public
    */
-  @ViewChild('appWidgetBox')
-  public readonly appWidgetBox: WidgetBoxComponent | null = null;
-
-  /**
-   * @summary - Get the pixel ratio for current device.
-   *
-   * In order to fix the blurry canvas.
-   *
-   * @type {number}
-   * @private
-   */
-  private readonly _devicePixelRatio: number = window.devicePixelRatio || 1;
 
   /**
    * @summary - Format type for numbers.
@@ -73,12 +76,11 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    * @private
    */
   private readonly _canvasStyle: CanvasStyle = {
-    width: 700,
-    height: 350,
-    spacing: 16,
-    fontSize: 16,
-    lineHeight: 1.25,
-    font: "normal 400 1rem/1.25 'Roboto', sans-serif",
+    spacingPXDefault: 16,
+    spacingPX: 16,
+    fontSizePXDefault: 18,
+    fontSizePX: 18,
+    fontFamily: "'Roboto', sans-serif",
     color: '#000',
   };
 
@@ -168,8 +170,15 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    * @type {ElementRef<HTMLCanvasElement> | null}
    * @private
    */
-  @ViewChild('barChart') private _canvasElement: ElementRef<HTMLCanvasElement> | null =
+  @ViewChild('barChart') private readonly _canvasElement: ElementRef<HTMLCanvasElement> | null =
     null;
+
+  @ViewChild('canvasWrapper') private readonly _canvasWrapper: ElementRef<HTMLDivElement> | null =
+    null;
+
+  constructor(mediaQueryService: MediaQueryService) {
+    this._mediaQueryService = mediaQueryService;
+  }
 
   /**
    * @summary - A count of all expenses from data.
@@ -196,22 +205,17 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    const PADDING_X = this._canvasStyle.spacing * 2;
-
-    const LAST_ITEM_X_AXIS =
-      this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
+    const PADDING_X = this._canvasStyle.spacingPX * 2;
+    const LAST_ITEM_X_AXIS = this._dataSource.xAxis.data[this._dataSource.xAxis.data.length - 1];
 
     const LAST_ITEM_X_AXIS_MEASURE = this._canvasContext.measureText(LAST_ITEM_X_AXIS);
 
     const LEGEND_TOP_RECTANGLE_HEIGHT = 20;
-    const LEGEND_TOP_HEIGHT = LEGEND_TOP_RECTANGLE_HEIGHT + this._canvasStyle.spacing;
-    const LEGEND_BOTTOM_HEIGHT = this._canvasStyle.fontSize + this._canvasStyle.spacing;
+    const LEGEND_TOP_HEIGHT = LEGEND_TOP_RECTANGLE_HEIGHT + this._canvasStyle.spacingPX;
+    const LEGEND_BOTTOM_HEIGHT = this._canvasStyle.fontSizePX + this._canvasStyle.spacingPX;
 
-    const LEGEND_Y_AXIS_WIDTH =
-      this._graphConfiguration.niceNumbersStartingPositionX + PADDING_X;
-
-    const LEGEND_Y_AXIS_HEIGHT =
-      CANVAS_ELEMENT.height - LEGEND_TOP_HEIGHT - LEGEND_BOTTOM_HEIGHT;
+    const LEGEND_Y_AXIS_WIDTH = this._graphConfiguration.niceNumbersStartingPositionX + PADDING_X;
+    const LEGEND_Y_AXIS_HEIGHT = CANVAS_ELEMENT.height - LEGEND_TOP_HEIGHT - LEGEND_BOTTOM_HEIGHT;
 
     // I need to divide LAST_ITEM_X_AXIS_MEASURE.width, so half of the element don't go outside its column.
     const LEGEND_X_AXIS_WIDTH =
@@ -219,8 +223,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
     const COLUMN_WIDTH = LEGEND_X_AXIS_WIDTH / this._dataSource.xAxis.data.length;
 
-    const ROW_HEIGHT =
-      LEGEND_Y_AXIS_HEIGHT / (this._graphConfiguration.niceNumbersData.length - 1);
+    const ROW_HEIGHT = LEGEND_Y_AXIS_HEIGHT / (this._graphConfiguration.niceNumbersData.length - 1);
 
     Object.assign(this._graphConfiguration, {
       //
@@ -257,11 +260,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     let niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE_DATA_SOURCE);
 
     if (niceNumbers.length > DEFAULT_TICKS) {
-      niceNumbers = generateNiceNumbersArray(
-        0,
-        MAXIMUM_VALUE_DATA_SOURCE,
-        DEFAULT_TICKS / 2
-      );
+      niceNumbers = generateNiceNumbersArray(0, MAXIMUM_VALUE_DATA_SOURCE, DEFAULT_TICKS / 2);
     }
 
     const TEXT_SIZES = niceNumbers.map(item => {
@@ -289,16 +288,31 @@ export class TotalCountCategoryComponent implements AfterViewInit {
    */
   private _renderInitialCanvas(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
+    const CANVAS_WRAPPER = this._canvasWrapper && this._canvasWrapper.nativeElement;
 
-    if (!CANVAS_ELEMENT || !this._canvasContext) {
+    if (!this._canvasContext || !CANVAS_ELEMENT || !CANVAS_WRAPPER) {
       throw Error('Canvas element not found!');
     }
 
-    CANVAS_ELEMENT.style.width = `${this._canvasStyle.width}px`;
-    CANVAS_ELEMENT.style.height = `${this._canvasStyle.height}px`;
+    let size = 1;
 
-    CANVAS_ELEMENT.width = this._canvasStyle.width * this._devicePixelRatio;
-    CANVAS_ELEMENT.height = this._canvasStyle.height * this._devicePixelRatio;
+    const { width: wrapperWidth, height: wrapperHeight } = CANVAS_WRAPPER.getBoundingClientRect();
+
+    const isMobile = this._isMobile();
+    const DEVICE_PIXEL_RATIO = window.devicePixelRatio || 1;
+
+    if (isMobile) {
+      size = 2;
+    }
+
+    this._canvasStyle.fontSizePX = this._canvasStyle.fontSizePXDefault * size;
+    this._canvasStyle.spacingPX = this._canvasStyle.spacingPXDefault * size;
+
+    CANVAS_ELEMENT.style.width = `${wrapperWidth}px`;
+    CANVAS_ELEMENT.style.height = `${wrapperHeight}px`;
+
+    CANVAS_ELEMENT.width = wrapperWidth * DEVICE_PIXEL_RATIO;
+    CANVAS_ELEMENT.height = wrapperHeight * DEVICE_PIXEL_RATIO;
 
     this._canvasContext.clearRect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
 
@@ -308,7 +322,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._canvasContext.rect(0, 0, CANVAS_ELEMENT.width, CANVAS_ELEMENT.height);
     this._canvasContext.closePath();
 
-    this._canvasContext.font = this._canvasStyle.font;
+    this._canvasContext.font = `${this._canvasStyle.fontSizePX}px ${this._canvasStyle.fontFamily}`;
   }
 
   /**
@@ -324,32 +338,39 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       throw Error('Canvas context not found!');
     }
 
-    this._canvasContext.textBaseline = 'middle';
+    this._canvasContext.textBaseline = 'top';
 
-    const SPACING = this._canvasStyle.spacing;
+    const SPACING = this._canvasStyle.spacingPX;
     const RECT_WIDTH = 45;
-    const POSITION_Y_RECT = 0;
-    const POSITION_Y_TEXT_CONTENT = this._graphConfiguration.legendTopRectangleHeight / 2;
+    const POSITION_Y_RECT =
+      this._graphConfiguration.legendTopHeight / 2 -
+      this._graphConfiguration.legendTopRectangleHeight / 2;
+
+    const POSITION_Y_TEXT_CONTENT =
+      this._graphConfiguration.legendTopHeight / 2 - this._canvasStyle.fontSizePX / 2;
 
     const MARGIN_RECT_AND_TEXT = 5;
     const SPACE_BETWEEN_ITEMS = SPACING;
 
-    const ITEMS_CONTAINER_WIDTH = this._dataSource.series.reduce(
-      (total, current, index, self) => {
-        const TEXT_CONTENT = current[DataSourceItemKey.NAME];
+    const ITEMS_CONTAINER_WIDTH = this._dataSource.series.reduce((total, current, index, self) => {
+      const TEXT_CONTENT = current[DataSourceItemKey.NAME];
 
-        const SPACING = index < self.length - 1 ? SPACE_BETWEEN_ITEMS : 0;
+      const SPACING = index < self.length - 1 ? SPACE_BETWEEN_ITEMS : 0;
 
-        const TEXT_CONTENT_WIDTH =
-          this._canvasContext!.measureText(TEXT_CONTENT).width +
-          RECT_WIDTH +
-          MARGIN_RECT_AND_TEXT +
-          SPACING;
+      const TEXT_CONTENT_WIDTH =
+        this._canvasContext!.measureText(TEXT_CONTENT).width +
+        RECT_WIDTH +
+        MARGIN_RECT_AND_TEXT +
+        SPACING;
 
-        return total + TEXT_CONTENT_WIDTH;
-      },
-      0
-    );
+      return total + TEXT_CONTENT_WIDTH;
+    }, 0);
+
+    const ITEMS_OVERLAP = ITEMS_CONTAINER_WIDTH > CANVAS_ELEMENT.width;
+
+    if (ITEMS_OVERLAP) {
+      return;
+    }
 
     const HORIZONTAL_CENTER_POSITION =
       this._graphConfiguration.legendXAxisWidth / 2 - ITEMS_CONTAINER_WIDTH / 2;
@@ -428,8 +449,24 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     this._canvasContext.textBaseline = 'bottom';
     this._canvasContext.fillStyle = this._canvasStyle.color;
 
-    for (let i = 0; i < this._dataSource.xAxis.data.length; i++) {
-      const ITEM = this._dataSource.xAxis.data[i];
+    const DATA = this._dataSource.xAxis.data;
+
+    const OVERLAPS = DATA.some(item => {
+      if (!this._canvasContext) {
+        return;
+      }
+
+      const TEXT_CONTENT_WIDTH = this._canvasContext.measureText(item).width;
+
+      return TEXT_CONTENT_WIDTH > this._graphConfiguration.columnWidth;
+    });
+
+    if (OVERLAPS) {
+      return;
+    }
+
+    for (let i = 0; i < DATA.length; i++) {
+      const ITEM = DATA[i];
 
       // Center the labels in the middle of the column.
       const POSITION_X =
@@ -501,13 +538,12 @@ export class TotalCountCategoryComponent implements AfterViewInit {
       this._canvasContext.beginPath();
 
       this._canvasContext.moveTo(
-        this._graphConfiguration.legendYAxisWidth - this._canvasStyle.spacing,
+        this._graphConfiguration.legendYAxisWidth - this._canvasStyle.spacingPX,
         POSITION_Y
       );
 
       this._canvasContext.lineTo(
-        this._graphConfiguration.legendXAxisWidth +
-          this._graphConfiguration.legendYAxisWidth,
+        this._graphConfiguration.legendXAxisWidth + this._graphConfiguration.legendYAxisWidth,
         POSITION_Y
       );
 
@@ -521,11 +557,10 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     // Y-axis lines
     for (let i = 0; i < this._dataSource.xAxis.data.length + EXTRA_COLUMN_LINES; i++) {
       const POSITION_X =
-        this._graphConfiguration.legendYAxisWidth +
-        i * this._graphConfiguration.columnWidth;
+        this._graphConfiguration.legendYAxisWidth + i * this._graphConfiguration.columnWidth;
 
       const POSITION_Y =
-        this._canvasStyle.spacing +
+        this._canvasStyle.spacingPX +
         this._graphConfiguration.legendYAxisHeight +
         this._graphConfiguration.legendTopHeight;
 
@@ -557,21 +592,16 @@ export class TotalCountCategoryComponent implements AfterViewInit {
     }
 
     const MAXIMUM_VALUE = this._graphConfiguration.niceNumbersMaximumValue;
-    const SPACING = this._canvasStyle.spacing;
+    const SPACING = this._canvasStyle.spacingPX;
     const COLUMN_START_POSITION = this._graphConfiguration.legendYAxisWidth + SPACING;
     const SPACING_X = SPACING * 2; // "padding" left and right
 
     // Match values with each given column
-    for (
-      let seriesIndex = 0;
-      seriesIndex < this._dataSource.series.length;
-      seriesIndex++
-    ) {
+    for (let seriesIndex = 0; seriesIndex < this._dataSource.series.length; seriesIndex++) {
       const SERIES_ITEM = this._dataSource.series[seriesIndex];
 
       // We have one space remaining on the right side which represents "padding-right";
-      const NUMBER_OF_SPACES_BETWEEN_BARS =
-        SERIES_ITEM[DataSourceItemKey.VALUE].length - 1;
+      const NUMBER_OF_SPACES_BETWEEN_BARS = SERIES_ITEM[DataSourceItemKey.VALUE].length - 1;
 
       const SPACING_BETWEEN_BARS = SPACING * NUMBER_OF_SPACES_BETWEEN_BARS;
 
@@ -580,11 +610,7 @@ export class TotalCountCategoryComponent implements AfterViewInit {
 
       const BAR_WIDTH_PX = COLUMN_AVAILABLE_WIDTH / this._dataSource.xAxis.data.length;
 
-      for (
-        let columnIndex = 0;
-        columnIndex < this._dataSource.xAxis.data.length;
-        columnIndex++
-      ) {
+      for (let columnIndex = 0; columnIndex < this._dataSource.xAxis.data.length; columnIndex++) {
         const CORRESPONDING_VALUE = SERIES_ITEM[DataSourceItemKey.VALUE][columnIndex];
         const CORRESPONDING_VALUE_FRACTION = CORRESPONDING_VALUE / MAXIMUM_VALUE;
 
@@ -600,47 +626,97 @@ export class TotalCountCategoryComponent implements AfterViewInit {
         positionX += this._graphConfiguration.columnWidth * columnIndex;
 
         const POSITION_Y =
-          this._graphConfiguration.legendYAxisHeight +
-          this._graphConfiguration.legendTopHeight;
+          this._graphConfiguration.legendYAxisHeight + this._graphConfiguration.legendTopHeight;
 
         this._canvasContext.beginPath();
 
         this._canvasContext.fillStyle = SERIES_ITEM[DataSourceItemKey.COLOR];
 
-        this._canvasContext.fillRect(
-          positionX,
-          POSITION_Y,
-          BAR_WIDTH_PX,
-          -THRESHOLD_POSITION_Y
-        );
+        this._canvasContext.fillRect(positionX, POSITION_Y, BAR_WIDTH_PX, -THRESHOLD_POSITION_Y);
 
         this._canvasContext.closePath();
       }
     }
   }
 
-  public ngAfterViewInit(): void {
+  /**
+   * @summary - Paint canvas, all functions stacked together.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _paintCanvas(): void {
+    requestAnimationFrame(() => {
+      this._renderInitialCanvas();
+      //
+      this._setNiceNumbersConfig();
+      this._setLegendSizesConfig();
+      //
+      this._renderLegendTop();
+      this._renderLegendBottom();
+      this._renderLegendLeft();
+      //
+      this._renderBackgroundLines();
+      this._renderDataBars();
+    });
+  }
+
+  /**
+   * @summary - Check if device is mobile.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _isMobile(): boolean {
+    return (
+      window.innerWidth <= this._mediaQueryService.breakpointsPX.xl &&
+      window.innerHeight <= this._mediaQueryService.breakpointsPX.xl
+    );
+  }
+
+  /**
+   * @summary - Initialize the canvas context.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCanvasContext(): void {
     const CANVAS_ELEMENT = this._canvasElement && this._canvasElement.nativeElement;
 
-    const CANVAS_CONTEXT =
-      CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
+    const CANVAS_CONTEXT = CANVAS_ELEMENT && CANVAS_ELEMENT.getContext('2d', { alpha: false });
 
     if (!CANVAS_ELEMENT || !CANVAS_CONTEXT) {
       throw Error('Canvas element not queried!');
     }
 
     this._canvasContext = CANVAS_CONTEXT;
+  }
 
-    this._renderInitialCanvas();
-    //
-    this._setNiceNumbersConfig();
-    this._setLegendSizesConfig();
-    //
-    this._renderLegendTop();
-    this._renderLegendBottom();
-    this._renderLegendLeft();
-    //
-    this._renderBackgroundLines();
-    this._renderDataBars();
+  /**
+   * @summary - For whenever we destroy the component.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCleanup(): void {
+    this._resizeEventDestroy$.next();
+    this._resizeEventDestroy$.complete();
+  }
+
+  public ngAfterViewInit(): void {
+    this._initCanvasContext();
+    this._paintCanvas();
+
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(300))
+      .subscribe({
+        next: () => {
+          this._paintCanvas();
+        },
+      });
+  }
+
+  public ngOnDestroy(): void {
+    this._initCleanup();
   }
 }

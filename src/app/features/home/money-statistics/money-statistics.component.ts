@@ -204,12 +204,12 @@ export class MoneyStatisticsComponent implements AfterViewInit, OnDestroy {
       throw Error('Canvas element not found!');
     }
 
+    let size = 1;
+
     const { width: wrapperWidth, height: wrapperHeight } = CANVAS_WRAPPER.getBoundingClientRect();
 
     const isMobile = this._isMobile();
     const DEVICE_PIXEL_RATIO = window.devicePixelRatio || 1;
-
-    let size = 1;
 
     if (isMobile) {
       size = 2;
