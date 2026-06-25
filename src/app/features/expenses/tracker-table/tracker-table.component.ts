@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 
 import { CategoryType, ExpenseStatus } from '@shared/models/enums';
 import { StatusType } from '@shared/components/pill-status/pill-status.model';
@@ -10,6 +10,7 @@ import { MediaQueryService } from '@shared/services/media-query/media-query.serv
   selector: 'app-tracker-table',
   templateUrl: './tracker-table.component.html',
   styleUrls: ['./tracker-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackerTableComponent {
   public readonly ExpenseItemKey = ExpenseItemKey;

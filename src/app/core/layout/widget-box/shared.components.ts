@@ -3,14 +3,12 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
 @Component({
   selector: 'app-widget-box-header',
   template: `
-    <div class="header">
-      <div class="title-container">
-        <ng-content select="app-widget-box-title"></ng-content>
-        <ng-content select="app-widget-box-title-info"></ng-content>
-      </div>
-
-      <ng-content></ng-content>
+    <div class="title-container">
+      <ng-content select="app-widget-box-title"></ng-content>
+      <ng-content select="app-widget-box-title-info"></ng-content>
     </div>
+
+    <ng-content></ng-content>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

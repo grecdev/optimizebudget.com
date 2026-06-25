@@ -17,10 +17,11 @@
   box-shadow: map.get(variables.$box-shadow, 'default');
   overflow: hidden;
 
-  & .app-widget-box-header .header {
+  & .app-widget-box-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: spacing.$default;
 
     & .app-widget-box-title,
