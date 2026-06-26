@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { type OnInit, ChangeDetectionStrategy, Component, ChangeDetectorRef } from '@angular/core';
+
+import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import {
   Months,
@@ -16,10 +18,28 @@ import {
   styleUrls: ['./profit-loss-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfitLossTableComponent {
+export class ProfitLossTableComponent implements OnInit {
   public readonly Months = Months;
   public readonly RowType = RowType;
   public displayedColumns: DisplayedColumns = [];
+
+  /**
+   * @summary - Actual data used by our table component.
+   *
+   * @type {DataSource}
+   *
+   * @public
+   */
+  public dataSource: DataSource = [];
+
+  /**
+   * @summary - Change whatever on mobile devices.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public isMobile: boolean = false;
 
   private _dataSourceRevenue: DataSourceMonths = {
     [Months.JANUARY]: 12,
@@ -51,14 +71,18 @@ export class ProfitLossTableComponent {
     [Months.DECEMBER]: 12,
   };
 
-  /**
-   * @summary - Actual data used by our table component.
-   *
-   * @type {DataSource}
-   *
-   * @public
-   */
-  public dataSource: DataSource = [];
+  private readonly _mediaQueryService: MediaQueryService;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  constructor(mediaQueryService: MediaQueryService, changeDetectorRef: ChangeDetectorRef) {
+    this._initDisplayedColumns();
+    this._initSetDataSource();
+    this._initSetGrossProfit();
+    this._initSetProfitMargins();
+
+    this._mediaQueryService = mediaQueryService;
+    this._changeDetectorRef = changeDetectorRef;
+  }
 
   /**
    * @summary - Track by fn for displayed columns.
@@ -135,12 +159,16 @@ export class ProfitLossTableComponent {
       yearlyTotal: YEARLY_TOTAL,
     };
 
-    this.dataSource.push(
-      {
-        type: RowType.DIVIDER,
-      },
-      ITEM
+    const DATA = Object.assign(
+      {},
+      !this.isMobile
+        ? {
+            type: RowType.DIVIDER,
+          }
+        : null
     );
+
+    this.dataSource.push(DATA, ITEM);
   }
 
   /**
@@ -202,10 +230,39 @@ export class ProfitLossTableComponent {
     return ITEM;
   }
 
-  constructor() {
-    this._initDisplayedColumns();
-    this._initSetDataSource();
-    this._initSetGrossProfit();
-    this._initSetProfitMargins();
+  /**
+   * @summary - Init media query subscription.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initMediaQuerySubscription(): void {
+    this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
+      next: value => {
+        this.isMobile = value;
+        this._changeDetectorRef.markForCheck();
+      },
+    });
+  }
+
+  /**
+   * @summary - For an optimized loop block.
+   *
+   * @param {number} index - Current index.
+   * @param {DataSourceItem} item - Current item in iteration.
+   *
+   * @returns {number}
+   * @public
+   */
+  public trackByFnDataSource(index: number, item: DataSourceItem): string | number {
+    if (typeof item.type !== 'string') {
+      return index;
+    }
+
+    return item.type;
+  }
+
+  ngOnInit(): void {
+    this._initMediaQuerySubscription();
   }
 }

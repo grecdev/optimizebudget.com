@@ -1,7 +1,9 @@
 <app-widget-box>
-  <h4 app-widget-box-title>P&L report</h4>
+  <app-widget-box-header>
+    <app-widget-box-title>P&L report</app-widget-box-title>
+  </app-widget-box-header>
 
-  <table app-table [dataSource]="dataSource">
+  <table app-table [dataSource]="dataSource" *ngIf="!isMobile; else mobileCardsContainer">
     <ng-container
       *ngFor="let item of displayedColumns; trackBy: trackByFnDisplayedColumns"
       [appColumnDef]="item"
@@ -59,4 +61,65 @@
       [class.divider]="row.type === RowType.DIVIDER"
     ></tr>
   </table>
+
+  <ng-template #mobileCardsContainer>
+    <div class="mobile-cards-container">
+      <ng-container *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
+        <app-card *ngIf="item.type !== RowType.DIVIDER">
+          <app-card-row>
+            <app-card-key>Type</app-card-key>
+
+            <app-card-value>
+              {{
+                {
+                  cellItem: item,
+                  displayedColumnsItem: 'type',
+                } | rowTypeValue
+              }}
+            </app-card-value>
+          </app-card-row>
+
+          <ng-container *ngFor="let object of item | keyvalue">
+            <ng-container *ngIf="!['type', 'yearlyTotal'].includes(object.key)">
+              <app-card-row>
+                <app-card-key>
+                  {{ object.key }}
+                </app-card-key>
+
+                <app-card-value
+                  *ngIf="
+                    {
+                      cellItem: item,
+                      displayedColumnsItem: object.key,
+                    } | isProfitMargin
+                  "
+                >
+                  {{ object.value | number: '1.0-2' }}&percnt;
+                </app-card-value>
+
+                <app-card-value
+                  *ngIf="
+                    {
+                      cellItem: item,
+                      displayedColumnsItem: object.key,
+                    } | isNumberType
+                  "
+                >
+                  {{ object.value | currency: 'EUR' }}
+                </app-card-value>
+              </app-card-row>
+            </ng-container>
+          </ng-container>
+
+          <app-card-row>
+            <app-card-key>Yearly Total</app-card-key>
+
+            <app-card-value>
+              {{ item.yearlyTotal | currency: 'EUR' }}
+            </app-card-value>
+          </app-card-row>
+        </app-card>
+      </ng-container>
+    </div>
+  </ng-template>
 </app-widget-box>

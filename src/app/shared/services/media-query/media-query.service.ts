@@ -18,6 +18,10 @@ import { Breakpoint, BreakpointLevel, BreakpointRangeLimit } from './media-query
  *       },
  *     });
  *   }
+ *
+ *  ngOnInit(): void {
+ *    this._initMediaQuerySubscription();
+ *  }
  * ```
  */
 @Injectable({
