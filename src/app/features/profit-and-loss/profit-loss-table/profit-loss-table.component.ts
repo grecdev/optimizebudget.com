@@ -98,6 +98,23 @@ export class ProfitLossTableComponent implements OnInit {
   }
 
   /**
+   * @summary - For an optimized loop block.
+   *
+   * @param {number} index - Current index.
+   * @param {DataSourceItem} item - Current item in iteration.
+   *
+   * @returns {number}
+   * @public
+   */
+  public trackByFnDataSource(index: number, item: DataSourceItem): string | number {
+    if (typeof item.type !== 'string') {
+      return index;
+    }
+
+    return item.type;
+  }
+
+  /**
    * @summary - Format displayed columns.
    *
    * @private
@@ -243,23 +260,6 @@ export class ProfitLossTableComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       },
     });
-  }
-
-  /**
-   * @summary - For an optimized loop block.
-   *
-   * @param {number} index - Current index.
-   * @param {DataSourceItem} item - Current item in iteration.
-   *
-   * @returns {number}
-   * @public
-   */
-  public trackByFnDataSource(index: number, item: DataSourceItem): string | number {
-    if (typeof item.type !== 'string') {
-      return index;
-    }
-
-    return item.type;
   }
 
   ngOnInit(): void {

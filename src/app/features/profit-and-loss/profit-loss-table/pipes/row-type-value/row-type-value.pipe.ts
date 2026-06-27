@@ -27,16 +27,16 @@ export class RowTypeValuePipe implements PipeTransform {
   /**
    * @summary - Show the appropiate textContent format.
    *
-   * @param {GetRowTypeDictValueOptions["cellItem"]} options.cellItem - The `dataSource` item.
-   * @param {GetRowTypeDictValueOptions["displayedColumnsItem"]}  options.displayedColumnsItem - Column key.
+   * @param {GetRowTypeDictValueOptions["item"]} options.item - The `dataSource` item.
+   * @param {GetRowTypeDictValueOptions["key"]}  options.key - Column key.
    *
    * @public
    * @returns {string}
    */
   transform(options: GetRowTypeDictValueOptions): string {
-    const { cellItem, displayedColumnsItem } = options;
+    const { item, key } = options;
 
-    const CELL_ITEM_VALUE = cellItem[displayedColumnsItem as keyof typeof cellItem];
+    const CELL_ITEM_VALUE = item[key as keyof typeof item];
 
     if (!CELL_ITEM_VALUE) {
       return '';

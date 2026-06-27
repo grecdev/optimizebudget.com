@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, CurrencyPipe, DecimalPipe, KeyValuePipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DecimalPipe, KeyValuePipe, NgIf } from '@angular/common';
 
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
 
@@ -10,6 +10,7 @@ import { IsNumberTypePipe } from './pipes/is-number-type/is-number-type.pipe';
 import { IsInfoCellPipe } from './pipes/is-info-cell/is-info-cell.pipe';
 import { RowTypeValuePipe } from './pipes/row-type-value/row-type-value.pipe';
 import { IsProfitMarginPipe } from './pipes/is-profit-margin/is-profit-margin.pipe';
+import { GetNumberValuePipe } from './pipes/get-number-value/get-number-value.pipe';
 
 import { ProfitLossTableComponent } from './profit-loss-table.component';
 
@@ -21,6 +22,7 @@ import { ProfitLossTableComponent } from './profit-loss-table.component';
     IsInfoCellPipe,
     RowTypeValuePipe,
     IsProfitMarginPipe,
+    GetNumberValuePipe,
   ],
   imports: [
     // Angular specific

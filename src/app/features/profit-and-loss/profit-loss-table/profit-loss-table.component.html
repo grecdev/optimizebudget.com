@@ -5,38 +5,38 @@
 
   <table app-table [dataSource]="dataSource" *ngIf="!isMobile; else mobileCardsContainer">
     <ng-container
-      *ngFor="let item of displayedColumns; trackBy: trackByFnDisplayedColumns"
-      [appColumnDef]="item"
+      *ngFor="let key of displayedColumns; trackBy: trackByFnDisplayedColumns"
+      [appColumnDef]="key"
     >
       <th *appHeaderCellDef>
-        <ng-container *ngIf="item !== 'type' && item !== 'yearlyTotal'">{{ item }}</ng-container>
-        <ng-container *ngIf="item === 'yearlyTotal'">Yearly Total</ng-container>
+        <ng-container *ngIf="key !== 'type' && key !== 'yearlyTotal'">{{ key }}</ng-container>
+        <ng-container *ngIf="key === 'yearlyTotal'">Yearly Total</ng-container>
       </th>
 
-      <td app-cell *appCellDef="let cellItem">
+      <td app-cell *appCellDef="let item">
         <ng-container
           *ngIf="
             {
-              cellItem,
-              displayedColumnsItem: item,
+              item,
+              key,
             } | isNumberType
           "
         >
-          {{ cellItem[item] | currency: 'EUR' }}
+          {{ item[key] | currency: 'EUR' }}
         </ng-container>
 
         <ng-container
           *ngIf="
             {
-              cellItem,
-              displayedColumnsItem: item,
+              item,
+              key,
             } | isInfoCell
           "
         >
           {{
             {
-              cellItem,
-              displayedColumnsItem: item,
+              item,
+              key,
             } | rowTypeValue
           }}
         </ng-container>
@@ -44,12 +44,12 @@
         <ng-container
           *ngIf="
             {
-              cellItem,
-              displayedColumnsItem: item,
+              item,
+              key,
             } | isProfitMargin
           "
         >
-          {{ cellItem[item] | number: '1.0-2' }}&percnt;
+          {{ item[key] | number: '1.0-2' }}&percnt;
         </ng-container>
       </td>
     </ng-container>
@@ -66,58 +66,76 @@
     <div class="mobile-cards-container">
       <ng-container *ngFor="let item of dataSource; trackBy: trackByFnDataSource">
         <app-card *ngIf="item.type !== RowType.DIVIDER">
-          <app-card-row>
-            <app-card-key>Type</app-card-key>
-
-            <app-card-value>
-              {{
+          <ng-container *ngFor="let key of displayedColumns; trackBy: trackByFnDisplayedColumns">
+            <app-card-row
+              *ngIf="
                 {
-                  cellItem: item,
-                  displayedColumnsItem: 'type',
-                } | rowTypeValue
-              }}
-            </app-card-value>
-          </app-card-row>
+                  item,
+                  key,
+                } | isInfoCell
+              "
+            >
+              <app-card-key>Type</app-card-key>
 
-          <ng-container *ngFor="let object of item | keyvalue">
-            <ng-container *ngIf="!['type', 'yearlyTotal'].includes(object.key)">
-              <app-card-row>
-                <app-card-key>
-                  {{ object.key }}
-                </app-card-key>
+              <app-card-value>
+                {{
+                  {
+                    item,
+                    key,
+                  } | rowTypeValue
+                }}
+              </app-card-value>
+            </app-card-row>
 
-                <app-card-value
-                  *ngIf="
-                    {
-                      cellItem: item,
-                      displayedColumnsItem: object.key,
-                    } | isProfitMargin
-                  "
-                >
-                  {{ object.value | number: '1.0-2' }}&percnt;
-                </app-card-value>
+            <app-card-row
+              *ngIf="
+                !(
+                  {
+                    item,
+                    key,
+                  } | isInfoCell
+                )
+              "
+            >
+              <app-card-key>{{ key !== 'yearlyTotal' ? key : 'Yearly Total' }}</app-card-key>
 
-                <app-card-value
-                  *ngIf="
-                    {
-                      cellItem: item,
-                      displayedColumnsItem: object.key,
-                    } | isNumberType
-                  "
-                >
-                  {{ object.value | currency: 'EUR' }}
-                </app-card-value>
-              </app-card-row>
-            </ng-container>
+              <app-card-value
+                *ngIf="
+                  {
+                    item,
+                    key,
+                  } | isNumberType
+                "
+              >
+                {{
+                  {
+                    item,
+                    key,
+                  }
+                    | getNumberValue
+                    | currency: 'EUR'
+                }}
+              </app-card-value>
+
+              <app-card-value
+                *ngIf="
+                  {
+                    item,
+                    key,
+                  } | isProfitMargin
+                "
+              >
+                {{
+                  {
+                    item,
+                    key,
+                  }
+                    | getNumberValue
+                    | number: '1.0-2'
+                }}&percnt;
+              </app-card-value>
+            </app-card-row>
           </ng-container>
-
-          <app-card-row>
-            <app-card-key>Yearly Total</app-card-key>
-
-            <app-card-value>
-              {{ item.yearlyTotal | currency: 'EUR' }}
-            </app-card-value>
-          </app-card-row>
         </app-card>
       </ng-container>
     </div>
