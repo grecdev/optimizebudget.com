@@ -1,8 +1,8 @@
 import { DataSourceItem } from '@features/profit-and-loss/profit-loss-table/profit-loss-table.model';
 
-interface IsProfitMarginOptions {
+interface GetNumberValueOptions {
   item: DataSourceItem;
   key: string;
 }
 
-export type { IsProfitMarginOptions };
+export type { GetNumberValueOptions };

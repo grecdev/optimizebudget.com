@@ -10,21 +10,21 @@ export class IsProfitMarginPipe implements PipeTransform {
   /**
    * @summary - Check if the current item is a profit margin number, so I can use the percentage sign.
    *
-   * @param {IsNumberTypeOptions["cellItem"]} options.cellItem - The `dataSource` item.
-   * @param {IsNumberTypeOptions["displayedColumnsItem"]}  options.displayedColumnsItem - Column key.
+   * @param {IsNumberTypeOptions["item"]} options.item - The `dataSource` item.
+   * @param {IsNumberTypeOptions["key"]}  options.key - Column key.
    *
    * @public
    * @returns {boolean}
    */
   transform(options: IsProfitMarginOptions): boolean {
-    const { cellItem, displayedColumnsItem } = options;
+    const { item, key } = options;
 
-    const CELL_ITEM_VALUE = cellItem[displayedColumnsItem as keyof typeof cellItem];
+    const CELL_ITEM_VALUE = item[key as keyof typeof item];
 
     const IS_PROFIT_MARGIN =
-      cellItem &&
-      Object.hasOwn(cellItem, 'type') &&
-      [RowType.PROFIT_MARGINS].includes(cellItem.type! as RowType) &&
+      item &&
+      Object.hasOwn(item, 'type') &&
+      [RowType.PROFIT_MARGINS].includes(item.type! as RowType) &&
       typeof CELL_ITEM_VALUE === 'number';
 
     return IS_PROFIT_MARGIN;

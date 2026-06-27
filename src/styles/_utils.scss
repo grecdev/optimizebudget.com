@@ -1,8 +1,15 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'functions' as *;
-@use 'spacing' as *;
+@use 'variables' as variables;
+@use 'functions' as functions;
+@use 'spacing' as spacing;
+
+$spacing: (
+  'sm': spacing.$sm,
+  'default': spacing.$default,
+  'md': spacing.$md,
+  'lg': spacing.$lg,
+);
 
 /* Default Theme */
 .overlay {
@@ -297,8 +304,8 @@
     display: flex;
 
     &.justify-content {
-      @each $value in map.get($grid, 'justify-content') {
-        $class-name: getGridClassName($value);
+      @each $value in map.get(variables.$grid, 'justify-content') {
+        $class-name: functions.getGridClassName($value);
 
         &-#{$class-name} {
           justify-content: $value;
@@ -307,8 +314,8 @@
     }
 
     &.align-items {
-      @each $value in map.get($grid, 'align-items') {
-        $class-name: getGridClassName($value);
+      @each $value in map.get(variables.$grid, 'align-items') {
+        $class-name: functions.getGridClassName($value);
 
         &-#{$class-name} {
           align-items: $value;
@@ -317,11 +324,16 @@
     }
 
     &.flex {
-      @each $value in map.get($grid, 'direction') {
+      @each $value in map.get(variables.$grid, 'direction') {
         &-#{$value} {
           direction: $value;
         }
       }
     }
   }
+}
+
+.mobile-cards-container {
+  display: grid;
+  gap: spacing.$lg;
 }

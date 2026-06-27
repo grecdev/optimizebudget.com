@@ -1,7 +1,20 @@
 @use 'spacing' as spacing;
+@use 'breakpoints' as breakpoints;
 
 .row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: spacing.$grid-gap-spacing;
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: breakpoints.$md) {
+  .row {
+    grid-template-columns: 1fr;
+  }
 }

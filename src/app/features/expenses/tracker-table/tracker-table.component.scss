@@ -25,15 +25,10 @@
   font-size: typography.$body-sm;
 }
 
-.mobile-cards-container {
-  display: grid;
-  gap: spacing.$lg;
-
-  & .app-pill-status {
-    padding: 0;
-    border: none;
-    background: transparent;
-  }
+.mobile-cards-container .app-pill-status {
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 @media screen and (max-width: breakpoints.$lg) {
