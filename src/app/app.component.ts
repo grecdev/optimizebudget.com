@@ -8,8 +8,6 @@ import {
 
 import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
 
-import { AuthenticationService } from '@core/authentication/authentication.service';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -23,9 +21,7 @@ export class AppComponent implements AfterViewInit {
   /**
    * @summary - For testing purposes.
    */
-  userIsLoggedIn: boolean = true;
-
-  private readonly _sidebarService: AuthenticationService;
+  userIsLoggedIn: boolean = false;
 
   @ViewChild('appHeader', {
     read: ElementRef<HTMLElement>,
@@ -34,10 +30,6 @@ export class AppComponent implements AfterViewInit {
 
   @ViewChild('appSidebar')
   private readonly _appSidebar: SidebarComponent | null = null;
-
-  constructor(sidebarService: AuthenticationService) {
-    this._sidebarService = sidebarService;
-  }
 
   /**
    * @summary - Dynamically change the sidebar position based on header height.
@@ -48,6 +40,10 @@ export class AppComponent implements AfterViewInit {
    * @returns {void}
    */
   private _setHeaderHeight(): void {
+    if (!this.userIsLoggedIn) {
+      return;
+    }
+
     const NATIVE_ELEMENT_HEADER = this._appHeader && this._appHeader.nativeElement;
 
     if (!NATIVE_ELEMENT_HEADER || !this._appSidebar) {
@@ -59,29 +55,7 @@ export class AppComponent implements AfterViewInit {
     this._appSidebar.headerHeight = HEIGHT;
   }
 
-  async loadTodos(): Promise<void> {
-    try {
-      const response = await this._sidebarService.getTodos();
-
-      if (response.error) {
-        console.error(response.error.message);
-      }
-
-      if (response.data) {
-        console.log(response.data);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  }
-
   ngAfterViewInit(): void {
     this._setHeaderHeight();
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.loadTodos();
   }
 }
