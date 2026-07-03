@@ -1,4 +1,4 @@
-<ng-container *ngIf="userIsLoggedIn; else authenticationContainer">
+<ng-container *ngIf="!hideLayout">
   <app-sidebar #appSidebar />
 
   <main class="main-wrapper">
@@ -10,6 +10,4 @@
   </main>
 </ng-container>
 
-<ng-template #authenticationContainer>
-  <router-outlet name="authentication"></router-outlet>
-</ng-template>
+<router-outlet name="authentication"></router-outlet>
