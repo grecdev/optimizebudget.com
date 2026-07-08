@@ -7,7 +7,7 @@ import { IconRegistryService } from '@shared/components/icon/icon-registry.servi
 
 import { allRoutes } from '@script/globalData';
 
-import { type RegexPatterns, RequirementType } from './register.model';
+import { type RegexPatterns, RequirementType, InputTypes } from './register.model';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +15,7 @@ import { type RegexPatterns, RequirementType } from './register.model';
   styleUrls: ['../authentication-common.scss', './register.component.scss'],
 })
 export class RegisterComponent {
+  public readonly InputTypes = InputTypes;
   public readonly RequirementType = RequirementType;
 
   public paths: Pick<typeof allRoutes, 'login'> = {
@@ -53,25 +54,26 @@ export class RegisterComponent {
     check: 'check',
   };
 
-  private readonly _regexPatterns: RegexPatterns = {
+  public readonly regexPatterns: RegexPatterns = {
     specialCharacters: /[$%&_@!]/,
     numbers: /\d/,
     lowercase: /[a-z]/,
     uppercase: /[A-Z]/,
+    lengthLimit: /^.{5,15}$/,
     password: /^(?=.*[$%&_@!])(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d$%&_@!]{5,15}$/,
   };
 
   public readonly registerForm: FormGroup = new FormGroup({
-    fullName: new FormControl('', {
+    [InputTypes.FULL_NAME]: new FormControl('', {
       validators: [Validators.required],
     }),
-    email: new FormControl('', {
+    [InputTypes.EMAIL]: new FormControl('', {
       validators: [Validators.email, Validators.required],
     }),
-    password: new FormControl('', {
-      validators: [Validators.required, Validators.pattern(this._regexPatterns.password)],
+    [InputTypes.PASSWORD]: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(5), Validators.maxLength(15)],
     }),
-    confirmPassword: new FormControl('', {
+    [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
       validators: [Validators.required],
     }),
   });
@@ -87,9 +89,6 @@ export class RegisterComponent {
     if (this.registerForm.invalid) {
       return;
     }
-
-    console.log(this.registerForm);
-    console.log(this.registerForm.invalid);
   }
 
   /**

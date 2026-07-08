@@ -29,10 +29,12 @@
       height: $icon-size;
     }
 
-    &[data-type='INVALID'] {
-      & app-icon {
-        fill: map.get(color-palette.$red, 'variant-2');
-      }
+    &[data-type='VALID'] app-icon {
+      fill: map.get(color-palette.$green, 'variant-3');
+    }
+
+    &[data-type='INVALID'] app-icon {
+      fill: map.get(color-palette.$red, 'variant-2');
     }
   }
 }

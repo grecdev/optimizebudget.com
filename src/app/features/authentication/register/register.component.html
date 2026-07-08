@@ -29,7 +29,7 @@
         id="full-name"
         type="text"
         placeholder="John Doe"
-        formControlName="fullName"
+        [formControlName]="InputTypes.FULL_NAME"
       />
     </app-form-field>
 
@@ -49,7 +49,7 @@
         id="email"
         type="email"
         placeholder="mail@example.com"
-        formControlName="email"
+        [formControlName]="InputTypes.EMAIL"
       />
     </app-form-field>
 
@@ -69,13 +69,37 @@
           id="password"
           type="password"
           placeholder="******"
-          formControlName="password"
+          [formControlName]="InputTypes.PASSWORD"
         />
       </app-form-field>
 
       <div class="password-requirements">
-        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
-          <app-icon [svgIcon]="icons['xMark']" />
+        <p
+          class="requirement-box"
+          [attr.data-type]="
+            ({
+              value: registerForm.value[InputTypes.PASSWORD],
+              regularExpression: regexPatterns.lengthLimit,
+            } | passwordRequirementType)
+              ? RequirementType.VALID
+              : RequirementType.INVALID
+          "
+        >
+          <app-icon
+            [svgIcon]="icons['check']"
+            *ngIf="
+              {
+                value: registerForm.value[InputTypes.PASSWORD],
+                regularExpression: regexPatterns.lengthLimit,
+              } | passwordRequirementType;
+              else invalidIcon
+            "
+          />
+
+          <ng-template #invalidIcon>
+            <app-icon [svgIcon]="icons['xMark']" />
+          </ng-template>
+
           <span>5-15 characters</span>
         </p>
 
@@ -112,7 +136,7 @@
         id="confirm-password"
         type="password"
         placeholder="******"
-        formControlName="confirmPassword"
+        [formControlName]="InputTypes.CONFIRM_PASSWORD"
       />
     </app-form-field>
 
