@@ -11,7 +11,7 @@ export class AuthenticationService {
    *
    * @public
    */
-  public isAuthenticated: boolean = true;
+  public isAuthenticated: boolean = false;
 
   constructor() {
     console.log('AuthenticationService');

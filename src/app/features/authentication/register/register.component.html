@@ -7,7 +7,12 @@
     <p class="light-text">Let's get started. Fill in the details below to create your account.</p>
   </div>
 
-  <form id="registerForm" class="text-align-left">
+  <form
+    id="registerForm"
+    class="text-align-left"
+    [formGroup]="registerForm"
+    (ngSubmit)="handleSubmit()"
+  >
     <app-form-field
       variant="outlined"
       color="primary-default"
@@ -19,7 +24,13 @@
     >
       <app-input-label>Full Name</app-input-label>
 
-      <input appInput id="full-name" type="text" placeholder="John Doe" />
+      <input
+        appInput
+        id="full-name"
+        type="text"
+        placeholder="John Doe"
+        formControlName="fullName"
+      />
     </app-form-field>
 
     <app-form-field
@@ -33,22 +44,57 @@
     >
       <app-input-label>Email</app-input-label>
 
-      <input appInput id="email" type="email" placeholder="mail@example.com" />
+      <input
+        appInput
+        id="email"
+        type="email"
+        placeholder="mail@example.com"
+        formControlName="email"
+      />
     </app-form-field>
 
-    <app-form-field
-      variant="outlined"
-      color="primary-default"
-      class="mb-default"
-      fullWidth
-      [labelOptions]="{
-        position: 'top',
-      }"
-    >
-      <app-input-label>Password</app-input-label>
+    <div class="password-container mb-default">
+      <app-form-field
+        variant="outlined"
+        color="primary-default"
+        fullWidth
+        [labelOptions]="{
+          position: 'top',
+        }"
+      >
+        <app-input-label class="password-label">Password</app-input-label>
 
-      <input appInput id="password" type="password" placeholder="******" />
-    </app-form-field>
+        <input
+          appInput
+          id="password"
+          type="password"
+          placeholder="******"
+          formControlName="password"
+        />
+      </app-form-field>
+
+      <div class="password-requirements">
+        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
+          <app-icon [svgIcon]="icons['xMark']" />
+          <span>5-15 characters</span>
+        </p>
+
+        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
+          <app-icon [svgIcon]="icons['xMark']" />
+          <span>Uppercase letters</span>
+        </p>
+
+        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
+          <app-icon [svgIcon]="icons['xMark']" />
+          <span>Special characters $%&_@!</span>
+        </p>
+
+        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
+          <app-icon [svgIcon]="icons['xMark']" />
+          <span>Lowercase letters</span>
+        </p>
+      </div>
+    </div>
 
     <app-form-field
       class="mb-default"
@@ -61,10 +107,24 @@
     >
       <app-input-label>Confirm Password</app-input-label>
 
-      <input appInput id="confirm-password" type="password" placeholder="******" />
+      <input
+        appInput
+        id="confirm-password"
+        type="password"
+        placeholder="******"
+        formControlName="confirmPassword"
+      />
     </app-form-field>
 
-    <button type="submit" appButton variant="contained" color="primary">Register</button>
+    <button
+      type="submit"
+      appButton
+      variant="contained"
+      color="primary"
+      [disabled]="registerForm.invalid"
+    >
+      Register
+    </button>
   </form>
 
   <app-form-delimiter textContent="Or sign in with" />
