@@ -71,7 +71,7 @@ export class RegisterComponent {
       validators: [Validators.email, Validators.required],
     }),
     [InputTypes.PASSWORD]: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(5), Validators.maxLength(15)],
+      validators: [Validators.required, Validators.pattern(this.regexPatterns.password)],
     }),
     [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
       validators: [Validators.required],

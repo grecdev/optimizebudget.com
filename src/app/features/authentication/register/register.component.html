@@ -103,19 +103,120 @@
           <span>5-15 characters</span>
         </p>
 
-        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
-          <app-icon [svgIcon]="icons['xMark']" />
+        <p
+          class="requirement-box"
+          [attr.data-type]="
+            ({
+              value: registerForm.value[InputTypes.PASSWORD],
+              regularExpression: regexPatterns.uppercase,
+            } | passwordRequirementType)
+              ? RequirementType.VALID
+              : RequirementType.INVALID
+          "
+        >
+          <app-icon
+            [svgIcon]="icons['check']"
+            *ngIf="
+              {
+                value: registerForm.value[InputTypes.PASSWORD],
+                regularExpression: regexPatterns.uppercase,
+              } | passwordRequirementType;
+              else invalidIcon
+            "
+          />
+
+          <ng-template #invalidIcon>
+            <app-icon [svgIcon]="icons['xMark']" />
+          </ng-template>
+
           <span>Uppercase letters</span>
         </p>
 
-        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
-          <app-icon [svgIcon]="icons['xMark']" />
+        <p
+          class="requirement-box"
+          [attr.data-type]="
+            ({
+              value: registerForm.value[InputTypes.PASSWORD],
+              regularExpression: regexPatterns.specialCharacters,
+            } | passwordRequirementType)
+              ? RequirementType.VALID
+              : RequirementType.INVALID
+          "
+        >
+          <app-icon
+            [svgIcon]="icons['check']"
+            *ngIf="
+              {
+                value: registerForm.value[InputTypes.PASSWORD],
+                regularExpression: regexPatterns.specialCharacters,
+              } | passwordRequirementType;
+              else invalidIcon
+            "
+          />
+
+          <ng-template #invalidIcon>
+            <app-icon [svgIcon]="icons['xMark']" />
+          </ng-template>
+
           <span>Special characters $%&_@!</span>
         </p>
 
-        <p class="requirement-box" [attr.data-type]="RequirementType.INVALID">
-          <app-icon [svgIcon]="icons['xMark']" />
+        <p
+          class="requirement-box"
+          [attr.data-type]="
+            ({
+              value: registerForm.value[InputTypes.PASSWORD],
+              regularExpression: regexPatterns.lowercase,
+            } | passwordRequirementType)
+              ? RequirementType.VALID
+              : RequirementType.INVALID
+          "
+        >
+          <app-icon
+            [svgIcon]="icons['check']"
+            *ngIf="
+              {
+                value: registerForm.value[InputTypes.PASSWORD],
+                regularExpression: regexPatterns.lowercase,
+              } | passwordRequirementType;
+              else invalidIcon
+            "
+          />
+
+          <ng-template #invalidIcon>
+            <app-icon [svgIcon]="icons['xMark']" />
+          </ng-template>
+
           <span>Lowercase letters</span>
+        </p>
+
+        <p
+          class="requirement-box"
+          [attr.data-type]="
+            ({
+              value: registerForm.value[InputTypes.PASSWORD],
+              regularExpression: regexPatterns.numbers,
+            } | passwordRequirementType)
+              ? RequirementType.VALID
+              : RequirementType.INVALID
+          "
+        >
+          <app-icon
+            [svgIcon]="icons['check']"
+            *ngIf="
+              {
+                value: registerForm.value[InputTypes.PASSWORD],
+                regularExpression: regexPatterns.numbers,
+              } | passwordRequirementType;
+              else invalidIcon
+            "
+          />
+
+          <ng-template #invalidIcon>
+            <app-icon [svgIcon]="icons['xMark']" />
+          </ng-template>
+
+          <span>Numbers</span>
         </p>
       </div>
     </div>
