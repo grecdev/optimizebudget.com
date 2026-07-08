@@ -1,8 +1,5 @@
-@use 'sass:map';
-
 @use 'breakpoints' as breakpoints;
 @use 'spacing' as spacing;
-@use 'color-palette' as color-palette;
 
 @use '../authentication-common' as authentication-common;
 
@@ -12,31 +9,10 @@
 }
 
 .password-requirements {
-  $icon-size: 20px;
-  //
   font-size: 0.8rem;
 
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-
-  & .requirement-box {
-    display: flex;
-    align-items: center;
-    line-height: 1;
-
-    & app-icon {
-      width: $icon-size;
-      height: $icon-size;
-    }
-
-    &[data-type='VALID'] app-icon {
-      fill: map.get(color-palette.$green, 'variant-3');
-    }
-
-    &[data-type='INVALID'] app-icon {
-      fill: map.get(color-palette.$red, 'variant-2');
-    }
-  }
 }
 
 @media screen and (max-width: breakpoints.$xl) {

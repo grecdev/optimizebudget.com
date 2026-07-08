@@ -12,6 +12,8 @@ import { RegisterComponent } from './register.component';
 
 import { PasswordRequirementValidatorPipe } from './pipes/password-requirement-validator/password-requirement-validator.pipe';
 
+import { PasswordRequirementModule } from './password-requirement/password-requirement.module';
+
 @NgModule({
   declarations: [RegisterComponent, PasswordRequirementValidatorPipe],
   imports: [
@@ -20,6 +22,7 @@ import { PasswordRequirementValidatorPipe } from './pipes/password-requirement-v
     RegisterRoutingModule,
     AuthenticationCommonModule,
     AppIconModule,
+    PasswordRequirementModule,
   ],
 })
 export class RegisterModule {}

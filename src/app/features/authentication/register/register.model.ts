@@ -1,8 +1,3 @@
-enum RequirementType {
-  INVALID = 'INVALID',
-  VALID = 'VALID',
-}
-
 enum InputTypes {
   FULL_NAME = 'FULL_NAME',
   EMAIL = 'EMAIL',
@@ -20,4 +15,4 @@ interface RegexPatterns {
 }
 
 export type { RegexPatterns };
-export { RequirementType, InputTypes };
+export { InputTypes };

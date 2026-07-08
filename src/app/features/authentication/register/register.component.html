@@ -74,150 +74,60 @@
       </app-form-field>
 
       <div class="password-requirements">
-        <p
-          class="requirement-box"
-          [attr.data-type]="
-            ({
+        <app-password-requirement
+          [isValid]="
+            {
               value: registerForm.value[InputTypes.PASSWORD],
               regularExpression: regexPatterns.lengthLimit,
-            } | passwordRequirementType)
-              ? RequirementType.VALID
-              : RequirementType.INVALID
+            } | passwordRequirementType
           "
         >
-          <app-icon
-            [svgIcon]="icons['check']"
-            *ngIf="
-              {
-                value: registerForm.value[InputTypes.PASSWORD],
-                regularExpression: regexPatterns.lengthLimit,
-              } | passwordRequirementType;
-              else invalidIcon
-            "
-          />
+          5-15 characters
+        </app-password-requirement>
 
-          <ng-template #invalidIcon>
-            <app-icon [svgIcon]="icons['xMark']" />
-          </ng-template>
-
-          <span>5-15 characters</span>
-        </p>
-
-        <p
-          class="requirement-box"
-          [attr.data-type]="
-            ({
+        <app-password-requirement
+          [isValid]="
+            {
               value: registerForm.value[InputTypes.PASSWORD],
               regularExpression: regexPatterns.uppercase,
-            } | passwordRequirementType)
-              ? RequirementType.VALID
-              : RequirementType.INVALID
+            } | passwordRequirementType
           "
         >
-          <app-icon
-            [svgIcon]="icons['check']"
-            *ngIf="
-              {
-                value: registerForm.value[InputTypes.PASSWORD],
-                regularExpression: regexPatterns.uppercase,
-              } | passwordRequirementType;
-              else invalidIcon
-            "
-          />
+          Uppercase letters
+        </app-password-requirement>
 
-          <ng-template #invalidIcon>
-            <app-icon [svgIcon]="icons['xMark']" />
-          </ng-template>
-
-          <span>Uppercase letters</span>
-        </p>
-
-        <p
-          class="requirement-box"
-          [attr.data-type]="
-            ({
+        <app-password-requirement
+          [isValid]="
+            {
               value: registerForm.value[InputTypes.PASSWORD],
               regularExpression: regexPatterns.specialCharacters,
-            } | passwordRequirementType)
-              ? RequirementType.VALID
-              : RequirementType.INVALID
+            } | passwordRequirementType
           "
         >
-          <app-icon
-            [svgIcon]="icons['check']"
-            *ngIf="
-              {
-                value: registerForm.value[InputTypes.PASSWORD],
-                regularExpression: regexPatterns.specialCharacters,
-              } | passwordRequirementType;
-              else invalidIcon
-            "
-          />
+          Special characters $%&_@!
+        </app-password-requirement>
 
-          <ng-template #invalidIcon>
-            <app-icon [svgIcon]="icons['xMark']" />
-          </ng-template>
-
-          <span>Special characters $%&_@!</span>
-        </p>
-
-        <p
-          class="requirement-box"
-          [attr.data-type]="
-            ({
+        <app-password-requirement
+          [isValid]="
+            {
               value: registerForm.value[InputTypes.PASSWORD],
               regularExpression: regexPatterns.lowercase,
-            } | passwordRequirementType)
-              ? RequirementType.VALID
-              : RequirementType.INVALID
+            } | passwordRequirementType
           "
         >
-          <app-icon
-            [svgIcon]="icons['check']"
-            *ngIf="
-              {
-                value: registerForm.value[InputTypes.PASSWORD],
-                regularExpression: regexPatterns.lowercase,
-              } | passwordRequirementType;
-              else invalidIcon
-            "
-          />
+          Lowercase letters
+        </app-password-requirement>
 
-          <ng-template #invalidIcon>
-            <app-icon [svgIcon]="icons['xMark']" />
-          </ng-template>
-
-          <span>Lowercase letters</span>
-        </p>
-
-        <p
-          class="requirement-box"
-          [attr.data-type]="
-            ({
+        <app-password-requirement
+          [isValid]="
+            {
               value: registerForm.value[InputTypes.PASSWORD],
               regularExpression: regexPatterns.numbers,
-            } | passwordRequirementType)
-              ? RequirementType.VALID
-              : RequirementType.INVALID
+            } | passwordRequirementType
           "
         >
-          <app-icon
-            [svgIcon]="icons['check']"
-            *ngIf="
-              {
-                value: registerForm.value[InputTypes.PASSWORD],
-                regularExpression: regexPatterns.numbers,
-              } | passwordRequirementType;
-              else invalidIcon
-            "
-          />
-
-          <ng-template #invalidIcon>
-            <app-icon [svgIcon]="icons['xMark']" />
-          </ng-template>
-
-          <span>Numbers</span>
-        </p>
+          Numbers
+        </app-password-requirement>
       </div>
     </div>
 

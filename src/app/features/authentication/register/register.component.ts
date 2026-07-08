@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-
-import { IconRegistryService } from '@shared/components/icon/icon-registry.service';
 
 import { allRoutes } from '@script/globalData';
 
-import { type RegexPatterns, RequirementType, InputTypes } from './register.model';
+import { type RegexPatterns, InputTypes } from './register.model';
 
 @Component({
   selector: 'app-register',
@@ -16,42 +13,9 @@ import { type RegexPatterns, RequirementType, InputTypes } from './register.mode
 })
 export class RegisterComponent {
   public readonly InputTypes = InputTypes;
-  public readonly RequirementType = RequirementType;
 
   public paths: Pick<typeof allRoutes, 'login'> = {
     login: allRoutes.login,
-  };
-
-  /**
-   * @summary - Sanitize whatever inputs.
-   *
-   * @type {DomSanitizer}
-   *
-   * @private
-   * @readonly
-   */
-  private readonly _domSanitizer: DomSanitizer;
-
-  /**
-   * @summary - Icon registry service.
-   *
-   * @type {IconRegistryService}
-   *
-   * @private
-   * @readonly
-   */
-  private readonly _iconRegistryService: IconRegistryService;
-
-  /**
-   * @summary - Icons state.
-   *
-   * @type {Record<string, string>}
-   * @public
-   * @readonly
-   */
-  public readonly icons: Record<string, string> = {
-    xMark: 'xmark',
-    check: 'check',
   };
 
   public readonly regexPatterns: RegexPatterns = {
@@ -78,31 +42,9 @@ export class RegisterComponent {
     }),
   });
 
-  constructor(iconRegistryService: IconRegistryService, domSanitizer: DomSanitizer) {
-    this._iconRegistryService = iconRegistryService;
-    this._domSanitizer = domSanitizer;
-
-    this._initIconRegistry();
-  }
-
   public handleSubmit(): void {
     if (this.registerForm.invalid) {
       return;
     }
-  }
-
-  /**
-   * @summary - Registry icons used in this component.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _initIconRegistry(): void {
-    Object.values(this.icons).forEach(item => {
-      this._iconRegistryService.addSvgIconConfig({
-        name: item,
-        url: this._domSanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${item}.svg`),
-      });
-    });
   }
 }
