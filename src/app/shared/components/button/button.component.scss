@@ -3,25 +3,27 @@
 @use 'sass:list';
 @use 'sass:math';
 
-@use 'variables' as *;
-@use 'color-palette' as *;
-@use 'spacing' as *;
-@use 'shape' as *;
+@use 'variables' as variables;
+@use 'color-palette' as color-palette;
+@use 'spacing' as spacing;
+@use 'shape' as shape;
 
-// I don't use the $color-palette directly, because maybe I don't need all colors to be generated...
+// I don't use the color-palette directly, because maybe I don't need all colors to be generated...
 $buttons-color-palette: (
-  'primary': map.get($color-palette, 'primary', 'default'),
-  'secondary': map.get($color-palette, 'secondary', 'default'),
-  'success': map.get($color-palette, 'green', 'variant-3'),
-  'danger': map.get($color-palette, 'red', 'default')
+  'primary': map.get(color-palette.$primary, 'default'),
+  'secondary': map.get(color-palette.$secondary, 'default'),
+  'success': map.get(color-palette.$green, 'variant-3'),
+  'danger': map.get(color-palette.$red, 'default'),
 );
 
 .app-button {
   display: inline-block;
-  padding: map.get($spacing, sm);
-  border-radius: map.get($border-radius, 'default');
+  padding: spacing.$sm;
+  border-radius: shape.$default;
   text-transform: capitalize;
-  transition: background 150ms ease-in-out, color 150ms ease-in-out;
+  transition:
+    background 150ms ease-in-out,
+    color 150ms ease-in-out;
   line-height: 1;
   cursor: pointer;
   text-align: center;
@@ -30,7 +32,7 @@ $buttons-color-palette: (
   color: inherit;
 
   &:hover {
-    background: map.get($color-palette, 'gray', 'default');
+    background: map.get(color-palette.$gray, 'default');
   }
 }
 
@@ -38,13 +40,13 @@ $buttons-color-palette: (
   @each $key, $value in $buttons-color-palette {
     &.app-button-color-#{$key} {
       $base-color: $value;
-      $text-color: map.get($color-palette, 'common', 'white');
+      $text-color: map.get(color-palette.$common, 'white');
       $base-lightness: color.lightness($base-color);
       //
       background: $base-color;
 
       @if ($base-lightness >= 50%) {
-        $text-color: map.get($color-palette, 'common', 'black');
+        $text-color: map.get(color-palette.$common, 'black');
       }
 
       color: $text-color;
@@ -68,7 +70,7 @@ $buttons-color-palette: (
       border: 2px solid $base-color;
 
       @if ($base-color-lightness <= 55%) {
-        $text-color: map.get($color-palette, 'common', 'white');
+        $text-color: map.get(color-palette.$common, 'white');
       }
 
       &:hover {
@@ -79,110 +81,8 @@ $buttons-color-palette: (
   }
 }
 
-//.btnColor {
-//  @each $key, $variant in $color-palette {
-//    @each $variant-key, $variant-color in $variant {
-//      $class-name: #{$key}-#{$variant-key};
-//
-//      &-#{$class-name} {
-//        &.btnVariant-basic {
-//          border-radius: 0;
-//          @include variantBasic($variant-color);
-//        }
-//
-//        &.btnVariant-contained {
-//          $text-color: map.get($color-palette, white, default);
-//
-//          // Here when you will create your preferred UI, just add the needed classes :)
-//          // The thing is that you want to use a dark text color on light background or vice-versa
-//          $dark-backgrounds: 'primary-default', 'secondary-default';
-//
-//          @if (list.index($dark-backgrounds, $class-name)) {
-//            $text-color: map.get($color-palette, 'common', 'white');
-//          }
-//
-//          @include variantContained($variant-color, $text-color);
-//        }
-//
-//        &.btnVariant-outlined {
-//          @include variantOutlined($variant-color);
-//        }
-//      }
-//    }
-//  }
-//}
-
-//.btnVariant {
-//  &-outlined {
-//    &:disabled,
-//    &[aria-disabled='true'] {
-//      @include disabledButton(
-//        map.get($color-palette, secondary, default),
-//        map.get($color-palette, gray, default)
-//      );
-//    }
-//  }
-//
-//  &-contained {
-//    &:disabled,
-//    &[aria-disabled='true'] {
-//      @include disabledButton(
-//        map.get($color-palette, gray, default),
-//        map.get($color-palette, gray, variant-2)
-//      );
-//    }
-//  }
-//}
-
-//.btnWithIcon {
-//  &-leftIcon,
-//  &-rightIcon {
-//    display: inline-flex;
-//    align-items: center;
-//    justify-content: center;
-//    gap: map.get($spacing, sm);
-//  }
-//
-//  &-leftIcon {
-//    padding-left: 12px;
-//  }
-//
-//  &-rightIcon {
-//    padding-right: 12px;
-//  }
-//}
-
-//.btnIconButton {
-//  border-radius: map.get($border-radius, rounded);
-//  display: inline-flex;
-//  flex-direction: column;
-//  justify-content: center;
-//  align-items: center;
-//  padding: 0;
-//}
-
-//.btnIconSize {
-//  &-small {
-//    width: map.get($buttons-icon-size, sm);
-//    height: map.get($buttons-icon-size, sm);
-//    font-size: 0.8rem;
-//  }
-//
-//  &-default {
-//    width: map.get($buttons-icon-size, default);
-//    height: map.get($buttons-icon-size, default);
-//    font-size: 1rem;
-//  }
-//
-//  &-medium {
-//    width: map.get($buttons-icon-size, md);
-//    height: map.get($buttons-icon-size, md);
-//    font-size: 1.25rem;
-//  }
-//
-//  &-large {
-//    width: map.get($buttons-icon-size, lg);
-//    height: map.get($buttons-icon-size, lg);
-//    font-size: 1.5rem;
-//  }
-//}
+.app-button[disabled][class*='app-button-variant'][class*='app-button-color'] {
+  background: map.get(color-palette.$gray, 'default');
+  color: map.get(color-palette.$gray, 'variant-3');
+  cursor: auto;
+}

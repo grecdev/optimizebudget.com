@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 import { type ThemeVariant } from '@shared/models/types';
 
@@ -51,18 +46,25 @@ export class AppButtonComponent implements ButtonInputs {
   @Input() variant: ButtonInputs['variant'] = 'basic';
   @Input() icon: ButtonInputs['icon'] = null;
 
-  get color(): ButtonInputs['color'] {
-    return this._color;
-  }
-
   @Input() set color(value: ButtonInputs['color']) {
     this.className = `app-button-color-${value}`;
 
     this._color = value;
   }
 
+  get color(): ButtonInputs['color'] {
+    return this._color;
+  }
+
   private _color: ButtonInputs['color'] = null;
 
+  /**
+   * @summary - Class name builder.
+   *
+   * @param {string} value - Custom class name.
+   *
+   * @returns {string}
+   */
   get className(): string {
     return this._className.join(' ');
   }
