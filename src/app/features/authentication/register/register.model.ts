@@ -10,8 +10,9 @@ interface RegexPatterns {
   numbers: RegExp;
   lowercase: RegExp;
   uppercase: RegExp;
-  password: RegExp;
   lengthLimit: RegExp;
+  fullName: RegExp;
+  password: RegExp;
 }
 
 export type { RegexPatterns };
