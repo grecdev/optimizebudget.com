@@ -61,7 +61,7 @@ export class AppDialogService {
    * @param {E} [entry] - If we are using a module, we need to pass the exported component reference via `InjectionToken` API.
    *
    * @public
-   * @returns {void}
+   * @returns {OverlayReferenceMapKey<AppOverlayComponent>}
    */
   public open<C, E>(
     component: C,
@@ -110,8 +110,7 @@ export class AppDialogService {
   ): EmbeddedViewRef<C>['rootNodes'] {
     let rootNodes: EmbeddedViewRef<C>['rootNodes'] = [];
 
-    let dialogProjectedContent: typeof this._componentReference.dialogProjectedContent =
-      null;
+    let dialogProjectedContent: typeof this._componentReference.dialogProjectedContent = null;
 
     let hostView: null | EmbeddedViewRef<C | E> = null;
 
@@ -202,9 +201,7 @@ export class AppDialogService {
       .resolveComponentFactory(COMPONENT_TYPE)
       .create(moduleReference.injector, [projectableNodes]);
 
-    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<
-      typeof COMPONENT_TYPE
-    >;
+    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<typeof COMPONENT_TYPE>;
 
     const ROOT_NODES = HOST_VIEW.rootNodes;
 
