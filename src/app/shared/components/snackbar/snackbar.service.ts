@@ -8,6 +8,7 @@ import {
 
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type OverlayReferenceMapKey } from '@shared/components/overlay/overlay.model';
+import { type AppOverlayComponent } from '@shared/components/overlay/overlay.component';
 
 import {
   type ComponentReferencesState,
@@ -32,10 +33,22 @@ export class SnackbarService {
    *
    * @private
    */
-  private _componentReference: ComponentReferencesState = {
+  private readonly _componentReference: ComponentReferencesState = {
     snackbarModuleRef: null,
     snackbarComponentRef: null,
   };
+
+  private readonly _timeoutDelayMS: number = 3500;
+
+  /**
+   * @summary - So we can keep only one snackbar at a time.
+   *
+   * @type {OverlayReferenceMapKey<AppOverlayComponent> | null}
+   *
+   * @private
+   */
+  private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null = null;
+  private _lastOverlayReferenceTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     injector: Injector,
@@ -60,6 +73,8 @@ export class SnackbarService {
   ): OverlayReferenceMapKey<typeof APP_SNACKBAR_COMPONENT_REFERENCE> {
     const DIALOG_ROOT_NODES = this._createSnackbarModule(options);
 
+    this._closeExtraSnackbar();
+
     const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
       contentReferences: [],
       projectableNodes: DIALOG_ROOT_NODES,
@@ -67,6 +82,12 @@ export class SnackbarService {
         noBackground: true,
       },
     });
+
+    this._lastOverlayReference = OVERLAY_REFERENCE;
+
+    this._lastOverlayReferenceTimeout = setTimeout(() => {
+      this._closeExtraSnackbar();
+    }, this._timeoutDelayMS);
 
     return OVERLAY_REFERENCE;
   }
@@ -109,5 +130,21 @@ export class SnackbarService {
     this._applicationReference.attachView(HOST_VIEW);
 
     return ROOT_NODES;
+  }
+
+  /**
+   * @summary - I need to keep only one snackbar at a time.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _closeExtraSnackbar(): void {
+    if (!this._lastOverlayReference || !this._lastOverlayReferenceTimeout) {
+      return;
+    }
+
+    this._lastOverlayReference.close();
+
+    clearTimeout(this._lastOverlayReferenceTimeout);
   }
 }

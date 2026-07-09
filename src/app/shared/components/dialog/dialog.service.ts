@@ -34,7 +34,7 @@ export class AppDialogService {
    *
    * @private
    */
-  private _componentReference: ComponentReferencesState<unknown> = {
+  private readonly _componentReference: ComponentReferencesState<unknown> = {
     dialogProjectedContent: null,
     dialogRootComponent: null,
     contentModuleRef: null,
