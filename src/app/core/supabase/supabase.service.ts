@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 import { environment } from '@environments/environment';
 
@@ -8,15 +8,29 @@ import { environment } from '@environments/environment';
   providedIn: 'root',
 })
 export class SupabaseService {
+  /**
+   * @summary - Expose only the auth API.
+   *
+   * @type {SupabaseClient['auth']}
+   *
+   * @public
+   * @readonly
+   */
+  public readonly auth: SupabaseClient['auth'];
+
+  /**
+   * @summary - Main supabase API.
+   *
+   * @type {SupabaseClient}
+   *
+   * @private
+   * @readonly
+   */
   private readonly _supabase: SupabaseClient;
 
   constructor() {
     this._supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
-    console.log('SupabaseService');
-  }
-
-  getTodos() {
-    return this._supabase.from('test').select('*');
+    this.auth = this._supabase.auth;
   }
 }

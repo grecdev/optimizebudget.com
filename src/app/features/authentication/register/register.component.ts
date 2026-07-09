@@ -4,8 +4,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { allRoutes } from '@script/globalData';
 
-import { type RegexPatterns, InputTypes } from './register.model';
+import { AuthenticationService } from '@core/authentication/authentication.service';
 
+import { type RegexPatterns, InputTypes } from './register.model';
 import { confirmPasswordValidator } from './validators';
 
 @Component({
@@ -15,6 +16,8 @@ import { confirmPasswordValidator } from './validators';
 })
 export class RegisterComponent {
   public readonly InputTypes = InputTypes;
+
+  private readonly _authenticationService: AuthenticationService;
 
   /**
    * @summary - Routes to redirect from within the template.
@@ -47,16 +50,16 @@ export class RegisterComponent {
 
   public readonly registerForm: FormGroup = new FormGroup(
     {
-      [InputTypes.FULL_NAME]: new FormControl('', {
+      [InputTypes.FULL_NAME]: new FormControl('Grecu Alexandru', {
         validators: [Validators.required, Validators.pattern(this.regexPatterns.fullName)],
       }),
-      [InputTypes.EMAIL]: new FormControl('', {
+      [InputTypes.EMAIL]: new FormControl('grecualexandru001@gmail.com', {
         validators: [Validators.required, Validators.email],
       }),
-      [InputTypes.PASSWORD]: new FormControl('', {
+      [InputTypes.PASSWORD]: new FormControl('Test123!', {
         validators: [Validators.required, Validators.pattern(this.regexPatterns.password)],
       }),
-      [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
+      [InputTypes.CONFIRM_PASSWORD]: new FormControl('Test123!', {
         validators: [Validators.required],
       }),
     },
@@ -65,9 +68,26 @@ export class RegisterComponent {
     }
   );
 
-  public handleSubmit(): void {
+  constructor(authenticationService: AuthenticationService) {
+    this._authenticationService = authenticationService;
+  }
+
+  public async handleSubmit(): Promise<void> {
     if (this.registerForm.invalid) {
       return;
     }
+
+    const RESPONSE = await this._authenticationService.signUp({
+      email: this.registerForm.value[InputTypes.EMAIL],
+      password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
+      options: {
+        data: {
+          [InputTypes.FULL_NAME]: this.registerForm.value[InputTypes.FULL_NAME],
+        },
+        emailRedirectTo: allRoutes.overview.path,
+      },
+    });
+
+    console.log(RESPONSE);
   }
 }
