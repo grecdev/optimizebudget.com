@@ -81,7 +81,7 @@ export class AppOverlayComponent
   }
 
   @HostBinding('class.no-background') get hostNoBackground(): boolean {
-    return this.options.noBackground;
+    return this.options.noBackground ?? false;
   }
 
   /**
