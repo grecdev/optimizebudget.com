@@ -5,6 +5,8 @@ import { allRoutes } from '@script/globalData';
 
 import { CanActivateAuthenticationGuard } from '@core/authentication/route-guards/can-activate-authentication.guard';
 
+import { type RouteSnapshotData } from './app.model';
+
 const routes: Routes = [
   {
     path: '',
@@ -37,6 +39,9 @@ const routes: Routes = [
     path: allRoutes.login.path,
     loadChildren: () =>
       import('./features/authentication/login/login.module').then(module => module.LoginModule),
+    data: {
+      hideShell: true,
+    } as RouteSnapshotData,
   },
   {
     path: allRoutes.register.path,
@@ -44,6 +49,9 @@ const routes: Routes = [
       import('./features/authentication/register/register.module').then(
         module => module.RegisterModule
       ),
+    data: {
+      hideShell: true,
+    } as RouteSnapshotData,
   },
   {
     path: allRoutes.forgotPassword.path,
@@ -51,6 +59,9 @@ const routes: Routes = [
       import('./features/authentication/forgot-password/forgot-password.module').then(
         module => module.ForgotPasswordModule
       ),
+    data: {
+      hideShell: true,
+    } as RouteSnapshotData,
   },
   // {
   //   path: '**',

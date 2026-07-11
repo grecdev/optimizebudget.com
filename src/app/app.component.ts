@@ -1,5 +1,4 @@
 import {
-  type AfterViewInit,
   type OnInit,
   ElementRef,
   ChangeDetectionStrategy,
@@ -8,15 +7,13 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
-import { filter, map } from 'rxjs';
-
-import { allRoutes } from '@script/globalData';
-
-import { AuthenticationService } from '@core/authentication/authentication.service';
+import { filter } from 'rxjs';
 
 import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
+
+import { type RouteSnapshotData } from './app.model';
 
 @Component({
   selector: 'app-root',
@@ -24,21 +21,21 @@ import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.data-logged-in]': '!hideLayout',
+    '[attr.data-logged-in]': '!hideShell',
   },
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   /**
-   * @summary - Dynamically render components.
+   * @summary - The main "app shell" state render.
    *
    * @type {boolean}
    *
    * @public
    */
-  public hideLayout: boolean = true;
+  public hideShell: boolean = true;
 
-  private readonly _authenticationService: AuthenticationService;
   private readonly _router: Router;
+  private readonly _activatedRoute: ActivatedRoute;
   private readonly _changeDetectorRef: ChangeDetectorRef;
 
   @ViewChild('appHeader', {
@@ -49,13 +46,21 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('appSidebar')
   private readonly _appSidebar: SidebarComponent | null = null;
 
+  @ViewChild('mainContainer') private set _mainContainer(element: ElementRef<HTMLElement> | null) {
+    if (!element) {
+      return;
+    }
+
+    this._setHeaderHeight();
+  }
+
   constructor(
-    authenticationService: AuthenticationService,
     router: Router,
+    activatedRoute: ActivatedRoute,
     changeDetectorRef: ChangeDetectorRef
   ) {
-    this._authenticationService = authenticationService;
     this._router = router;
+    this._activatedRoute = activatedRoute;
     this._changeDetectorRef = changeDetectorRef;
   }
 
@@ -68,7 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit {
    * @returns {void}
    */
   private _setHeaderHeight(): void {
-    if (this.hideLayout) {
+    if (this.hideShell) {
       return;
     }
 
@@ -84,43 +89,44 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * @summary - Maybe we have nested child routes.
+   *
+   * @private
+   * @returns {RouteSnapshotData | void}
+   */
+  private _getDeepestRouteData(): RouteSnapshotData | void {
+    let currentRoute = this._activatedRoute.firstChild;
+
+    if (!currentRoute) {
+      return;
+    }
+
+    while (currentRoute.firstChild) {
+      currentRoute = currentRoute.firstChild;
+    }
+
+    return currentRoute.snapshot.data as RouteSnapshotData;
+  }
+
+  /**
    * @summary - Change state on route change.
    *
    * @private
    * @returns {void}
    */
   private _initRouterEvents(): void {
-    this._router.events
-      .pipe(
-        filter(data => data instanceof NavigationEnd),
-        map(data => data as NavigationEnd)
-      )
-      .subscribe({
-        next: data => {
-          const URL = data.url.replace('/', '');
+    this._router.events.pipe(filter(data => data instanceof NavigationEnd)).subscribe({
+      next: () => {
+        const ACTIVATED_ROUTE_DATA = this._getDeepestRouteData();
 
-          const AUTHENTICATION_ROUTES = [
-            allRoutes.login.path,
-            allRoutes.register.path,
-            allRoutes.forgotPassword.path,
-          ];
+        this.hideShell = (ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.hideShell) ?? false;
 
-          // Array method is using '===' operator to check for value.
-          const hideLayout =
-            AUTHENTICATION_ROUTES.some(item => URL.includes(item)) ||
-            !this._authenticationService.isAuthenticated;
-
-          this.hideLayout = hideLayout;
-          this._changeDetectorRef.markForCheck();
-        },
-      });
+        this._changeDetectorRef.markForCheck();
+      },
+    });
   }
 
   public ngOnInit(): void {
     this._initRouterEvents();
-  }
-
-  public ngAfterViewInit(): void {
-    this._setHeaderHeight();
   }
 }
