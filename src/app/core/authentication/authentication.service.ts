@@ -17,7 +17,7 @@ export class AuthenticationService {
    *
    * @public
    */
-  public isAuthenticated: boolean = false;
+  public isAuthenticated: boolean = true;
 
   constructor(supabase: SupabaseService) {
     this._supabase = supabase;

@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { allRoutes } from '@script/globalData';
 
+import { SnackbarType } from '@shared/components/snackbar/snackbar.model';
+import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
+
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { AuthenticationService } from '@core/authentication/authentication.service';
 
 import { type RegexPatterns, InputTypes } from './register.model';
@@ -18,6 +22,17 @@ export class RegisterComponent {
   public readonly InputTypes = InputTypes;
 
   private readonly _authenticationService: AuthenticationService;
+  private readonly _snackbarService: SnackbarService;
+  private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  /**
+   * @summary - Need overlay reference for cleanup.
+   *
+   * @type {AppOverlayContentInstances['overlayReference']}
+   *
+   * @private
+   */
+  private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
   /**
    * @summary - Routes to redirect from within the template.
@@ -68,8 +83,14 @@ export class RegisterComponent {
     }
   );
 
-  constructor(authenticationService: AuthenticationService) {
+  constructor(
+    authenticationService: AuthenticationService,
+    snackbarService: SnackbarService,
+    changeDetectorRef: ChangeDetectorRef
+  ) {
     this._authenticationService = authenticationService;
+    this._snackbarService = snackbarService;
+    this._changeDetectorRef = changeDetectorRef;
   }
 
   public async handleSubmit(): Promise<void> {
@@ -77,17 +98,44 @@ export class RegisterComponent {
       return;
     }
 
-    const RESPONSE = await this._authenticationService.signUp({
-      email: this.registerForm.value[InputTypes.EMAIL],
-      password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
-      options: {
-        data: {
-          [InputTypes.FULL_NAME]: this.registerForm.value[InputTypes.FULL_NAME],
-        },
-        emailRedirectTo: allRoutes.overview.path,
-      },
+    // const RESPONSE = await this._authenticationService.signUp({
+    //   email: this.registerForm.value[InputTypes.EMAIL],
+    //   password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
+    //   options: {
+    //     data: {
+    //       [InputTypes.FULL_NAME]: this.registerForm.value[InputTypes.FULL_NAME],
+    //     },
+    //     emailRedirectTo: allRoutes.overview.path,
+    //   },
+    // });
+    //
+    // console.log(RESPONSE);
+
+    // ***************
+    this._overlayReference = this._snackbarService.open({
+      type: SnackbarType.ERROR,
+      message: `Some error occurred`,
     });
 
-    console.log(RESPONSE);
+    this._initCloseSubscription();
+  }
+
+  /**
+   * @summary - Proper unsubscribe.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCloseSubscription(): void {
+    if (!this._overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this._overlayReference.closingOverlay$.subscribe({
+      next: () => {
+        this._changeDetectorRef.markForCheck();
+        this._overlayReference = null;
+      },
+    });
   }
 }

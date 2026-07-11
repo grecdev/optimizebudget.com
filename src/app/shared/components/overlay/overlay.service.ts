@@ -285,15 +285,15 @@ export class AppOverlayService {
       .pipe(takeUntil(this._lastOverlayReference.completeObservable$))
       .subscribe({
         next: data => {
-          const COMPONENT_REFERENCES =
+          const OVERLAY_REFERENCE =
             this._overlayReferenceDataSource.has(data) &&
             this._overlayReferenceDataSource.get(data);
 
-          if (!COMPONENT_REFERENCES) {
+          if (!OVERLAY_REFERENCE) {
             return;
           }
 
-          COMPONENT_REFERENCES.contentReferences.forEach(item => {
+          OVERLAY_REFERENCE.contentReferences.forEach(item => {
             this._removeComponent(item);
           });
 
@@ -327,17 +327,19 @@ export class AppOverlayService {
       )
       .subscribe({
         next: () => {
-          if (!this._lastOverlayReference) {
-            throw Error('Overlay reference not found!');
+          const ALLOWED_ENTRIES = Array.from(this._overlayReferenceDataSource.values()).filter(
+            data => {
+              return data.overlayReference && !data.overlayReference.disableEscapeEvent;
+            }
+          );
+
+          const LAST_ENTRY = ALLOWED_ENTRIES[ALLOWED_ENTRIES.length - 1];
+
+          if (!LAST_ENTRY || !LAST_ENTRY.overlayReference) {
+            return;
           }
 
-          console.log(this._overlayReferenceDataSource);
-
-          // if (this._lastOverlayReference.disableEscapeEvent) {
-          //   return;
-          // }
-          //
-          // this._lastOverlayReference.close();
+          LAST_ENTRY.overlayReference.close(LAST_ENTRY.overlayReference.id);
         },
       });
   }

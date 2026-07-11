@@ -48,8 +48,8 @@ export class OverlayReference<C = unknown, CloseResult = unknown> {
    * @public
    * @returns {void}
    */
-  public close(): void {
-    this._closingOverlay.next(this.id);
+  public close(id: number = this.id): void {
+    this._closingOverlay.next(id);
   }
 
   /**

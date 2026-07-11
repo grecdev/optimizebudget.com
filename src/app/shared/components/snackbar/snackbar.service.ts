@@ -81,6 +81,7 @@ export class SnackbarService {
       instanceOptions: {
         noBackground: true,
       },
+      disableEscapeEvent: true,
     });
 
     this._lastOverlayReference = OVERLAY_REFERENCE;
