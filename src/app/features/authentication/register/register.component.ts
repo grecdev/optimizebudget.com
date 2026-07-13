@@ -4,7 +4,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { allRoutes } from '@script/globalData';
 
-import { SnackbarType } from '@shared/components/snackbar/snackbar.model';
+import { SnackbarType, SnackbarPosition } from '@shared/components/snackbar/snackbar.model';
+
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
@@ -65,7 +66,7 @@ export class RegisterComponent {
 
   public readonly registerForm: FormGroup = new FormGroup(
     {
-      [InputTypes.FULL_NAME]: new FormControl('Grecu Alexandru', {
+      [InputTypes.DISPLAY_NAME]: new FormControl('Grecu Alexandru', {
         validators: [Validators.required, Validators.pattern(this.regexPatterns.fullName)],
       }),
       [InputTypes.EMAIL]: new FormControl('grecualexandru001@gmail.com', {
@@ -98,26 +99,31 @@ export class RegisterComponent {
       return;
     }
 
-    // const RESPONSE = await this._authenticationService.signUp({
-    //   email: this.registerForm.value[InputTypes.EMAIL],
-    //   password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
-    //   options: {
-    //     data: {
-    //       [InputTypes.FULL_NAME]: this.registerForm.value[InputTypes.FULL_NAME],
-    //     },
-    //     emailRedirectTo: allRoutes.overview.path,
-    //   },
-    // });
-    //
-    // console.log(RESPONSE);
+    try {
+      const RESPONSE = await this._authenticationService.signUp({
+        email: this.registerForm.value[InputTypes.EMAIL],
+        password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
+        options: {
+          data: {
+            [InputTypes.DISPLAY_NAME]: this.registerForm.value[InputTypes.DISPLAY_NAME],
+          },
+          emailRedirectTo: allRoutes.overview.path,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        this._overlayReference = this._snackbarService.open({
+          type: SnackbarType.ERROR,
+          message: error.message,
+          position: {
+            horizontal: SnackbarPosition.MIDDLE,
+            vertical: SnackbarPosition.END,
+          },
+        });
 
-    // ***************
-    this._overlayReference = this._snackbarService.open({
-      type: SnackbarType.ERROR,
-      message: `Some error occurred`,
-    });
-
-    this._initCloseSubscription();
+        this._initCloseSubscription();
+      }
+    }
   }
 
   /**

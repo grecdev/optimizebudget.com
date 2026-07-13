@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
 import { AuthResponse, type SignUpWithPasswordCredentials } from '@supabase/supabase-js';
-
 import { SupabaseService } from '@core/supabase/supabase.service';
 
 @Injectable({
@@ -30,14 +29,12 @@ export class AuthenticationService {
    * @returns {Promise<AuthResponse | void>}
    */
   public async signUp(options: SignUpWithPasswordCredentials): Promise<AuthResponse | void> {
-    try {
-      const RESPONSE = await this._supabase.auth.signUp(options);
+    const RESPONSE = await this._supabase.auth.signUp(options);
 
-      return RESPONSE;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error);
-      }
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
     }
+
+    return RESPONSE;
   }
 }
