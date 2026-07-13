@@ -5,6 +5,7 @@ import { type AppOverlayComponent } from './overlay.component';
 
 interface AppOverlayComponentOptions {
   noBackground: boolean;
+  style: Partial<CSSStyleDeclaration>;
 }
 
 /**
@@ -25,14 +26,14 @@ interface AppOverlayContentInstances {
 interface AppendOverlayOptions<C> extends Pick<AppendToDOMOptions, 'targetDOM'> {
   projectableNodes: EmbeddedViewRef<C>['rootNodes'];
   contentReferences: ComponentReferencesState;
-  instanceOptions: AppOverlayComponentInstances['options'];
+  overlayInstanceOptions: AppOverlayComponentInstances['options'];
   disableEscapeEvent?: boolean;
 }
 
 interface SetReferenceInstancesOptions {
   overlayComponentReference: ComponentRef<AppOverlayComponent>;
   contentReferences: ComponentReferencesState;
-  instanceOptions?: AppOverlayComponentInstances['options'];
+  overlayInstanceOptions?: AppOverlayComponentInstances['options'];
 }
 
 interface SaveOverlayReferenceOptions {

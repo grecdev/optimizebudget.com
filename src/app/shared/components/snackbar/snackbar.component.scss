@@ -1,0 +1,35 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+@use 'spacing' as spacing;
+@use 'variables' as variables;
+@use 'shape' as shape;
+
+.app-snackbar {
+  $margin: spacing.$sm;
+  //
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  pointer-events: auto;
+
+  width: max-content;
+  max-width: calc(100% - $margin);
+
+  padding: spacing.$sm spacing.$default;
+  margin: $margin;
+  cursor: default;
+  border-radius: shape.$default;
+
+  &.snackbar-type-error {
+    background: map.get(color-palette.$red, 'default');
+    color: map.get(color-palette.$common, 'white');
+  }
+
+  & .snackbar-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

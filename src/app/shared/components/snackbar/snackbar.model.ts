@@ -8,19 +8,40 @@ enum SnackbarType {
   INFO = 'INFO',
 }
 
+enum SnackbarPosition {
+  START = 'START',
+  MIDDLE = 'MIDDLE',
+  END = 'END',
+}
+
 interface ComponentReferencesState {
   snackbarModuleRef: NgModuleRef<AppSnackbarModule> | null;
   snackbarComponentRef: ComponentRef<AppSnackbarComponent> | null;
 }
-
-type OpenOptions = CreateSnackbarModuleOptions;
 
 type CreateSnackbarModuleOptions = Partial<{
   /* Projected content message */
   message: string;
   /* UI Styling */
   type: SnackbarType;
+  /* Position on the screen */
+  position: {
+    horizontal: SnackbarPosition;
+    vertical: SnackbarPosition;
+  };
 }>;
 
-export type { ComponentReferencesState, OpenOptions, CreateSnackbarModuleOptions };
-export { SnackbarType };
+type OpenSnackbarOptions = CreateSnackbarModuleOptions;
+
+interface GetOverlayStylesOptions {
+  position: CreateSnackbarModuleOptions['position'];
+}
+
+export type {
+  ComponentReferencesState,
+  OpenSnackbarOptions,
+  CreateSnackbarModuleOptions,
+  GetOverlayStylesOptions,
+};
+
+export { SnackbarType, SnackbarPosition };

@@ -109,7 +109,7 @@ export class UserAvatarComponent {
     this._overlayReference = this._appOverlayService.appendOverlay({
       contentReferences: [USER_INFO_WRAPPER_EMBEDDED_VIEW],
       projectableNodes: [USER_INFO_WRAPPER_EMBEDDED_VIEW.rootNodes],
-      instanceOptions: {
+      overlayInstanceOptions: {
         noBackground: true,
       },
     });

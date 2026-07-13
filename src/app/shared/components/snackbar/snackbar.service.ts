@@ -13,7 +13,9 @@ import { type AppOverlayComponent } from '@shared/components/overlay/overlay.com
 import {
   type ComponentReferencesState,
   type CreateSnackbarModuleOptions,
-  type OpenOptions,
+  type OpenSnackbarOptions,
+  SnackbarPosition,
+  GetOverlayStylesOptions,
 } from './snackbar.model';
 
 import { APP_SNACKBAR_COMPONENT_REFERENCE, AppSnackbarModule } from './snackbar.module';
@@ -41,6 +43,22 @@ export class SnackbarService {
   private readonly _timeoutDelayMS: number = 3500;
 
   /**
+   * @summary - Add styling based on input.
+   *
+   * @type {Record<SnackbarPosition, string>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _stylePosition: Record<SnackbarPosition, string> = {
+    [SnackbarPosition.START]: 'flex-start',
+    [SnackbarPosition.MIDDLE]: 'center',
+    [SnackbarPosition.END]: 'flex-end',
+  };
+
+  private readonly _overlayStyleArray: Array<string> = ['display: flex', 'flexDirection: column'];
+
+  /**
    * @summary - So we can keep only one snackbar at a time.
    *
    * @type {OverlayReferenceMapKey<AppOverlayComponent> | null}
@@ -63,25 +81,30 @@ export class SnackbarService {
   /**
    * @summary - Open a snackbar component.
    *
-   * @param {OpenOptions} options - Maybe our component needs dynamic data, we can change its properties with this parameter.
+   * @param {OpenSnackbarOptions} options - Maybe our component needs dynamic data, we can change its properties with this parameter.
    *
    * @public
    * @returns {OverlayReferenceMapKey<typeof APP_SNACKBAR_COMPONENT_REFERENCE>}
    */
   public open(
-    options: OpenOptions
+    options: OpenSnackbarOptions
   ): OverlayReferenceMapKey<typeof APP_SNACKBAR_COMPONENT_REFERENCE> {
-    const DIALOG_ROOT_NODES = this._createSnackbarModule(options);
+    const SNACKBAR_ROOT_NODES = this._createSnackbarModule(options);
+
+    const OVERLAY_STYLES = this._getOverlayStyles({
+      position: options.position,
+    });
 
     this._closeExtraSnackbar();
 
     const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
       contentReferences: [],
-      projectableNodes: DIALOG_ROOT_NODES,
-      instanceOptions: {
-        noBackground: true,
-      },
+      projectableNodes: SNACKBAR_ROOT_NODES,
       disableEscapeEvent: true,
+      overlayInstanceOptions: {
+        noBackground: true,
+        style: OVERLAY_STYLES,
+      },
     });
 
     this._lastOverlayReference = OVERLAY_REFERENCE;
@@ -147,5 +170,28 @@ export class SnackbarService {
     this._lastOverlayReference.close();
 
     clearTimeout(this._lastOverlayReferenceTimeout);
+  }
+
+  /**
+   * @summary - Add whatever styles you need for overlay.
+   *
+   * @params {GetOverlayStylesOptions} options - Add styles conditionally.
+   *
+   * @private
+   * @returns {string}
+   */
+  private _getOverlayStyles(options: GetOverlayStylesOptions): string {
+    const { position } = options;
+
+    if (!position) {
+      return '';
+    }
+
+    this._overlayStyleArray.push(`justifyContent: ${this._stylePosition[position.vertical]}`);
+    this._overlayStyleArray.push(`alignItems: ${this._stylePosition[position.horizontal]}`);
+
+    const STYLE_STRING = this._overlayStyleArray.join(';');
+
+    return STYLE_STRING;
   }
 }

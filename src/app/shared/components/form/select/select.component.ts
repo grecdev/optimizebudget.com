@@ -518,7 +518,7 @@ export class AppSelectComponent
       contentReferences: [OPTIONS_WRAPPER_EMBEDDED_VIEW],
       projectableNodes: [OPTIONS_WRAPPER_EMBEDDED_VIEW.rootNodes],
       targetDOM: CURRENT_TARGET,
-      instanceOptions: {
+      overlayInstanceOptions: {
         noBackground: true,
       },
     });

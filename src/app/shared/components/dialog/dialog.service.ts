@@ -85,7 +85,7 @@ export class AppDialogService {
     const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
       contentReferences: CONTENT_REFERENCES,
       projectableNodes: DIALOG_ROOT_NODES,
-      instanceOptions: {
+      overlayInstanceOptions: {
         noBackground: false,
       },
     });

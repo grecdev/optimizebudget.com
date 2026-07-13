@@ -110,8 +110,13 @@ export class AppOverlayService {
   public appendOverlay<C>(
     options: AppendOverlayOptions<C>
   ): OverlayReferenceMapKey<AppOverlayComponent> {
-    const { projectableNodes, contentReferences, instanceOptions, targetDOM, disableEscapeEvent } =
-      options;
+    const {
+      projectableNodes,
+      contentReferences,
+      overlayInstanceOptions,
+      targetDOM,
+      disableEscapeEvent,
+    } = options;
 
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
@@ -135,7 +140,7 @@ export class AppOverlayService {
     this._setReferenceInstances({
       overlayComponentReference: COMPONENT_REFERENCE,
       contentReferences: CONTENT_REFERENCES,
-      instanceOptions,
+      overlayInstanceOptions,
     });
 
     this._saveOverlayReference({
@@ -170,7 +175,7 @@ export class AppOverlayService {
       throw Error('Overlay reference not found!');
     }
 
-    const { contentReferences, instanceOptions, overlayComponentReference } = options;
+    const { contentReferences, overlayInstanceOptions, overlayComponentReference } = options;
 
     contentReferences.forEach(item => {
       if (
@@ -183,11 +188,11 @@ export class AppOverlayService {
     });
 
     if (
-      instanceOptions &&
+      overlayInstanceOptions &&
       Object.hasOwn(overlayComponentReference, 'instance') &&
       Object.hasOwn(overlayComponentReference.instance, 'options')
     ) {
-      Object.assign(overlayComponentReference.instance.options, instanceOptions);
+      Object.assign(overlayComponentReference.instance.options, overlayInstanceOptions);
     }
   }
 
