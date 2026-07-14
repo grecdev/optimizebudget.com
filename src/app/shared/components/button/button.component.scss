@@ -7,6 +7,7 @@
 @use 'color-palette' as color-palette;
 @use 'spacing' as spacing;
 @use 'shape' as shape;
+@use 'typography' as typography;
 
 // I don't use the color-palette directly, because maybe I don't need all colors to be generated...
 $buttons-color-palette: (
@@ -15,6 +16,15 @@ $buttons-color-palette: (
   'success': map.get(color-palette.$green, 'variant-3'),
   'danger': map.get(color-palette.$red, 'default'),
 );
+
+@mixin disabled-state {
+  &,
+  &:hover {
+    background: map.get(color-palette.$gray, 'default');
+    color: map.get(color-palette.$gray, 'variant-3');
+    cursor: auto;
+  }
+}
 
 .app-button {
   display: inline-block;
@@ -33,6 +43,28 @@ $buttons-color-palette: (
 
   &:hover {
     background: map.get(color-palette.$gray, 'default');
+  }
+}
+
+.app-button.app-button-loading[class*='app-button-variant'][class*='app-button-color'] {
+  @include disabled-state;
+  //
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: spacing.$sm;
+
+  & .button-loader {
+    $size: typography.$body;
+    //
+    width: $size;
+    height: $size;
+    border: 3px solid map.get(color-palette.$gray, 'variant-3');
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
   }
 }
 
@@ -82,7 +114,15 @@ $buttons-color-palette: (
 }
 
 .app-button[disabled][class*='app-button-variant'][class*='app-button-color'] {
-  background: map.get(color-palette.$gray, 'default');
-  color: map.get(color-palette.$gray, 'variant-3');
-  cursor: auto;
+  @include disabled-state;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

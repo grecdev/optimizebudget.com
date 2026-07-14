@@ -21,6 +21,7 @@ import { confirmPasswordValidator } from './validators';
 })
 export class RegisterComponent {
   public readonly InputTypes = InputTypes;
+  public signUpLoading: boolean = false;
 
   private readonly _authenticationService: AuthenticationService;
   private readonly _snackbarService: SnackbarService;
@@ -99,6 +100,8 @@ export class RegisterComponent {
       return;
     }
 
+    this.signUpLoading = true;
+
     try {
       const RESPONSE = await this._authenticationService.signUp({
         email: this.registerForm.value[InputTypes.EMAIL],
@@ -123,6 +126,9 @@ export class RegisterComponent {
 
         this._initCloseSubscription();
       }
+    } finally {
+      this.signUpLoading = false;
+      this._changeDetectorRef.markForCheck();
     }
   }
 

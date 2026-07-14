@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
-import { type ThemeVariant } from '@shared/models/types';
-
-import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
+import { type ButtonInputs } from './button.model';
 
 /**
  * @summary - Button util component
@@ -40,6 +38,8 @@ import { ButtonInputs, IconPosition, ButtonColor } from './button.model';
     '[class.app-button-variant-basic]': 'variant === "basic"',
     '[class.app-button-variant-outlined]': 'variant === "outlined"',
     '[class.app-button-variant-contained]': 'variant === "contained"',
+
+    '[class.app-button-loading]': '_loading',
   },
 })
 export class AppButtonComponent implements ButtonInputs {
@@ -57,6 +57,23 @@ export class AppButtonComponent implements ButtonInputs {
   }
 
   private _color: ButtonInputs['color'] = null;
+
+  /**
+   * @summary - Loading state.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  @Input() public get loading(): boolean {
+    return this._loading;
+  }
+
+  public set loading(value: boolean) {
+    this._loading = value;
+  }
+
+  public _loading: boolean = false;
 
   /**
    * @summary - Class name builder.
