@@ -49,8 +49,8 @@ const adminData = {
   email: 'some-email',
 };
 
-const apiEndpoints: Record<ApiEndpoints, string> = {
-  someApi: `${environment.SOME_VARIABLE}/api/someApi`,
-};
+// const apiEndpoints: Record<ApiEndpoints, string> = {
+//   someApi: `${environment.SOME_VARIABLE}/api/someApi`,
+// };
 
-export { allRoutes, adminData, apiEndpoints };
+export { allRoutes, adminData };
