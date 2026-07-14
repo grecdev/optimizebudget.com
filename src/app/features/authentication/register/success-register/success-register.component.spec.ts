@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SuccessRegisterComponent } from './success-register.component';
+import { AppSuccessRegisterComponent } from './success-register.component';
 
-describe('SuccessRegisterComponent', () => {
-  let component: SuccessRegisterComponent;
-  let fixture: ComponentFixture<SuccessRegisterComponent>;
+describe('AppSuccessRegisterComponent', () => {
+  let component: AppSuccessRegisterComponent;
+  let fixture: ComponentFixture<AppSuccessRegisterComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SuccessRegisterComponent]
+      declarations: [AppSuccessRegisterComponent],
     });
-    fixture = TestBed.createComponent(SuccessRegisterComponent);
+    fixture = TestBed.createComponent(AppSuccessRegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
