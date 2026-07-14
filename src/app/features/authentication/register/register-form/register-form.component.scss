@@ -1,0 +1,26 @@
+@use 'breakpoints' as breakpoints;
+@use 'spacing' as spacing;
+
+@use '../../authentication-common' as authentication-common;
+
+.password-container {
+  display: grid;
+  gap: spacing.$sm;
+}
+
+.password-requirements {
+  font-size: 0.8rem;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+#register-button {
+  @include authentication-common.submit-button;
+}
+
+@media screen and (max-width: breakpoints.$xl) {
+  .password-requirements {
+    grid-template-columns: 1fr;
+  }
+}

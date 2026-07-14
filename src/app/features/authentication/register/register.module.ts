@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 
-import { ReactiveFormsModule } from '@angular/forms';
-
 import { AppIconModule } from '@shared/components/icon/icon.module';
 
 import { AuthenticationCommonModule } from '../authentication-common.module';
@@ -10,19 +8,19 @@ import { RegisterRoutingModule } from './register-routing.module';
 
 import { RegisterComponent } from './register.component';
 
-import { PasswordRequirementValidatorPipe } from './pipes/password-requirement-validator/password-requirement-validator.pipe';
-
 import { PasswordRequirementModule } from './password-requirement/password-requirement.module';
+import { SuccessRegisterModule } from './success-register/success-register.module';
+import { RegisterFormModule } from './register-form/register-form.module';
 
 @NgModule({
-  declarations: [RegisterComponent, PasswordRequirementValidatorPipe],
+  declarations: [RegisterComponent],
   imports: [
-    ReactiveFormsModule,
-    //
     RegisterRoutingModule,
     AuthenticationCommonModule,
     AppIconModule,
     PasswordRequirementModule,
+    SuccessRegisterModule,
+    RegisterFormModule,
   ],
 })
 export class RegisterModule {}

@@ -1,6 +1,5 @@
 @use 'sass:map';
 
-@use 'variables' as *;
 @use 'spacing' as spacing;
 @use 'color-palette' as color-palette;
 @use 'shape' as shape;
@@ -8,6 +7,10 @@
 
 @mixin host-style {
   padding: spacing.$default;
+}
+
+@mixin submit-button {
+  width: 100%;
 }
 
 app-login,
@@ -36,10 +39,6 @@ app-forgot-password {
   border-radius: shape.$default;
 
   text-align: center;
-
-  & form button[type='submit'] {
-    width: 100%;
-  }
 }
 
 .redirect-link {

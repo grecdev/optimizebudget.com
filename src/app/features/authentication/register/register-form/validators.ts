@@ -1,5 +1,5 @@
 import { type AbstractControl, type ValidationErrors } from '@angular/forms';
-import { InputTypes } from './register.model';
+import { InputTypes } from './register-form.model';
 
 function confirmPasswordValidator() {
   return (formGroup: AbstractControl): ValidationErrors | null => {
