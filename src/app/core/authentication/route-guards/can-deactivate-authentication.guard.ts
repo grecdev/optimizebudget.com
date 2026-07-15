@@ -31,6 +31,6 @@ export class CanDeactivateAuthenticationGuard implements CanDeactivate<unknown> 
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    return this._authenticationService.isAuthenticated;
+    return this._authenticationService.isAuthenticated();
   }
 }

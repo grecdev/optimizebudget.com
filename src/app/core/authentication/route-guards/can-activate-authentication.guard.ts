@@ -33,7 +33,7 @@ export class CanActivateAuthenticationGuard implements CanActivateChild {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this._authenticationService.isAuthenticated) {
+    if (this._authenticationService.isAuthenticated()) {
       return true;
     }
 

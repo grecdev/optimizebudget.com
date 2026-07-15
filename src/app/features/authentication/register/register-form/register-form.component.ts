@@ -119,7 +119,7 @@ export class RegisterFormComponent {
     this.signUpLoading = true;
 
     try {
-      const RESPONSE = await this._authenticationService.signUp({
+      await this._authenticationService.signUp({
         email: this.registerForm.value[InputTypes.EMAIL],
         password: this.registerForm.value[InputTypes.CONFIRM_PASSWORD],
         options: {
@@ -130,9 +130,7 @@ export class RegisterFormComponent {
         },
       });
 
-      if (RESPONSE && RESPONSE.data) {
-        this.registerSuccessEmitter.emit(true);
-      }
+      this.registerSuccessEmitter.emit(true);
     } catch (error) {
       if (error instanceof Error) {
         this._overlayReference = this._snackbarService.open({
