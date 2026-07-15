@@ -11,6 +11,8 @@ import {
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
+import { type ResetPasswordOptions } from './authentication.model';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -81,6 +83,18 @@ export class AuthenticationService {
     }
 
     this._isAuthenticatedSubscriber.next(true);
+
+    return RESPONSE;
+  }
+
+  public async resetPassword(
+    params: ResetPasswordOptions
+  ): Promise<ReturnType<typeof this._supabase.auth.resetPasswordForEmail> | void> {
+    const RESPONSE = await this._supabase.auth.resetPasswordForEmail(params.email, params.options);
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
 
     return RESPONSE;
   }

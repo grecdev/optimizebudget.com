@@ -20,10 +20,10 @@ const allRoutes: Record<RoutesName, Route> = {
     path: 'register',
     ariaLabel: 'Register page path',
   },
-  forgotPassword: {
+  resetPassword: {
     id: 3,
-    path: 'forgot-password',
-    ariaLabel: 'Forgot password page path',
+    path: 'reset-password',
+    ariaLabel: 'Reset password page path',
   },
   expenses: {
     id: 4,
@@ -42,6 +42,12 @@ const allRoutes: Record<RoutesName, Route> = {
     path: 'goals',
     textContent: 'Goals',
     ariaLabel: 'Goals path',
+  },
+  resetPasswordUser: {
+    id: 7,
+    path: 'reset-password-user',
+    textContent: 'Reset Password',
+    ariaLabel: 'Reset paswword for user path',
   },
 };
 

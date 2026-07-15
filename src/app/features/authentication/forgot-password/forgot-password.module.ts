@@ -8,6 +8,11 @@ import { ForgotPasswordRoutingModule } from './forgot-password-routing.module';
 
 @NgModule({
   declarations: [ForgotPasswordComponent],
-  imports: [ForgotPasswordRoutingModule, AuthenticationCommonModule, FormsModule],
+  imports: [
+    FormsModule,
+    //
+    ForgotPasswordRoutingModule,
+    AuthenticationCommonModule,
+  ],
 })
 export class ForgotPasswordModule {}

@@ -33,14 +33,14 @@ export class LoginComponent {
   /**
    * @summary - To navigate.
    *
-   * @type {Pick<typeof allRoutes, 'register' | 'forgotPassword'>}
+   * @type {Pick<typeof allRoutes, 'register' | 'resetPassword'>}
    *
    * @public
    * @readonly
    */
-  public readonly paths: Pick<typeof allRoutes, 'register' | 'forgotPassword'> = {
+  public readonly paths: Pick<typeof allRoutes, 'register' | 'resetPassword'> = {
     register: allRoutes.register,
-    forgotPassword: allRoutes.forgotPassword,
+    resetPassword: allRoutes.resetPassword,
   };
 
   public readonly loginForm: Record<InputTypes, string> = {
@@ -81,7 +81,7 @@ export class LoginComponent {
    *
    * @public
    */
-  public async handleLogin(ngForm: NgForm) {
+  public async handleLogin(ngForm: NgForm): Promise<void> {
     if (ngForm.invalid) {
       return;
     }

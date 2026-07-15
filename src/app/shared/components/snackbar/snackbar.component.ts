@@ -12,6 +12,7 @@ import { SnackbarType, type CreateSnackbarModuleOptions } from './snackbar.model
     'class': 'app-snackbar',
 
     '[class.snackbar-type-error]': 'type === SnackbarType.ERROR',
+    '[class.snackbar-type-success]': 'type === SnackbarType.SUCCESS',
   },
 })
 export class AppSnackbarComponent implements CreateSnackbarModuleOptions {

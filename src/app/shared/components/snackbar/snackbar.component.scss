@@ -27,6 +27,11 @@
     color: map.get(color-palette.$common, 'white');
   }
 
+  &.snackbar-type-success {
+    background: map.get(color-palette.$green, 'default');
+    color: map.get(color-palette.$common, 'white');
+  }
+
   & .snackbar-content {
     white-space: nowrap;
     overflow: hidden;

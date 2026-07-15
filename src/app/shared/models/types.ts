@@ -2,7 +2,8 @@ type RoutesName =
   | 'overview'
   | 'login'
   | 'register'
-  | 'forgotPassword'
+  | 'resetPassword'
+  | 'resetPasswordUser'
   | 'expenses'
   | 'profitAndLoss'
   | 'goals';

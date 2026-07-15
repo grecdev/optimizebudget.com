@@ -6,6 +6,7 @@ import { type AppSnackbarComponent } from './snackbar.component';
 enum SnackbarType {
   ERROR = 'ERORR',
   INFO = 'INFO',
+  SUCCESS = 'SUCCESS',
 }
 
 enum SnackbarPosition {

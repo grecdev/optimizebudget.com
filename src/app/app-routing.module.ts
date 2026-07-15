@@ -54,7 +54,7 @@ const routes: Routes = [
     } as RouteSnapshotData,
   },
   {
-    path: allRoutes.forgotPassword.path,
+    path: allRoutes.resetPassword.path,
     loadChildren: () =>
       import('./features/authentication/forgot-password/forgot-password.module').then(
         module => module.ForgotPasswordModule
