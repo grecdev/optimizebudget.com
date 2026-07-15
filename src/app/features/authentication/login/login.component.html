@@ -14,8 +14,8 @@
   <form
     id="loginForm"
     class="text-align-left"
-    #loginForm="ngForm"
-    (ngSubmit)="handleLogin(loginForm)"
+    #ngFormLogin="ngForm"
+    (ngSubmit)="handleLogin(ngFormLogin)"
   >
     <app-form-field
       variant="outlined"
@@ -28,7 +28,15 @@
     >
       <app-input-label>Email</app-input-label>
 
-      <input appInput id="email" type="email" placeholder="mail@example.com" />
+      <input
+        appInput
+        id="email"
+        type="email"
+        placeholder="mail@example.com"
+        [(ngModel)]="loginForm[InputTypes.EMAIL]"
+        [name]="InputTypes.EMAIL"
+        required
+      />
     </app-form-field>
 
     <app-form-field
@@ -50,10 +58,28 @@
         </span>
       </app-input-label>
 
-      <input appInput id="password" type="password" placeholder="******" />
+      <input
+        appInput
+        id="password"
+        type="password"
+        placeholder="******"
+        [(ngModel)]="loginForm[InputTypes.PASSWORD]"
+        [name]="InputTypes.PASSWORD"
+        required
+      />
     </app-form-field>
 
-    <button type="submit" appButton variant="contained" color="primary">Login</button>
+    <button
+      id="login-button"
+      type="submit"
+      appButton
+      variant="contained"
+      color="primary"
+      [disabled]="ngFormLogin.invalid"
+      [loading]="loginLoading"
+    >
+      Login
+    </button>
   </form>
 
   <p>
