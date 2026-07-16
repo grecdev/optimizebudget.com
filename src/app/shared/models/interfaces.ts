@@ -11,4 +11,8 @@ interface ClearTimeoutOptions {
   timeout: ReturnType<typeof setTimeout> | null;
 }
 
-export type { Route, ClearTimeoutOptions };
+interface RouteSnapshotData {
+  authenticationPage: boolean;
+}
+
+export type { Route, ClearTimeoutOptions, RouteSnapshotData };

@@ -11,9 +11,9 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
 
-import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
+import { RouteUtil } from '@shared/utility/route';
 
-import { type RouteSnapshotData } from './app.model';
+import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,7 @@ import { type RouteSnapshotData } from './app.model';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.data-logged-in]': '!hideShell',
+    '[attr.data-logged-in]': '!authenticationPage',
   },
 })
 export class AppComponent implements OnInit {
@@ -32,11 +32,12 @@ export class AppComponent implements OnInit {
    *
    * @public
    */
-  public hideShell: boolean = true;
+  public authenticationPage: boolean = true;
 
   private readonly _router: Router;
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _changeDetectorRef: ChangeDetectorRef;
+  private readonly _routeUtil = new RouteUtil();
 
   @ViewChild('appHeader', {
     read: ElementRef<HTMLElement>,
@@ -73,7 +74,7 @@ export class AppComponent implements OnInit {
    * @returns {void}
    */
   private _setHeaderHeight(): void {
-    if (this.hideShell) {
+    if (this.authenticationPage) {
       return;
     }
 
@@ -89,26 +90,6 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * @summary - Maybe we have nested child routes.
-   *
-   * @private
-   * @returns {RouteSnapshotData | void}
-   */
-  private _getDeepestRouteData(): RouteSnapshotData | void {
-    let currentRoute = this._activatedRoute.firstChild;
-
-    if (!currentRoute) {
-      return;
-    }
-
-    while (currentRoute.firstChild) {
-      currentRoute = currentRoute.firstChild;
-    }
-
-    return currentRoute.snapshot.data as RouteSnapshotData;
-  }
-
-  /**
    * @summary - Change state on route change.
    *
    * @private
@@ -117,9 +98,12 @@ export class AppComponent implements OnInit {
   private _initRouterEvents(): void {
     this._router.events.pipe(filter(data => data instanceof NavigationEnd)).subscribe({
       next: () => {
-        const ACTIVATED_ROUTE_DATA = this._getDeepestRouteData();
+        const ACTIVATED_ROUTE_DATA = this._routeUtil.getDeepestRouteData(
+          this._activatedRoute.firstChild
+        );
 
-        this.hideShell = (ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.hideShell) ?? false;
+        this.authenticationPage =
+          (ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.authenticationPage) ?? false;
 
         this._changeDetectorRef.markForCheck();
       },

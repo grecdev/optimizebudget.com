@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { allRoutes } from '@script/globalData';
+import { RouteSnapshotData } from '@shared/models/interfaces';
 
 import { CanActivateAuthenticationGuard } from '@core/authentication/route-guards/can-activate-authentication.guard';
-
-import { type RouteSnapshotData } from './app.model';
 
 const routes: Routes = [
   {
@@ -40,7 +39,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./features/authentication/login/login.module').then(module => module.LoginModule),
     data: {
-      hideShell: true,
+      authenticationPage: true,
     } as RouteSnapshotData,
   },
   {
@@ -50,7 +49,7 @@ const routes: Routes = [
         module => module.RegisterModule
       ),
     data: {
-      hideShell: true,
+      authenticationPage: true,
     } as RouteSnapshotData,
   },
   {
@@ -60,7 +59,7 @@ const routes: Routes = [
         module => module.ForgotPasswordModule
       ),
     data: {
-      hideShell: true,
+      authenticationPage: true,
     } as RouteSnapshotData,
   },
   // {
