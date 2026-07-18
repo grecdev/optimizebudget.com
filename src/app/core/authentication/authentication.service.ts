@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
 
 import {
   type AuthResponse,
@@ -9,14 +11,24 @@ import {
   type SignUpWithPasswordCredentials,
 } from '@supabase/supabase-js';
 
+import { RouteUtil } from '@shared/utility/route';
+import { allRoutes } from '@script/globalData';
+
 import { SupabaseService } from '@core/supabase/supabase.service';
 
-import { type ResetPasswordOptions } from './authentication.model';
+import {
+  type ResetPasswordOptions,
+  AuthenticationQueryParams,
+  AuthenticationBrowserStorageKeys,
+  AuthenticationLocalStorage,
+} from './authentication.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
+  private _token: string = '';
+
   private readonly _supabase: SupabaseService;
 
   /**
@@ -33,8 +45,23 @@ export class AuthenticationService {
     new BehaviorSubject<boolean>(false);
   public readonly isAuthenticatedObserver$ = this._isAuthenticatedSubscriber.asObservable();
 
-  constructor(supabase: SupabaseService) {
+  private readonly _router: Router;
+  private readonly _routeUtil = new RouteUtil();
+  private readonly _activatedRoute: ActivatedRoute;
+  private readonly _location: Location;
+
+  constructor(
+    supabase: SupabaseService,
+    router: Router,
+    activatedRoute: ActivatedRoute,
+    location: Location
+  ) {
     this._supabase = supabase;
+    this._router = router;
+    this._activatedRoute = activatedRoute;
+    this._location = location;
+
+    this._initRouterEvents();
   }
 
   /**
@@ -97,5 +124,132 @@ export class AuthenticationService {
     }
 
     return RESPONSE;
+  }
+
+  /**
+   * @summary - Reset query params on whatever cases.
+   *
+   * I do not want to actually trigger a second route change.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _resetQueryParams(): void {
+    const URL_TREE = this._router.createUrlTree([], {
+      relativeTo: this._activatedRoute,
+      queryParamsHandling: 'merge',
+      queryParams: {
+        [AuthenticationQueryParams.TOKEN]: null,
+      },
+    });
+
+    this._location.replaceState(this._router.serializeUrl(URL_TREE));
+  }
+
+  /**
+   * @summary - Check if current session is valid.
+   *
+   * Only executed when the user access the internal app.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _checkValidToken(): void {
+    const AUTHENTICATION_DATA_STORAGE = this._getAuthenticationStorage();
+
+    const HAS_TOKEN_STORAGE =
+      AUTHENTICATION_DATA_STORAGE &&
+      Object.hasOwn(AUTHENTICATION_DATA_STORAGE, AuthenticationQueryParams.TOKEN);
+
+    if (!HAS_TOKEN_STORAGE) {
+      this._isAuthenticatedSubscriber.next(false);
+
+      this._router.navigate([allRoutes.login.path], {
+        queryParams: {
+          returnUrl: this._router.url,
+        },
+      });
+
+      return;
+    }
+
+    console.log('_checkValidToken');
+  }
+
+  /**
+   * @summary - Track route change events.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initRouterEvents(): void {
+    this._router.events.pipe(filter(data => data instanceof NavigationEnd)).subscribe({
+      next: () => {
+        const ACTIVATED_ROUTE_DATA = this._routeUtil.getDeepestRouteData(
+          this._activatedRoute.firstChild
+        );
+
+        const IS_AUTHENTICATION_PAGE =
+          ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.authenticationPage;
+
+        if (IS_AUTHENTICATION_PAGE) {
+          return;
+        }
+
+        const TOKEN_QUERY_PARAMS =
+          this._activatedRoute.snapshot.queryParams[AuthenticationQueryParams.TOKEN];
+
+        if (TOKEN_QUERY_PARAMS) {
+          this._token = TOKEN_QUERY_PARAMS;
+
+          this._setAuthenticationStorage();
+          this._resetQueryParams();
+        }
+
+        this._checkValidToken();
+      },
+    });
+  }
+
+  /**
+   * @summary - Get authentication data from storage.
+   *
+   * @returns {AuthenticationLocalStorage | null}
+   */
+  private _getAuthenticationStorage(): AuthenticationLocalStorage | undefined {
+    const KEY_BASE64 = btoa(AuthenticationBrowserStorageKeys.AUTHENTICATION);
+
+    const DATA_BASE64 = localStorage.getItem(KEY_BASE64);
+
+    if (!DATA_BASE64) {
+      return undefined;
+    }
+
+    const DATA_DECODED = atob(DATA_BASE64);
+    const DATA_FINAL: AuthenticationLocalStorage = JSON.parse(DATA_DECODED);
+
+    return DATA_FINAL;
+  }
+
+  /**
+   * @summary - Save authentication data in browser storage.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setAuthenticationStorage(): void {
+    if (!this._token) {
+      console.log('Token not found in _setTokenStorage');
+      return;
+    }
+
+    const DATA: AuthenticationLocalStorage = {
+      [AuthenticationQueryParams.TOKEN]: this._token,
+    };
+
+    const KEY_BASE64 = btoa(AuthenticationBrowserStorageKeys.AUTHENTICATION);
+    const DATA_BASE64 = btoa(JSON.stringify(DATA));
+
+    localStorage.setItem(KEY_BASE64, DATA_BASE64);
   }
 }

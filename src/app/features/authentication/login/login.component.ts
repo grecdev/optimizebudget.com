@@ -44,8 +44,8 @@ export class LoginComponent {
   };
 
   public readonly loginForm: Record<InputTypes, string> = {
-    [InputTypes.EMAIL]: '',
-    [InputTypes.PASSWORD]: '',
+    [InputTypes.EMAIL]: 'grecualexandru001@gmail.com',
+    [InputTypes.PASSWORD]: 'Test123!',
   };
 
   /**

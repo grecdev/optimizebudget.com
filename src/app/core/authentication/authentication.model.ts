@@ -1,3 +1,11 @@
+enum AuthenticationQueryParams {
+  TOKEN = 'token',
+}
+
+enum AuthenticationBrowserStorageKeys {
+  AUTHENTICATION = 'authentication',
+}
+
 interface ResetPasswordOptions {
   email: string;
   options: Partial<{
@@ -6,4 +14,9 @@ interface ResetPasswordOptions {
   }>;
 }
 
-export type { ResetPasswordOptions };
+interface AuthenticationLocalStorage {
+  [AuthenticationQueryParams.TOKEN]: string;
+}
+
+export type { ResetPasswordOptions, AuthenticationLocalStorage };
+export { AuthenticationQueryParams, AuthenticationBrowserStorageKeys };
