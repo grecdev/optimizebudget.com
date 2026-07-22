@@ -9,16 +9,17 @@ import { CanActivateAuthenticationGuard } from '@core/authentication/route-guard
 const routes: Routes = [
   {
     path: '',
-    canActivateChild: [CanActivateAuthenticationGuard],
     children: [
       {
         path: allRoutes.overview.path,
         loadChildren: () => import('./features/home/home.module').then(module => module.HomeModule),
+        canActivate: [CanActivateAuthenticationGuard],
       },
       {
         path: allRoutes.expenses.path,
         loadChildren: () =>
           import('./features/expenses/expenses.module').then(module => module.ExpensesModule),
+        canActivate: [CanActivateAuthenticationGuard],
       },
       {
         path: allRoutes.profitAndLoss.path,
@@ -26,11 +27,13 @@ const routes: Routes = [
           import('./features/profit-and-loss/profit-and-loss.module').then(
             module => module.ProfitAndLossModule
           ),
+        canActivate: [CanActivateAuthenticationGuard],
       },
       {
         path: allRoutes.goals.path,
         loadChildren: () =>
           import('./features/goals/goals.module').then(module => module.GoalsModule),
+        canActivate: [CanActivateAuthenticationGuard],
       },
     ],
   },

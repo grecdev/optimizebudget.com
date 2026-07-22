@@ -36,8 +36,9 @@ export class AppComponent implements OnInit {
 
   private readonly _router: Router;
   private readonly _activatedRoute: ActivatedRoute;
-  private readonly _changeDetectorRef: ChangeDetectorRef;
   private readonly _routeUtil = new RouteUtil();
+
+  private readonly _changeDetectorRef: ChangeDetectorRef;
 
   @ViewChild('appHeader', {
     read: ElementRef<HTMLElement>,

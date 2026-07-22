@@ -1,9 +1,12 @@
-enum AuthenticationQueryParams {
-  TOKEN = 'token',
+enum LocalStorageKeys {
+  AUTHENTICATION = 'authentication',
 }
 
-enum AuthenticationBrowserStorageKeys {
-  AUTHENTICATION = 'authentication',
+enum AuthenticationLocalStorageKeys {
+  TOKEN = 'token',
+  EXPIRES_AT = 'expires_at',
+  DISPLAY_NAME = 'display_name',
+  EMAIL = 'email',
 }
 
 interface ResetPasswordOptions {
@@ -15,8 +18,12 @@ interface ResetPasswordOptions {
 }
 
 interface AuthenticationLocalStorage {
-  [AuthenticationQueryParams.TOKEN]: string;
+  [AuthenticationLocalStorageKeys.TOKEN]: string;
+  [AuthenticationLocalStorageKeys.EXPIRES_AT]: number;
+  [AuthenticationLocalStorageKeys.DISPLAY_NAME]: string;
+  [AuthenticationLocalStorageKeys.EMAIL]: string;
 }
 
 export type { ResetPasswordOptions, AuthenticationLocalStorage };
-export { AuthenticationQueryParams, AuthenticationBrowserStorageKeys };
+
+export { LocalStorageKeys, AuthenticationLocalStorageKeys };

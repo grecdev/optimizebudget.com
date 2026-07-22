@@ -2,21 +2,22 @@ import { Injectable } from '@angular/core';
 
 import {
   type ActivatedRouteSnapshot,
-  type CanActivateChild,
   type RouterStateSnapshot,
+  type CanActivate,
   type UrlTree,
   Router,
 } from '@angular/router';
 
-import { Observable } from 'rxjs';
+import { type Observable } from 'rxjs';
+
+import { allRoutes } from '@script/globalData';
 
 import { AuthenticationService } from '@core/authentication/authentication.service';
-import { allRoutes } from '@script/globalData';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CanActivateAuthenticationGuard implements CanActivateChild {
+export class CanActivateAuthenticationGuard implements CanActivate {
   private readonly _authenticationService: AuthenticationService;
   private readonly _router: Router;
 
@@ -29,11 +30,13 @@ export class CanActivateAuthenticationGuard implements CanActivateChild {
    * true - Let the user access the target page.
    * false - Prevent the user from accessing the target page.
    */
-  public canActivateChild(
-    route: ActivatedRouteSnapshot,
+  public canActivate(
+    _: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this._authenticationService.isAuthenticated()) {
+    const TOKEN_HAS_EXPIRED = this._authenticationService.tokenExpired();
+
+    if (!TOKEN_HAS_EXPIRED) {
       return true;
     }
 

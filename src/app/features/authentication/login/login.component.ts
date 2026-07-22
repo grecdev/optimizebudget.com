@@ -98,11 +98,7 @@ export class LoginComponent {
         return;
       }
 
-      this._router.navigate([allRoutes.overview.path], {
-        queryParams: {
-          token: RESPONSE.data.session.access_token,
-        },
-      });
+      this._router.navigate([allRoutes.overview.path]);
     } catch (error) {
       if (error instanceof Error) {
         this._overlayReference = this._snackbarService.open({

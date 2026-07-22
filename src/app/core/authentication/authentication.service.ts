@@ -1,8 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-
-import { BehaviorSubject, filter } from 'rxjs';
 
 import {
   type AuthResponse,
@@ -11,67 +7,23 @@ import {
   type SignUpWithPasswordCredentials,
 } from '@supabase/supabase-js';
 
-import { RouteUtil } from '@shared/utility/route';
-import { allRoutes } from '@script/globalData';
-
 import { SupabaseService } from '@core/supabase/supabase.service';
 
 import {
+  type AuthenticationLocalStorage,
   type ResetPasswordOptions,
-  AuthenticationQueryParams,
-  AuthenticationBrowserStorageKeys,
-  AuthenticationLocalStorage,
+  LocalStorageKeys,
+  AuthenticationLocalStorageKeys,
 } from './authentication.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private _token: string = '';
-
   private readonly _supabase: SupabaseService;
 
-  /**
-   * @summary - Stream to check authentication state.
-   *
-   * And expose the stream only to subscribe to it if need it.
-   *
-   * @type {BehaviorSubject<boolean>}
-   *
-   * @private
-   * @readonly
-   */
-  private readonly _isAuthenticatedSubscriber: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  public readonly isAuthenticatedObserver$ = this._isAuthenticatedSubscriber.asObservable();
-
-  private readonly _router: Router;
-  private readonly _routeUtil = new RouteUtil();
-  private readonly _activatedRoute: ActivatedRoute;
-  private readonly _location: Location;
-
-  constructor(
-    supabase: SupabaseService,
-    router: Router,
-    activatedRoute: ActivatedRoute,
-    location: Location
-  ) {
+  constructor(supabase: SupabaseService) {
     this._supabase = supabase;
-    this._router = router;
-    this._activatedRoute = activatedRoute;
-    this._location = location;
-
-    this._initRouterEvents();
-  }
-
-  /**
-   * @summary - Get current stream state.
-   *
-   * @public
-   * @returns {boolean}
-   */
-  public isAuthenticated(): boolean {
-    return this._isAuthenticatedSubscriber.getValue();
   }
 
   /**
@@ -109,7 +61,14 @@ export class AuthenticationService {
       throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
     }
 
-    this._isAuthenticatedSubscriber.next(true);
+    this._setAuthenticationStorage({
+      [AuthenticationLocalStorageKeys.TOKEN]: RESPONSE.data.session.access_token,
+      [AuthenticationLocalStorageKeys.EXPIRES_AT]: RESPONSE.data.session.expires_at,
+      [AuthenticationLocalStorageKeys.DISPLAY_NAME]:
+        RESPONSE.data.user.user_metadata[AuthenticationLocalStorageKeys.DISPLAY_NAME] ?? '',
+      [AuthenticationLocalStorageKeys.EMAIL]:
+        RESPONSE.data.user.user_metadata[AuthenticationLocalStorageKeys.EMAIL] ?? '',
+    });
 
     return RESPONSE;
   }
@@ -127,88 +86,21 @@ export class AuthenticationService {
   }
 
   /**
-   * @summary - Reset query params on whatever cases.
+   * @summary - Check if  token has expired by using timestamp.
    *
-   * I do not want to actually trigger a second route change.
-   *
-   * @private
-   * @returns {void}
+   * @public
+   * @returns {boolean}
    */
-  private _resetQueryParams(): void {
-    const URL_TREE = this._router.createUrlTree([], {
-      relativeTo: this._activatedRoute,
-      queryParamsHandling: 'merge',
-      queryParams: {
-        [AuthenticationQueryParams.TOKEN]: null,
-      },
-    });
+  public tokenExpired(): boolean {
+    const AUTH_DATA = this._getAuthenticationStorage();
 
-    this._location.replaceState(this._router.serializeUrl(URL_TREE));
-  }
-
-  /**
-   * @summary - Check if current session is valid.
-   *
-   * Only executed when the user access the internal app.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _checkValidToken(): void {
-    const AUTHENTICATION_DATA_STORAGE = this._getAuthenticationStorage();
-
-    const HAS_TOKEN_STORAGE =
-      AUTHENTICATION_DATA_STORAGE &&
-      Object.hasOwn(AUTHENTICATION_DATA_STORAGE, AuthenticationQueryParams.TOKEN);
-
-    if (!HAS_TOKEN_STORAGE) {
-      this._isAuthenticatedSubscriber.next(false);
-
-      this._router.navigate([allRoutes.login.path], {
-        queryParams: {
-          returnUrl: this._router.url,
-        },
-      });
-
-      return;
+    if (!AUTH_DATA) {
+      return true;
     }
 
-    console.log('_checkValidToken');
-  }
+    const CURRENT_TIME = new Date().getTime();
 
-  /**
-   * @summary - Track route change events.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _initRouterEvents(): void {
-    this._router.events.pipe(filter(data => data instanceof NavigationEnd)).subscribe({
-      next: () => {
-        const ACTIVATED_ROUTE_DATA = this._routeUtil.getDeepestRouteData(
-          this._activatedRoute.firstChild
-        );
-
-        const IS_AUTHENTICATION_PAGE =
-          ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.authenticationPage;
-
-        if (IS_AUTHENTICATION_PAGE) {
-          return;
-        }
-
-        const TOKEN_QUERY_PARAMS =
-          this._activatedRoute.snapshot.queryParams[AuthenticationQueryParams.TOKEN];
-
-        if (TOKEN_QUERY_PARAMS) {
-          this._token = TOKEN_QUERY_PARAMS;
-
-          this._setAuthenticationStorage();
-          this._resetQueryParams();
-        }
-
-        this._checkValidToken();
-      },
-    });
+    return AUTH_DATA[AuthenticationLocalStorageKeys.EXPIRES_AT] >= CURRENT_TIME;
   }
 
   /**
@@ -217,7 +109,7 @@ export class AuthenticationService {
    * @returns {AuthenticationLocalStorage | null}
    */
   private _getAuthenticationStorage(): AuthenticationLocalStorage | undefined {
-    const KEY_BASE64 = btoa(AuthenticationBrowserStorageKeys.AUTHENTICATION);
+    const KEY_BASE64 = btoa(LocalStorageKeys.AUTHENTICATION);
 
     const DATA_BASE64 = localStorage.getItem(KEY_BASE64);
 
@@ -234,21 +126,17 @@ export class AuthenticationService {
   /**
    * @summary - Save authentication data in browser storage.
    *
+   * @param {Partial<AuthenticationLocalStorage>} authData - Authentication data.
+   *
    * @private
    * @returns {void}
    */
-  private _setAuthenticationStorage(): void {
-    if (!this._token) {
-      console.log('Token not found in _setTokenStorage');
-      return;
-    }
+  private _setAuthenticationStorage(authData: Partial<AuthenticationLocalStorage>): void {
+    const CURRENT_AUTH_DATA = this._getAuthenticationStorage();
+    const FINAL_AUTH_DATA = Object.assign(CURRENT_AUTH_DATA ?? {}, authData);
 
-    const DATA: AuthenticationLocalStorage = {
-      [AuthenticationQueryParams.TOKEN]: this._token,
-    };
-
-    const KEY_BASE64 = btoa(AuthenticationBrowserStorageKeys.AUTHENTICATION);
-    const DATA_BASE64 = btoa(JSON.stringify(DATA));
+    const KEY_BASE64 = btoa(LocalStorageKeys.AUTHENTICATION);
+    const DATA_BASE64 = btoa(JSON.stringify(FINAL_AUTH_DATA));
 
     localStorage.setItem(KEY_BASE64, DATA_BASE64);
   }
