@@ -35,6 +35,14 @@ const routes: Routes = [
           import('./features/goals/goals.module').then(module => module.GoalsModule),
         canActivate: [CanActivateAuthenticationGuard],
       },
+      {
+        path: allRoutes.resetPassword.path,
+        loadChildren: () =>
+          import('./features/reset-password/reset-password.module').then(
+            m => m.ResetPasswordModule
+          ),
+        canActivate: [CanActivateAuthenticationGuard],
+      },
     ],
   },
   {
@@ -65,6 +73,7 @@ const routes: Routes = [
       authenticationPage: true,
     } as RouteSnapshotData,
   },
+
   // {
   //   path: '**',
   //   loadChildren: () =>
