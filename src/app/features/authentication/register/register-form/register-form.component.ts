@@ -16,7 +16,7 @@ import { SnackbarType, SnackbarPosition } from '@shared/components/snackbar/snac
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { AuthenticationService } from '@core/authentication/authentication.service';
 
-import { confirmPasswordValidator } from '../../validators';
+import { confirmPasswordValidator } from './validators';
 import { InputTypes } from './register-form.model';
 
 @Component({

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { environment } from '@environments/environment';
-import { allRoutes } from '@script/globalData';
+import { allRoutes, regexPatterns } from '@script/globalData';
 
 import { SnackbarPosition, SnackbarType } from '@shared/components/snackbar/snackbar.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
@@ -27,6 +27,8 @@ export class ResetPasswordUserComponent {
    * @public
    */
   public resetPasswordLoading: boolean = false;
+
+  public readonly regexPatterns = regexPatterns;
 
   public readonly InputTypes = InputTypes;
 

@@ -19,6 +19,10 @@ export class PasswordRequirementValidatorPipe implements PipeTransform {
   public transform(options: PasswordRequirementValidatorPipeOptions): boolean {
     const { value, regularExpression } = options;
 
+    if (!value) {
+      return false;
+    }
+
     const MATCHES = value.match(regularExpression);
 
     return MATCHES ? MATCHES.length > 0 : false;

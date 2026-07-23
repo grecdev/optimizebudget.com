@@ -1,10 +1,14 @@
 import { type AbstractControl, type ValidationErrors } from '@angular/forms';
-import { InputTypes } from './register/register-form/register-form.model';
+import { InputTypes } from './register-form.model';
 
 function confirmPasswordValidator() {
-  return (formGroup: AbstractControl): ValidationErrors | null => {
-    const ERROR_KEY = 'passwordMismatch';
+  const ERROR_KEY = 'passwordMismatch';
 
+  const ERROR_DATA = {
+    [ERROR_KEY]: true,
+  };
+
+  return (formGroup: AbstractControl): ValidationErrors | null => {
     const PASSWORD_CONTROL = formGroup.get(InputTypes.PASSWORD);
     const CONFIRM_PASSWORD_CONTROL = formGroup.get(InputTypes.CONFIRM_PASSWORD);
 
@@ -17,10 +21,6 @@ function confirmPasswordValidator() {
     }
 
     if (PASSWORD_CONTROL.value !== CONFIRM_PASSWORD_CONTROL.value) {
-      const ERROR_DATA = {
-        [ERROR_KEY]: true,
-      };
-
       CONFIRM_PASSWORD_CONTROL.setErrors(ERROR_DATA);
 
       return ERROR_DATA;
