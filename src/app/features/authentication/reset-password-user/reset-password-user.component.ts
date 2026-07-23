@@ -2,23 +2,23 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { environment } from '@environments/environment';
-
 import { allRoutes } from '@script/globalData';
 
-import { AuthenticationService } from '@core/authentication/authentication.service';
+import { SnackbarPosition, SnackbarType } from '@shared/components/snackbar/snackbar.model';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+
 import type { AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
-import { SnackbarPosition, SnackbarType } from '@shared/components/snackbar/snackbar.model';
+import { AuthenticationService } from '@core/authentication/authentication.service';
 
-import { InputTypes } from './forgot-password.model';
+import { InputTypes } from './reset-password-user.model';
 
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrls: ['../authentication-common.scss', './forgot-password.component.scss'],
+  selector: 'app-reset-password-user',
+  templateUrl: './reset-password-user.component.html',
+  styleUrls: ['../authentication-common.scss', './reset-password-user.component.scss'],
 })
-export class ForgotPasswordComponent {
+export class ResetPasswordUserComponent {
   /**
    * @summary - To show loading state.
    *
@@ -43,7 +43,8 @@ export class ForgotPasswordComponent {
   };
 
   public readonly resetPasswordForm: Record<InputTypes, string> = {
-    [InputTypes.EMAIL]: '',
+    [InputTypes.PASSWORD]: '',
+    [InputTypes.CONFIRM_PASSWORD]: '',
   };
 
   /**
@@ -77,18 +78,12 @@ export class ForgotPasswordComponent {
     this.resetPasswordLoading = true;
 
     try {
-      const EMAIL = ngForm.value[InputTypes.EMAIL];
-
-      await this._authenticationService.resetPassword({
-        email: EMAIL,
-        options: {
-          redirectTo: `${environment.emailRedirectTo}/${allRoutes.resetPasswordUser.path}`,
-        },
-      });
+      const PASSWORD = ngForm.value[InputTypes.PASSWORD];
+      const CONFIRM_PASSWORD = ngForm.value[InputTypes.CONFIRM_PASSWORD];
 
       this._overlayReference = this._snackbarService.open({
         type: SnackbarType.SUCCESS,
-        message: `Check email ${EMAIL} for password reset!`,
+        message: `Check email ${123} for password reset!`,
         position: {
           horizontal: SnackbarPosition.MIDDLE,
           vertical: SnackbarPosition.END,

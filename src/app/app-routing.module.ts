@@ -35,14 +35,6 @@ const routes: Routes = [
           import('./features/goals/goals.module').then(module => module.GoalsModule),
         canActivate: [CanActivateAuthenticationGuard],
       },
-      {
-        path: allRoutes.resetPassword.path,
-        loadChildren: () =>
-          import('./features/reset-password/reset-password.module').then(
-            m => m.ResetPasswordModule
-          ),
-        canActivate: [CanActivateAuthenticationGuard],
-      },
     ],
   },
   {
@@ -68,6 +60,16 @@ const routes: Routes = [
     loadChildren: () =>
       import('./features/authentication/forgot-password/forgot-password.module').then(
         module => module.ForgotPasswordModule
+      ),
+    data: {
+      authenticationPage: true,
+    } as RouteSnapshotData,
+  },
+  {
+    path: allRoutes.resetPasswordUser.path,
+    loadChildren: () =>
+      import('./features/authentication/reset-password-user/reset-password-user.module').then(
+        m => m.ResetPasswordUserModule
       ),
     data: {
       authenticationPage: true,

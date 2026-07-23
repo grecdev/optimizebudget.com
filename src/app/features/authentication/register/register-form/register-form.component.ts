@@ -8,7 +8,7 @@ import {
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { allRoutes } from '@script/globalData';
+import { allRoutes, regexPatterns } from '@script/globalData';
 
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 import { SnackbarType, SnackbarPosition } from '@shared/components/snackbar/snackbar.model';
@@ -16,8 +16,8 @@ import { SnackbarType, SnackbarPosition } from '@shared/components/snackbar/snac
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { AuthenticationService } from '@core/authentication/authentication.service';
 
-import { type RegexPatterns, InputTypes } from './register-form.model';
-import { confirmPasswordValidator } from './validators';
+import { confirmPasswordValidator } from '../../validators';
+import { InputTypes } from './register-form.model';
 
 @Component({
   selector: 'app-register-form',
@@ -63,34 +63,16 @@ export class RegisterFormComponent {
     login: allRoutes.login,
   };
 
-  /**
-   * @summary - Used to validate the form UI.
-   *
-   * @type {RegexPatterns}
-   *
-   * @public
-   * @readonly
-   */
-  public readonly regexPatterns: RegexPatterns = {
-    specialCharacters: /[$%&_@!]/,
-    numbers: /\d/,
-    lowercase: /[a-z]/,
-    uppercase: /[A-Z]/,
-    lengthLimit: /^.{5,15}$/,
-    password: /^(?=.*[$%&_@!])(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d$%&_@!]{5,15}$/,
-    fullName: /^[aA-zZ\-\ ]{1,}$/,
-  };
-
   public readonly registerForm: FormGroup = new FormGroup(
     {
       [InputTypes.DISPLAY_NAME]: new FormControl('', {
-        validators: [Validators.required, Validators.pattern(this.regexPatterns.fullName)],
+        validators: [Validators.required, Validators.pattern(regexPatterns.fullName)],
       }),
       [InputTypes.EMAIL]: new FormControl('', {
         validators: [Validators.required, Validators.email],
       }),
       [InputTypes.PASSWORD]: new FormControl('', {
-        validators: [Validators.required, Validators.pattern(this.regexPatterns.password)],
+        validators: [Validators.required, Validators.pattern(regexPatterns.password)],
       }),
       [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
         validators: [Validators.required],

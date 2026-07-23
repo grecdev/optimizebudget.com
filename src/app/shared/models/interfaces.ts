@@ -15,4 +15,14 @@ interface RouteSnapshotData {
   authenticationPage: boolean;
 }
 
-export type { Route, ClearTimeoutOptions, RouteSnapshotData };
+interface RegexPatterns {
+  specialCharacters: RegExp;
+  numbers: RegExp;
+  lowercase: RegExp;
+  uppercase: RegExp;
+  lengthLimit: RegExp;
+  fullName: RegExp;
+  password: RegExp;
+}
+
+export type { Route, ClearTimeoutOptions, RouteSnapshotData, RegexPatterns };

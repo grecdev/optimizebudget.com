@@ -6,15 +6,13 @@ import { AppButtonModule } from '@shared/components/button/button.module';
 import { AppFormFieldModule } from '@shared/components/form/form-field/form-field.module';
 import { AppInputModule } from '@shared/components/form/input/input.module';
 
-import { AuthenticationCommonModule } from '@features/authentication/authentication-common.module';
-import { PasswordRequirementModule } from '@features/authentication/register/password-requirement/password-requirement.module';
-
-import { PasswordRequirementValidatorPipe } from '../pipes/password-requirement-validator/password-requirement-validator.pipe';
+import { AuthenticationCommonModule } from '../../authentication-common.module';
+import { PasswordRequirementContainerModule } from '../../components/password-requirement-container/password-requirement-container.module';
 
 import { RegisterFormComponent } from './register-form.component';
 
 @NgModule({
-  declarations: [RegisterFormComponent, PasswordRequirementValidatorPipe],
+  declarations: [RegisterFormComponent],
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -23,7 +21,7 @@ import { RegisterFormComponent } from './register-form.component';
     AppFormFieldModule,
     AppInputModule,
     AuthenticationCommonModule,
-    PasswordRequirementModule,
+    PasswordRequirementContainerModule,
   ],
   exports: [RegisterFormComponent],
 })

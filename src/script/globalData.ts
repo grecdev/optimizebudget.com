@@ -1,7 +1,5 @@
-import { environment } from '@environments/environment';
-
-import { type ApiEndpoints, type RoutesName } from '@shared/models/types';
-import { type Route } from '@shared/models/interfaces';
+import { type RoutesName } from '@shared/models/types';
+import { type RegexPatterns, type Route } from '@shared/models/interfaces';
 
 const allRoutes: Record<RoutesName, Route> = {
   overview: {
@@ -47,7 +45,7 @@ const allRoutes: Record<RoutesName, Route> = {
     id: 7,
     path: 'reset-password-user',
     textContent: 'Reset Password',
-    ariaLabel: 'Reset paswword for user path',
+    ariaLabel: 'Reset password for user path',
   },
 };
 
@@ -55,8 +53,23 @@ const adminData = {
   email: 'some-email',
 };
 
+/**
+ * @summary - Used to validate the form UI.
+ *
+ * @type {RegexPatterns}
+ */
+const regexPatterns: RegexPatterns = {
+  specialCharacters: /[$%&_@!]/,
+  numbers: /\d/,
+  lowercase: /[a-z]/,
+  uppercase: /[A-Z]/,
+  lengthLimit: /^.{5,15}$/,
+  password: /^(?=.*[$%&_@!])(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d$%&_@!]{5,15}$/,
+  fullName: /^[aA-zZ\-\ ]{1,}$/,
+};
+
 // const apiEndpoints: Record<ApiEndpoints, string> = {
 //   someApi: `${environment.SOME_VARIABLE}/api/someApi`,
 // };
 
-export { allRoutes, adminData };
+export { allRoutes, adminData, regexPatterns };
