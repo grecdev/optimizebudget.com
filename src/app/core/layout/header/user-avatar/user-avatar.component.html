@@ -9,11 +9,13 @@
 <ng-template #userInfoWrapperMobile>
   <div class="user-info-wrapper-mobile" (click)="handleClickOnWrapper($event)">
     <div class="user-info-container">
-      <p>
-        <strong>{{ fullName }}</strong>
-      </p>
+      <div>
+        <p>
+          <strong>{{ fullName }}</strong>
+        </p>
 
-      <p>{{ email }}</p>
+        <p>{{ email }}</p>
+      </div>
 
       <app-sign-out-button />
     </div>

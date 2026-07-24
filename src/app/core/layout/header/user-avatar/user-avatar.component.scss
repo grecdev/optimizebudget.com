@@ -39,5 +39,8 @@
     padding: spacing.$sm;
     background: map.get(color-palette.$common, 'white');
     box-shadow: map.get(variables.$box-shadow, 'variant-3');
+
+    display: grid;
+    gap: spacing.$default;
   }
 }
