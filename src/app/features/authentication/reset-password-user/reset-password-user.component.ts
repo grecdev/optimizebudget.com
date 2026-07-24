@@ -45,6 +45,7 @@ export class ResetPasswordUserComponent {
   };
 
   public readonly resetPasswordForm: Record<InputTypes, string> = {
+    [InputTypes.CURRENT_PASSWORD]: '',
     [InputTypes.PASSWORD]: '',
     [InputTypes.CONFIRM_PASSWORD]: '',
   };
@@ -72,7 +73,7 @@ export class ResetPasswordUserComponent {
     this._changeDetectorRef = changeDetectorRef;
   }
 
-  public async handleForgotPassword(ngForm: NgForm): Promise<void> {
+  public async handleResetPassword(ngForm: NgForm): Promise<void> {
     if (ngForm.invalid) {
       return;
     }
@@ -80,12 +81,32 @@ export class ResetPasswordUserComponent {
     this.resetPasswordLoading = true;
 
     try {
-      const PASSWORD = ngForm.value[InputTypes.PASSWORD];
-      const CONFIRM_PASSWORD = ngForm.value[InputTypes.CONFIRM_PASSWORD];
+      const USER_UPDATE_RESPONSE = await this._authenticationService.getUser();
+
+      const EMAIL =
+        USER_UPDATE_RESPONSE.data &&
+        USER_UPDATE_RESPONSE.data.user &&
+        USER_UPDATE_RESPONSE.data.user.email
+          ? USER_UPDATE_RESPONSE.data.user.email
+          : '';
+
+      const CURRENT_PASSWORD = ngForm.value[InputTypes.CURRENT_PASSWORD];
+      const NEW_PASSWORD = ngForm.value['newPasswordGroup'][InputTypes.CONFIRM_PASSWORD];
+
+      await this._authenticationService.signIn({
+        email: EMAIL,
+        password: CURRENT_PASSWORD,
+      });
+
+      await this._authenticationService.resetPassword({
+        email: EMAIL,
+        current_password: CURRENT_PASSWORD,
+        password: NEW_PASSWORD,
+      });
 
       this._overlayReference = this._snackbarService.open({
         type: SnackbarType.SUCCESS,
-        message: `Check email ${123} for password reset!`,
+        message: `Password successfully reset for ${EMAIL}!`,
         position: {
           horizontal: SnackbarPosition.MIDDLE,
           vertical: SnackbarPosition.END,

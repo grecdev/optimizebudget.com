@@ -79,7 +79,7 @@ export class ForgotPasswordComponent {
     try {
       const EMAIL = ngForm.value[InputTypes.EMAIL];
 
-      await this._authenticationService.resetPassword({
+      await this._authenticationService.sendResetPasswordLink({
         email: EMAIL,
         options: {
           redirectTo: `${environment.emailRedirectTo}/${allRoutes.resetPasswordUser.path}`,

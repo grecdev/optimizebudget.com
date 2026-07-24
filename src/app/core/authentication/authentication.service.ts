@@ -5,16 +5,17 @@ import {
   type AuthTokenResponsePassword,
   type SignInWithPasswordCredentials,
   type SignUpWithPasswordCredentials,
+  type UserResponse,
+  type UserAttributes,
+  type Session,
 } from '@supabase/supabase-js';
+
+import { environment } from '@environments/environment';
+import { allRoutes } from '@script/globalData';
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
-import {
-  type AuthenticationLocalStorage,
-  type ResetPasswordOptions,
-  LocalStorageKeys,
-  AuthenticationLocalStorageKeys,
-} from './authentication.model';
+import { type SendResetPasswordLinkOptions } from './authentication.model';
 
 @Injectable({
   providedIn: 'root',
@@ -61,22 +62,57 @@ export class AuthenticationService {
       throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
     }
 
-    this._setAuthenticationStorage({
-      [AuthenticationLocalStorageKeys.TOKEN]: RESPONSE.data.session.access_token,
-      [AuthenticationLocalStorageKeys.EXPIRES_AT]: RESPONSE.data.session.expires_at,
-      [AuthenticationLocalStorageKeys.DISPLAY_NAME]:
-        RESPONSE.data.user.user_metadata[AuthenticationLocalStorageKeys.DISPLAY_NAME] ?? '',
-      [AuthenticationLocalStorageKeys.EMAIL]:
-        RESPONSE.data.user.user_metadata[AuthenticationLocalStorageKeys.EMAIL] ?? '',
-    });
+    return RESPONSE;
+  }
+
+  /**
+   * @summary - Send a reset password link.
+   *
+   * @param {ResetPasswordOptions} params - Options for request.
+   *
+   * @public
+   * @returns {Promise<ReturnType<typeof this._supabase.auth.resetPasswordForEmail> | void>}
+   */
+  public async sendResetPasswordLink(
+    params: SendResetPasswordLinkOptions
+  ): Promise<ReturnType<typeof this._supabase.auth.resetPasswordForEmail> | void> {
+    const RESPONSE = await this._supabase.auth.resetPasswordForEmail(params.email, params.options);
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
 
     return RESPONSE;
   }
 
-  public async resetPassword(
-    params: ResetPasswordOptions
-  ): Promise<ReturnType<typeof this._supabase.auth.resetPasswordForEmail> | void> {
-    const RESPONSE = await this._supabase.auth.resetPasswordForEmail(params.email, params.options);
+  /**
+   * @summary - Reset password request.
+   *
+   * @param {UserAttributes} options - User attributes options.
+   *
+   * @public
+   * @returns {Promise<UserResponse | void>}
+   */
+  public async resetPassword(options: UserAttributes): Promise<UserResponse | void> {
+    const RESPONSE = await this._supabase.auth.updateUser(options, {
+      emailRedirectTo: `${environment.emailRedirectTo}/${allRoutes.login.path}`,
+    });
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
+
+    return RESPONSE;
+  }
+
+  /**
+   * @summary - Get current user session.
+   *
+   * @private
+   * @returns {Promise<UserResponse>}
+   */
+  public async getUser(): Promise<UserResponse> {
+    const RESPONSE = await this._supabase.auth.getUser();
 
     if (RESPONSE.error) {
       throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
@@ -98,46 +134,27 @@ export class AuthenticationService {
       return true;
     }
 
+    const EXPIRES_AT = AUTH_DATA.expires_at ? AUTH_DATA.expires_at * 1000 : 0;
     const CURRENT_TIME = new Date().getTime();
 
-    return AUTH_DATA[AuthenticationLocalStorageKeys.EXPIRES_AT] >= CURRENT_TIME;
+    return CURRENT_TIME < EXPIRES_AT;
   }
 
   /**
-   * @summary - Get authentication data from storage.
+   * @summary - Get supabase's authentication data from storage.
    *
-   * @returns {AuthenticationLocalStorage | null}
+   * @returns {Session | null}
    */
-  private _getAuthenticationStorage(): AuthenticationLocalStorage | undefined {
-    const KEY_BASE64 = btoa(LocalStorageKeys.AUTHENTICATION);
+  private _getAuthenticationStorage(): Session | null {
+    const SUPABASE_STORAGE_KEY = Object.hasOwn(this._supabase.auth, 'storageKey')
+      ? this._supabase.auth['storageKey']
+      : '';
 
-    const DATA_BASE64 = localStorage.getItem(KEY_BASE64);
+    const SUPABASE_STORAGE_DATA = localStorage.getItem(SUPABASE_STORAGE_KEY);
+    const SUPABASE_STORAGE_DATA_FORMATTED = SUPABASE_STORAGE_DATA
+      ? JSON.parse(SUPABASE_STORAGE_DATA)
+      : null;
 
-    if (!DATA_BASE64) {
-      return undefined;
-    }
-
-    const DATA_DECODED = atob(DATA_BASE64);
-    const DATA_FINAL: AuthenticationLocalStorage = JSON.parse(DATA_DECODED);
-
-    return DATA_FINAL;
-  }
-
-  /**
-   * @summary - Save authentication data in browser storage.
-   *
-   * @param {Partial<AuthenticationLocalStorage>} authData - Authentication data.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _setAuthenticationStorage(authData: Partial<AuthenticationLocalStorage>): void {
-    const CURRENT_AUTH_DATA = this._getAuthenticationStorage();
-    const FINAL_AUTH_DATA = Object.assign(CURRENT_AUTH_DATA ?? {}, authData);
-
-    const KEY_BASE64 = btoa(LocalStorageKeys.AUTHENTICATION);
-    const DATA_BASE64 = btoa(JSON.stringify(FINAL_AUTH_DATA));
-
-    localStorage.setItem(KEY_BASE64, DATA_BASE64);
+    return SUPABASE_STORAGE_DATA_FORMATTED;
   }
 }

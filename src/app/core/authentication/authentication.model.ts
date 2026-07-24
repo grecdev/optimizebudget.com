@@ -1,15 +1,6 @@
-enum LocalStorageKeys {
-  AUTHENTICATION = 'authentication',
-}
+import { type UserAttributes } from '@supabase/supabase-js';
 
-enum AuthenticationLocalStorageKeys {
-  TOKEN = 'token',
-  EXPIRES_AT = 'expires_at',
-  DISPLAY_NAME = 'display_name',
-  EMAIL = 'email',
-}
-
-interface ResetPasswordOptions {
+interface SendResetPasswordLinkOptions {
   email: string;
   options: Partial<{
     captchaToken: string;
@@ -17,13 +8,10 @@ interface ResetPasswordOptions {
   }>;
 }
 
-interface AuthenticationLocalStorage {
-  [AuthenticationLocalStorageKeys.TOKEN]: string;
-  [AuthenticationLocalStorageKeys.EXPIRES_AT]: number;
-  [AuthenticationLocalStorageKeys.DISPLAY_NAME]: string;
-  [AuthenticationLocalStorageKeys.EMAIL]: string;
+interface ResetPasswordOptions {
+  userAttributes: UserAttributes;
 }
 
-export type { ResetPasswordOptions, AuthenticationLocalStorage };
+export type { ResetPasswordOptions, SendResetPasswordLinkOptions };
 
-export { LocalStorageKeys, AuthenticationLocalStorageKeys };
+export {};
