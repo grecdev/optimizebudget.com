@@ -81,11 +81,6 @@ export class UserAvatarComponent {
   public handleOpenUserAvatarMenu(event: MouseEvent): void {
     event.stopPropagation();
 
-    if (!this.isMobile) {
-      event.preventDefault();
-      return;
-    }
-
     const CURRENT_TARGET = event.currentTarget as HTMLElement;
 
     if (!this._userInfoWrapperMobile || !CURRENT_TARGET) {
@@ -242,7 +237,7 @@ export class UserAvatarComponent {
     }
 
     Object.assign(CONTAINER.style, {
-      top: `${top + height}px`,
+      top: `${top + height + SPACING_PX / 2}px`,
       right: `${SPACING_PX}px`,
     });
   }
