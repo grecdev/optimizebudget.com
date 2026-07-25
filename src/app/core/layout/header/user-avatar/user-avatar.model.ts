@@ -1,13 +1,13 @@
 import { type EmbeddedViewRef } from '@angular/core';
 
 interface SetOptionsContainerStyleOptions {
-  wrapper: EmbeddedViewRef<UserInfoWrapperMobileContext>;
+  wrapper: EmbeddedViewRef<UserInfoWrapperContext>;
   currentTarget: HTMLElement;
 }
 
-interface UserInfoWrapperMobileContext {
+interface UserInfoWrapperContext {
   fullName: string;
   email: string;
 }
 
-export type { SetOptionsContainerStyleOptions, UserInfoWrapperMobileContext };
+export type { SetOptionsContainerStyleOptions, UserInfoWrapperContext };

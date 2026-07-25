@@ -1,1 +1,10 @@
-<button type="button" appButton variant="contained" color="primary">Sign out</button>
+<button
+  type="button"
+  (click)="handleSignOut($event)"
+  appButton
+  variant="contained"
+  color="primary"
+  [loading]="requestLoading"
+>
+  Sign out
+</button>

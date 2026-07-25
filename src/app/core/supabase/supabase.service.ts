@@ -29,11 +29,7 @@ export class SupabaseService {
   private readonly _supabase: SupabaseClient;
 
   constructor() {
-    this._supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
-      auth: {
-        persistSession: false,
-      },
-    });
+    this._supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.auth = this._supabase.auth;
   }

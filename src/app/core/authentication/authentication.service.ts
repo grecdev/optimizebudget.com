@@ -8,6 +8,8 @@ import {
   type UserResponse,
   type UserAttributes,
   type Session,
+  type SignOut,
+  type AuthError,
 } from '@supabase/supabase-js';
 
 import { environment } from '@environments/environment';
@@ -122,6 +124,24 @@ export class AuthenticationService {
   }
 
   /**
+   * @summary - Signs out the user.
+   *
+   * @param {SignOut} options - Signout options.
+   *
+   * @public
+   * @returns {Promise<{ error: AuthError | null }>}
+   */
+  public async signOut(options?: SignOut): Promise<{ error: AuthError | null }> {
+    const RESPONSE = await this._supabase.auth.signOut();
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
+
+    return RESPONSE;
+  }
+
+  /**
    * @summary - Check if  token has expired by using timestamp.
    *
    * @public
@@ -137,7 +157,7 @@ export class AuthenticationService {
     const EXPIRES_AT = AUTH_DATA.expires_at ? AUTH_DATA.expires_at * 1000 : 0;
     const CURRENT_TIME = new Date().getTime();
 
-    return CURRENT_TIME < EXPIRES_AT;
+    return CURRENT_TIME > EXPIRES_AT;
   }
 
   /**

@@ -1,19 +1,22 @@
 import {
   type TemplateRef,
   type EmbeddedViewRef,
+  type OnDestroy,
   ChangeDetectorRef,
   Component,
   ViewChild,
   ChangeDetectionStrategy,
+  ApplicationRef,
 } from '@angular/core';
 
-import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+// import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import {
   type SetOptionsContainerStyleOptions,
-  type UserInfoWrapperMobileContext,
+  type UserInfoWrapperContext,
 } from './user-avatar.model';
 
 @Component({
@@ -22,7 +25,7 @@ import {
   styleUrls: ['./user-avatar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserAvatarComponent {
+export class UserAvatarComponent implements OnDestroy {
   fullName: string = 'Grecu Alexandru';
   email: string = 'mail@example.com';
 
@@ -36,8 +39,9 @@ export class UserAvatarComponent {
   public isMobile: boolean = false;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
-  private readonly _mediaQueryService: MediaQueryService;
+  // private readonly _mediaQueryService: MediaQueryService;
   private readonly _appOverlayService: AppOverlayService;
+  private readonly _applicationReference: ApplicationRef;
 
   /**
    * @summary - Check if the menu is open.
@@ -57,17 +61,21 @@ export class UserAvatarComponent {
    */
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
-  @ViewChild('userInfoWrapperMobile')
-  private readonly _userInfoWrapperMobile: TemplateRef<UserInfoWrapperMobileContext> | null = null;
+  private _userInfoWrapperEmbeddedViewRef: EmbeddedViewRef<UserInfoWrapperContext> | null = null;
+
+  @ViewChild('userInfoWrapper')
+  private readonly _userInfoWrapper: TemplateRef<UserInfoWrapperContext> | null = null;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
-    mediaQueryService: MediaQueryService,
-    appOverlayService: AppOverlayService
+    // mediaQueryService: MediaQueryService,
+    appOverlayService: AppOverlayService,
+    applicationReference: ApplicationRef
   ) {
-    this._mediaQueryService = mediaQueryService;
+    // this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
     this._appOverlayService = appOverlayService;
+    this._applicationReference = applicationReference;
   }
 
   /**
@@ -83,7 +91,7 @@ export class UserAvatarComponent {
 
     const CURRENT_TARGET = event.currentTarget as HTMLElement;
 
-    if (!this._userInfoWrapperMobile || !CURRENT_TARGET) {
+    if (!this._userInfoWrapper || !CURRENT_TARGET) {
       throw Error('Elements not found!');
     }
 
@@ -94,16 +102,20 @@ export class UserAvatarComponent {
 
     this._menuOpen = true;
 
-    const USER_INFO_WRAPPER_EMBEDDED_VIEW = this._initUserInfoWrapperMobileEmbedded();
+    this._initUserInfoWrapperEmbedded();
+
+    if (!this._userInfoWrapperEmbeddedViewRef) {
+      return;
+    }
 
     this._setOptionsContainerStyle({
-      wrapper: USER_INFO_WRAPPER_EMBEDDED_VIEW,
+      wrapper: this._userInfoWrapperEmbeddedViewRef,
       currentTarget: CURRENT_TARGET,
     });
 
     this._overlayReference = this._appOverlayService.appendOverlay({
-      contentReferences: [USER_INFO_WRAPPER_EMBEDDED_VIEW],
-      projectableNodes: [USER_INFO_WRAPPER_EMBEDDED_VIEW.rootNodes],
+      contentReferences: [this._userInfoWrapperEmbeddedViewRef],
+      projectableNodes: [this._userInfoWrapperEmbeddedViewRef.rootNodes],
       overlayInstanceOptions: {
         noBackground: true,
       },
@@ -139,24 +151,24 @@ export class UserAvatarComponent {
    * @private
    * @returns {void}
    */
-  private _initMediaQuerySubscription(): void {
-    this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
-      next: value => {
-        this.isMobile = value;
-
-        this._changeDetectorRef.markForCheck();
-      },
-    });
-  }
+  // private _initMediaQuerySubscription(): void {
+  //   this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
+  //     next: value => {
+  //       this.isMobile = value;
+  //
+  //       this._changeDetectorRef.markForCheck();
+  //     },
+  //   });
+  // }
 
   /**
    * @summary - Instantiate the overlay container options embedded view.
    *
    * @private
-   * @returns {EmbeddedViewRef<void>}
+   * @returns {void}
    */
-  private _initUserInfoWrapperMobileEmbedded(): EmbeddedViewRef<UserInfoWrapperMobileContext> {
-    if (!this._userInfoWrapperMobile) {
+  private _initUserInfoWrapperEmbedded(): void {
+    if (!this._userInfoWrapper) {
       throw Error('Wrapper not found!');
     }
 
@@ -165,17 +177,15 @@ export class UserAvatarComponent {
       email: this.email,
     };
 
-    const VIEW = this._userInfoWrapperMobile.createEmbeddedView(CONTEXT_DATA);
+    this._userInfoWrapperEmbeddedViewRef = this._userInfoWrapper.createEmbeddedView(CONTEXT_DATA);
 
-    VIEW.detectChanges();
+    this._applicationReference.attachView(this._userInfoWrapperEmbeddedViewRef);
 
-    const ROOT_NODES = VIEW.rootNodes;
+    const ROOT_NODES = this._userInfoWrapperEmbeddedViewRef.rootNodes;
 
     if (!ROOT_NODES || ROOT_NODES.length === 0) {
       throw Error('Root nodes not found in select!');
     }
-
-    return VIEW;
   }
 
   /**
@@ -210,6 +220,12 @@ export class UserAvatarComponent {
         this._changeDetectorRef.markForCheck();
 
         this._overlayReference = null;
+
+        if (this._userInfoWrapperEmbeddedViewRef) {
+          this._applicationReference.detachView(this._userInfoWrapperEmbeddedViewRef);
+
+          this._userInfoWrapperEmbeddedViewRef = null;
+        }
       },
     });
   }
@@ -243,6 +259,10 @@ export class UserAvatarComponent {
   }
 
   ngOnInit(): void {
-    this._initMediaQuerySubscription();
+    // this._initMediaQuerySubscription();
+  }
+
+  public ngOnDestroy(): void {
+    this._triggerClose();
   }
 }
