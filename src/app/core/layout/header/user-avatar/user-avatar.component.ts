@@ -195,11 +195,9 @@ export class UserAvatarComponent implements OnDestroy {
    * @returns {void}
    */
   private _triggerClose(): void {
-    if (!this._overlayReference) {
-      throw Error('Overlay reference not found!');
+    if (this._overlayReference) {
+      this._overlayReference.close();
     }
-
-    this._overlayReference.close();
   }
 
   /**
