@@ -40,10 +40,12 @@ export class CanActivateAuthenticationGuard implements CanActivate {
       return true;
     }
 
-    return this._router.createUrlTree([allRoutes.login.path], {
-      queryParams: {
-        returnUrl: state.url.length > 1 ? state.url.replace('/', '') : state.url,
-      },
+    return this._authenticationService.signOut().then(() => {
+      return this._router.createUrlTree([allRoutes.login.path], {
+        queryParams: {
+          returnUrl: state.url.length > 1 ? state.url.replace('/', '') : state.url,
+        },
+      });
     });
   }
 }
