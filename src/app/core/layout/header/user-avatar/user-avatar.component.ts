@@ -14,10 +14,9 @@ import {
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import {
-  type SetOptionsContainerStyleOptions,
-  type UserInfoWrapperContext,
-} from './user-avatar.model';
+import { AuthenticationService } from '@core/authentication/authentication.service';
+
+import { type SetOptionsContainerStyleOptions } from './user-avatar.model';
 
 @Component({
   selector: 'app-user-avatar',
@@ -26,9 +25,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserAvatarComponent implements OnDestroy {
-  fullName: string = 'Grecu Alexandru';
-  email: string = 'mail@example.com';
-
   /**
    * @summary - Based on this member, render our components, inside the template.
    *
@@ -37,6 +33,8 @@ export class UserAvatarComponent implements OnDestroy {
    * @public
    */
   public isMobile: boolean = false;
+
+  public readonly authenticationService: AuthenticationService;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   // private readonly _mediaQueryService: MediaQueryService;
@@ -61,21 +59,24 @@ export class UserAvatarComponent implements OnDestroy {
    */
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
-  private _userInfoWrapperEmbeddedViewRef: EmbeddedViewRef<UserInfoWrapperContext> | null = null;
+  private _userInfoWrapperEmbeddedViewRef: EmbeddedViewRef<void> | null = null;
 
   @ViewChild('userInfoWrapper')
-  private readonly _userInfoWrapper: TemplateRef<UserInfoWrapperContext> | null = null;
+  private readonly _userInfoWrapper: TemplateRef<void> | null = null;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     // mediaQueryService: MediaQueryService,
     appOverlayService: AppOverlayService,
-    applicationReference: ApplicationRef
+    applicationReference: ApplicationRef,
+    authenticationService: AuthenticationService
   ) {
     // this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
-    this._appOverlayService = appOverlayService;
     this._applicationReference = applicationReference;
+
+    this._appOverlayService = appOverlayService;
+    this.authenticationService = authenticationService;
   }
 
   /**
@@ -172,12 +173,7 @@ export class UserAvatarComponent implements OnDestroy {
       throw Error('Wrapper not found!');
     }
 
-    const CONTEXT_DATA = {
-      fullName: this.fullName,
-      email: this.email,
-    };
-
-    this._userInfoWrapperEmbeddedViewRef = this._userInfoWrapper.createEmbeddedView(CONTEXT_DATA);
+    this._userInfoWrapperEmbeddedViewRef = this._userInfoWrapper.createEmbeddedView();
 
     this._applicationReference.attachView(this._userInfoWrapperEmbeddedViewRef);
 
@@ -240,7 +236,7 @@ export class UserAvatarComponent implements OnDestroy {
   private _setOptionsContainerStyle(options: SetOptionsContainerStyleOptions): void {
     const { wrapper, currentTarget } = options;
 
-    const { top, left, height } = currentTarget.getBoundingClientRect();
+    const { top, height } = currentTarget.getBoundingClientRect();
 
     const WRAPPER_ELEMENT = wrapper.rootNodes[0] as HTMLElement;
     const CONTAINER = WRAPPER_ELEMENT.querySelector<HTMLElement>('.user-info-container');
