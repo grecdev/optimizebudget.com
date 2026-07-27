@@ -53,19 +53,6 @@ $buttons-color-palette: (
   align-items: center;
   justify-content: center;
   gap: spacing.$sm;
-
-  & .button-loader {
-    $size: typography.$body;
-    //
-    width: $size;
-    height: $size;
-    border: 3px solid map.get(color-palette.$gray, 'variant-3');
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-  }
 }
 
 .app-button.app-button-variant-contained {
@@ -115,14 +102,4 @@ $buttons-color-palette: (
 
 .app-button[disabled][class*='app-button-variant'][class*='app-button-color'] {
   @include disabled-state;
-}
-
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
 }
