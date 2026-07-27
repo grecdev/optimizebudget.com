@@ -1,7 +1,17 @@
-<p>
-  <strong>{{ fullName }}</strong>
-</p>
+<div class="container">
+  <ng-container *ngIf="userData; else loading">
+    <p>
+      <strong>{{ fullName }}</strong>
+    </p>
 
-<p>{{ email }}</p>
+    <p>{{ email }}</p>
+  </ng-container>
+</div>
 
-<ng-template #loading></ng-template>
+<ng-template #loading>
+  <app-loader />
+</ng-template>
+
+<ng-container *ngIf="error">
+  <p appInfoText type="error">User not found!</p>
+</ng-container>

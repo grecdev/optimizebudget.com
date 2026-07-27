@@ -9,4 +9,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 export class UserInformationComponent {
   fullName: string = 'Grecu Aladsaexandru';
   email: string = 'mail@example.com';
+
+  userData: null = null;
+  error: boolean = true;
 }

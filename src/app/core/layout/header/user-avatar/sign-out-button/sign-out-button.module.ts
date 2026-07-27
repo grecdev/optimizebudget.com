@@ -7,7 +7,11 @@ import { AppSignOutButtonComponent } from './sign-out-button.component';
 
 @NgModule({
   declarations: [AppSignOutButtonComponent],
-  imports: [CommonModule, AppButtonModule],
+  imports: [
+    CommonModule,
+    //
+    AppButtonModule,
+  ],
   exports: [AppSignOutButtonComponent],
 })
 export class SignOutButtonModule {}
