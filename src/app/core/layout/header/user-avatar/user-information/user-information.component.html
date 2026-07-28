@@ -1,17 +1,17 @@
-<div class="container">
-  <ng-container *ngIf="userData; else loading">
-    <p>
-      <strong>{{ fullName }}</strong>
+<ng-container *ngIf="getUserRequest$ | async as getUserRequest; else loading">
+  <ng-container *ngIf="getUserRequest.data.user as userData">
+    <p *ngIf="userData.user_metadata['display_name']">
+      <strong>{{ userData.user_metadata['display_name'] }}</strong>
     </p>
 
-    <p>{{ email }}</p>
+    <p>{{ userData.email }}</p>
   </ng-container>
-</div>
+
+  <ng-container *ngIf="getUserRequest.error as error">
+    <p appInfoText type="error">{{ error.name }} {{ error.status }}: {{ error.message }}</p>
+  </ng-container>
+</ng-container>
 
 <ng-template #loading>
   <app-loader />
 </ng-template>
-
-<ng-container *ngIf="error">
-  <p appInfoText type="error">User not found!</p>
-</ng-container>

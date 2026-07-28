@@ -1,4 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { from, type Observable } from 'rxjs';
+
+import { type UserResponse } from '@supabase/supabase-js';
+
+import { AuthenticationService } from '@core/authentication/authentication.service';
 
 @Component({
   selector: 'app-user-information',
@@ -7,9 +12,20 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserInformationComponent {
-  fullName: string = 'Grecu Aladsaexandru';
-  email: string = 'mail@example.com';
+  /**
+   * @summary - Get user request.
+   *
+   * @type {Observable<UserResponse | null>}
+   *
+   * @public
+   */
+  public getUserRequest$: Observable<UserResponse | null> | null = null;
 
-  userData: null = null;
-  error: boolean = true;
+  public readonly authenticationService: AuthenticationService;
+
+  constructor(authenticationService: AuthenticationService) {
+    this.authenticationService = authenticationService;
+
+    this.getUserRequest$ = from(this.authenticationService.getUser());
+  }
 }
