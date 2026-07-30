@@ -12,7 +12,7 @@
       </ng-container>
 
       <ng-container *ngIf="sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME]">
-        {{ sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME] }}
+        {{ sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME] | formatName }}
       </ng-container>
     </button>
 

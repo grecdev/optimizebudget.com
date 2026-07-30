@@ -8,6 +8,7 @@
 .user-avatar-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: spacing.$sm;
 
   $image-size: 40px;
