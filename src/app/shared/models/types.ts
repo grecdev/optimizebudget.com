@@ -4,6 +4,7 @@ type RoutesName =
   | 'register'
   | 'resetPassword'
   | 'resetPasswordUser'
+  | 'confirmEmail'
   | 'expenses'
   | 'profitAndLoss'
   | 'goals';

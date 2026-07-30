@@ -16,7 +16,8 @@
 app-login,
 app-register,
 app-forgot-password,
-app-reset-password-user {
+app-reset-password-user,
+app-confirm-email {
   &:host {
     display: grid;
     align-content: center;

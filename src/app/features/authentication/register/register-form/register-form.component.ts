@@ -108,7 +108,7 @@ export class RegisterFormComponent {
           data: {
             [InputTypes.DISPLAY_NAME]: this.registerForm.value[InputTypes.DISPLAY_NAME],
           },
-          emailRedirectTo: allRoutes.overview.path,
+          emailRedirectTo: allRoutes.confirmEmail.path,
         },
       });
 

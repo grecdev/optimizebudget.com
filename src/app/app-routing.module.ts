@@ -35,6 +35,17 @@ const routes: Routes = [
           import('./features/goals/goals.module').then(module => module.GoalsModule),
         canActivate: [CanActivateAuthenticationGuard],
       },
+      {
+        path: allRoutes.confirmEmail.path,
+        loadChildren: () =>
+          import('./features/authentication/confirm-email/confirm-email.module').then(
+            m => m.ConfirmEmailModule
+          ),
+        data: {
+          authenticationPage: true,
+        } as RouteSnapshotData,
+        canActivate: [CanActivateAuthenticationGuard],
+      },
     ],
   },
   {

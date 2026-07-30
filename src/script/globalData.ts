@@ -47,6 +47,12 @@ const allRoutes: Record<RoutesName, Route> = {
     textContent: 'Reset Password',
     ariaLabel: 'Reset password for user path',
   },
+  confirmEmail: {
+    id: 7,
+    path: 'confirm-email',
+    textContent: 'Confirm Email',
+    ariaLabel: 'Confirm email for user',
+  },
 };
 
 const adminData = {
