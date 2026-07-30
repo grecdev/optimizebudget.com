@@ -10,13 +10,17 @@
   align-items: center;
   gap: spacing.$sm;
 
-  & .avatar-profile-image {
-    $image-size: 40px;
+  $image-size: 40px;
 
-    width: $image-size;
-    height: $image-size;
-    border-radius: shape.$rounded;
-  }
+  width: $image-size;
+  height: $image-size;
+  border-radius: shape.$rounded;
+
+  font-weight: 500;
+  color: map.get(color-palette.$common, 'white');
+  background: map.get(color-palette.$gray, 'variant-3');
+
+  overflow: hidden;
 
   & .user-info-container {
     text-align: left;

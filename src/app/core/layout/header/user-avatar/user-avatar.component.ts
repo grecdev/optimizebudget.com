@@ -9,12 +9,17 @@ import {
   ApplicationRef,
 } from '@angular/core';
 
+import { type Observable, from } from 'rxjs';
+
+import { UserDataKeys } from '@shared/models/enums';
+
 // import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { AuthenticationService } from '@core/authentication/authentication.service';
+import { type GetSessionResult } from '@core/authentication/authentication.model';
 
 import { type SetOptionsContainerStyleOptions } from './user-avatar.model';
 
@@ -34,12 +39,16 @@ export class UserAvatarComponent implements OnDestroy {
    */
   public isMobile: boolean = false;
 
-  public readonly authenticationService: AuthenticationService;
+  public getSessionRequest$: Observable<GetSessionResult> | null = null;
+
+  public readonly UserDataKeys = UserDataKeys;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   // private readonly _mediaQueryService: MediaQueryService;
-  private readonly _appOverlayService: AppOverlayService;
   private readonly _applicationReference: ApplicationRef;
+
+  private readonly _appOverlayService: AppOverlayService;
+  private readonly _authenticationService: AuthenticationService;
 
   /**
    * @summary - Check if the menu is open.
@@ -76,7 +85,7 @@ export class UserAvatarComponent implements OnDestroy {
     this._applicationReference = applicationReference;
 
     this._appOverlayService = appOverlayService;
-    this.authenticationService = authenticationService;
+    this._authenticationService = authenticationService;
   }
 
   /**
@@ -252,8 +261,20 @@ export class UserAvatarComponent implements OnDestroy {
     });
   }
 
+  /**
+   * @summary - Set an observable for session data, to be used inside template with pipe.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setGetSessionRequest(): void {
+    this.getSessionRequest$ = from(this._authenticationService.getSession());
+  }
+
   ngOnInit(): void {
     // this._initMediaQuerySubscription();
+
+    this._setGetSessionRequest();
   }
 
   public ngOnDestroy(): void {

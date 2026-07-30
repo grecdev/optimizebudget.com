@@ -17,7 +17,7 @@ import { allRoutes } from '@script/globalData';
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
-import { type SendResetPasswordLinkOptions } from './authentication.model';
+import { type SendResetPasswordLinkOptions, type GetSessionResult } from './authentication.model';
 
 @Injectable({
   providedIn: 'root',
@@ -108,13 +108,29 @@ export class AuthenticationService {
   }
 
   /**
-   * @summary - Get current user session.
+   * @summary - Get current user session via network request.
    *
    * @private
    * @returns {Promise<UserResponse>}
    */
   public async getUser(): Promise<UserResponse> {
     const RESPONSE = await this._supabase.auth.getUser();
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
+
+    return RESPONSE;
+  }
+
+  /**
+   * @summary - Get current session via localStorage.
+   *
+   * @private
+   * @returns {Promise<GetSessionResult>}
+   */
+  public async getSession(): Promise<GetSessionResult> {
+    const RESPONSE = await this._supabase.auth.getSession();
 
     if (RESPONSE.error) {
       throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
@@ -147,34 +163,18 @@ export class AuthenticationService {
    * @public
    * @returns {boolean}
    */
-  public tokenExpired(): boolean {
-    const AUTH_DATA = this._getAuthenticationStorage();
+  public async tokenExpired(): Promise<boolean> {
+    const RESPONSE = await this.getSession();
 
-    if (!AUTH_DATA) {
+    if (RESPONSE.error || !RESPONSE.data.session) {
       return true;
     }
 
-    const EXPIRES_AT = AUTH_DATA.expires_at ? AUTH_DATA.expires_at * 1000 : 0;
+    const SESSION_DATA = RESPONSE.data.session;
+
+    const EXPIRES_AT = SESSION_DATA.expires_at ? SESSION_DATA.expires_at * 1000 : 0;
     const CURRENT_TIME = new Date().getTime();
 
     return CURRENT_TIME > EXPIRES_AT;
-  }
-
-  /**
-   * @summary - Get supabase's authentication data from storage.
-   *
-   * @returns {Session | null}
-   */
-  private _getAuthenticationStorage(): Session | null {
-    const SUPABASE_STORAGE_KEY = Object.hasOwn(this._supabase.auth, 'storageKey')
-      ? this._supabase.auth['storageKey']
-      : '';
-
-    const SUPABASE_STORAGE_DATA = localStorage.getItem(SUPABASE_STORAGE_KEY);
-    const SUPABASE_STORAGE_DATA_FORMATTED = SUPABASE_STORAGE_DATA
-      ? JSON.parse(SUPABASE_STORAGE_DATA)
-      : null;
-
-    return SUPABASE_STORAGE_DATA_FORMATTED;
   }
 }

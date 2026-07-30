@@ -34,17 +34,17 @@ export class CanActivateAuthenticationGuard implements CanActivate {
     _: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    const TOKEN_HAS_EXPIRED = this._authenticationService.tokenExpired();
+    return this._authenticationService.tokenExpired().then(TOKEN_HAS_EXPIRED => {
+      if (!TOKEN_HAS_EXPIRED) {
+        return true;
+      }
 
-    if (!TOKEN_HAS_EXPIRED) {
-      return true;
-    }
-
-    return this._authenticationService.signOut().then(() => {
-      return this._router.createUrlTree([allRoutes.login.path], {
-        queryParams: {
-          returnUrl: state.url.length > 1 ? state.url.replace('/', '') : state.url,
-        },
+      return this._authenticationService.signOut().then(() => {
+        return this._router.createUrlTree([allRoutes.login.path], {
+          queryParams: {
+            returnUrl: state.url.length > 1 ? state.url.replace('/', '') : state.url,
+          },
+        });
       });
     });
   }

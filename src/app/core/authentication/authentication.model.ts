@@ -1,4 +1,4 @@
-import { type UserAttributes } from '@supabase/supabase-js';
+import { AuthError, Session, type UserAttributes } from '@supabase/supabase-js';
 
 interface SendResetPasswordLinkOptions {
   email: string;
@@ -12,6 +12,12 @@ interface ResetPasswordOptions {
   userAttributes: UserAttributes;
 }
 
-export type { ResetPasswordOptions, SendResetPasswordLinkOptions };
+// Not found in official docs.
+type GetSessionResult =
+  | { data: { session: Session }; error: null }
+  | { data: { session: null }; error: AuthError }
+  | { data: { session: null }; error: null };
+
+export type { ResetPasswordOptions, SendResetPasswordLinkOptions, GetSessionResult };
 
 export {};

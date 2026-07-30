@@ -3,6 +3,8 @@ import { from, type Observable } from 'rxjs';
 
 import { type UserResponse } from '@supabase/supabase-js';
 
+import { UserDataKeys } from '@shared/models/enums';
+
 import { AuthenticationService } from '@core/authentication/authentication.service';
 
 @Component({
@@ -20,6 +22,8 @@ export class UserInformationComponent {
    * @public
    */
   public getUserRequest$: Observable<UserResponse | null> | null = null;
+
+  public readonly UserDataKeys = UserDataKeys;
 
   public readonly authenticationService: AuthenticationService;
 

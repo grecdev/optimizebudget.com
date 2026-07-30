@@ -1,17 +1,33 @@
-<button class="user-avatar-btn" type="button" (click)="handleOpenUserAvatarMenu($event)">
-  <img
-    class="avatar-profile-image"
-    src="https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1906669723.jpg"
-    alt="avatar-profile-picture"
-  />
-</button>
+<ng-container *ngIf="getSessionRequest$ | async as getSessionRequest; else loaderPlaceholder">
+  <ng-container *ngIf="getSessionRequest.data.session as sessionData">
+    <button class="user-avatar-btn" type="button" (click)="handleOpenUserAvatarMenu($event)">
+      <ng-container *ngIf="sessionData.user.user_metadata[UserDataKeys.PROFILE_PICTURE]">
+        <img
+          class="avatar-profile-image"
+          [ngSrc]="sessionData.user.user_metadata[UserDataKeys.PROFILE_PICTURE]"
+          alt="avatar-profile-picture"
+          width="40"
+          height="40"
+        />
+      </ng-container>
 
-<ng-template #userInfoWrapper>
-  <div class="user-info-wrapper" (click)="handleClickOnWrapper($event)">
-    <div class="user-info-container">
-      <app-user-information />
+      <ng-container *ngIf="sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME]">
+        {{ sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME] }}
+      </ng-container>
+    </button>
 
-      <app-sign-out-button />
-    </div>
-  </div>
+    <ng-template #userInfoWrapper>
+      <div class="user-info-wrapper" (click)="handleClickOnWrapper($event)">
+        <div class="user-info-container">
+          <app-user-information />
+
+          <app-sign-out-button />
+        </div>
+      </div>
+    </ng-template>
+  </ng-container>
+</ng-container>
+
+<ng-template #loaderPlaceholder>
+  <app-loader />
 </ng-template>

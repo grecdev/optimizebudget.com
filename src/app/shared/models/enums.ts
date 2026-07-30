@@ -11,4 +11,10 @@ enum ExpenseStatus {
   PENDING = 'PENDING',
 }
 
-export { CategoryType, ExpenseStatus };
+// Match supabase's format
+enum UserDataKeys {
+  DISPLAY_NAME = 'display_name',
+  PROFILE_PICTURE = 'profile_picture',
+}
+
+export { CategoryType, ExpenseStatus, UserDataKeys };

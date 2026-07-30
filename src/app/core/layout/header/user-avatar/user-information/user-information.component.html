@@ -1,7 +1,7 @@
-<ng-container *ngIf="getUserRequest$ | async as getUserRequest; else loading">
+<ng-container *ngIf="getUserRequest$ | async as getUserRequest; else loaderPlaceholder">
   <ng-container *ngIf="getUserRequest.data.user as userData">
-    <p *ngIf="userData.user_metadata['display_name']">
-      <strong>{{ userData.user_metadata['display_name'] }}</strong>
+    <p *ngIf="userData.user_metadata[UserDataKeys.DISPLAY_NAME]">
+      <strong>{{ userData.user_metadata[UserDataKeys.DISPLAY_NAME] }}</strong>
     </p>
 
     <p>{{ userData.email }}</p>
@@ -12,6 +12,6 @@
   </ng-container>
 </ng-container>
 
-<ng-template #loading>
+<ng-template #loaderPlaceholder>
   <app-loader />
 </ng-template>
