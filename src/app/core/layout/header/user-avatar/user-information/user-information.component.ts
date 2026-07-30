@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { from, type Observable } from 'rxjs';
 
-import { type UserResponse } from '@supabase/supabase-js';
-
 import { UserDataKeys } from '@shared/models/enums';
 
 import { AuthenticationService } from '@core/authentication/authentication.service';
+import type { GetSessionResult } from '@core/authentication/authentication.model';
 
 @Component({
   selector: 'app-user-information',
@@ -15,13 +14,13 @@ import { AuthenticationService } from '@core/authentication/authentication.servi
 })
 export class UserInformationComponent {
   /**
-   * @summary - Get user request.
+   * @summary - Get session request.
    *
-   * @type {Observable<UserResponse | null>}
+   * @type {Observable<GetSessionResult | null>}
    *
    * @public
    */
-  public getUserRequest$: Observable<UserResponse | null> | null = null;
+  public getSessionRequest$: Observable<GetSessionResult> | null = null;
 
   public readonly UserDataKeys = UserDataKeys;
 
@@ -30,6 +29,6 @@ export class UserInformationComponent {
   constructor(authenticationService: AuthenticationService) {
     this.authenticationService = authenticationService;
 
-    this.getUserRequest$ = from(this.authenticationService.getUser());
+    this.getSessionRequest$ = from(this.authenticationService.getSession());
   }
 }

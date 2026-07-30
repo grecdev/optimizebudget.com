@@ -86,6 +86,8 @@ export class UserAvatarComponent implements OnDestroy {
 
     this._appOverlayService = appOverlayService;
     this._authenticationService = authenticationService;
+
+    this._setGetSessionRequest();
   }
 
   /**
@@ -273,8 +275,6 @@ export class UserAvatarComponent implements OnDestroy {
 
   ngOnInit(): void {
     // this._initMediaQuerySubscription();
-
-    this._setGetSessionRequest();
   }
 
   public ngOnDestroy(): void {
