@@ -8,6 +8,8 @@ import {
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { environment } from '@environments/environment';
+
 import { allRoutes, regexPatterns } from '@script/globalData';
 
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
@@ -65,16 +67,16 @@ export class RegisterFormComponent {
 
   public readonly registerForm: FormGroup = new FormGroup(
     {
-      [InputTypes.DISPLAY_NAME]: new FormControl('', {
+      [InputTypes.DISPLAY_NAME]: new FormControl('Grecu Alexandru-Constantin', {
         validators: [Validators.required, Validators.pattern(regexPatterns.fullName)],
       }),
-      [InputTypes.EMAIL]: new FormControl('', {
+      [InputTypes.EMAIL]: new FormControl('grecualexandru001@gmail.com', {
         validators: [Validators.required, Validators.email],
       }),
-      [InputTypes.PASSWORD]: new FormControl('', {
+      [InputTypes.PASSWORD]: new FormControl('Test123!', {
         validators: [Validators.required, Validators.pattern(regexPatterns.password)],
       }),
-      [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
+      [InputTypes.CONFIRM_PASSWORD]: new FormControl('Test123!', {
         validators: [Validators.required],
       }),
     },
@@ -108,7 +110,7 @@ export class RegisterFormComponent {
           data: {
             [InputTypes.DISPLAY_NAME]: this.registerForm.value[InputTypes.DISPLAY_NAME],
           },
-          emailRedirectTo: allRoutes.confirmEmail.path,
+          emailRedirectTo: `${environment.emailRedirectTo}/${allRoutes.confirmEmail.path}`,
         },
       });
 
