@@ -5,7 +5,12 @@
 </ng-container>
 
 <ng-template #successRegisterView>
-  <app-success-register class="form-container" />
+  <app-success-request
+    class="form-container"
+    title="Account successfully registered!"
+    [route]="allRoutes.login.path"
+    routeTextContent="Back to login"
+  />
 </ng-template>
 
 <app-agree-info-component textContent="register" />

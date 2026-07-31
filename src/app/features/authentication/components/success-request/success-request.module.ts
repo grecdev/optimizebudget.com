@@ -4,16 +4,16 @@ import { RouterLink } from '@angular/router';
 
 import { AppIconModule } from '@shared/components/icon/icon.module';
 
-import { AppSuccessRegisterComponent } from './success-register.component';
+import { AppSuccessRequestComponent } from './success-request.component';
 
 @NgModule({
-  declarations: [AppSuccessRegisterComponent],
+  declarations: [AppSuccessRequestComponent],
   imports: [
     CommonModule,
     RouterLink,
     //
     AppIconModule,
   ],
-  exports: [AppSuccessRegisterComponent],
+  exports: [AppSuccessRequestComponent],
 })
-export class SuccessRegisterModule {}
+export class SuccessRequestModule {}

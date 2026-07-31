@@ -9,7 +9,7 @@ import { RegisterRoutingModule } from './register-routing.module';
 
 import { RegisterComponent } from './register.component';
 
-import { SuccessRegisterModule } from './success-register/success-register.module';
+import { SuccessRequestModule } from '../components/success-request/success-request.module';
 import { RegisterFormModule } from './register-form/register-form.module';
 
 @NgModule({
@@ -19,7 +19,7 @@ import { RegisterFormModule } from './register-form/register-form.module';
     AuthenticationCommonModule,
     AppIconModule,
     PasswordRequirementModule,
-    SuccessRegisterModule,
+    SuccessRequestModule,
     RegisterFormModule,
   ],
 })
