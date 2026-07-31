@@ -11,7 +11,7 @@ import {
 
 import { type Observable, from } from 'rxjs';
 
-import { UserDataKeys } from '@shared/models/enums';
+import { UserMetaDataKeys } from '@shared/models/enums';
 
 // import { MediaQueryService } from '@shared/services/media-query/media-query.service';
 
@@ -41,7 +41,7 @@ export class UserAvatarComponent implements OnDestroy {
 
   public getSessionRequest$: Observable<GetSessionResult> | null = null;
 
-  public readonly UserDataKeys = UserDataKeys;
+  public readonly UserMetaDataKeys = UserMetaDataKeys;
 
   private readonly _changeDetectorRef: ChangeDetectorRef;
   // private readonly _mediaQueryService: MediaQueryService;

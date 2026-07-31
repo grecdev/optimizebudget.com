@@ -1,18 +1,18 @@
 <ng-container *ngIf="getSessionRequest$ | async as getSessionRequest; else loaderPlaceholder">
   <ng-container *ngIf="getSessionRequest.data.session as sessionData">
     <button class="user-avatar-btn" type="button" (click)="handleOpenUserAvatarMenu($event)">
-      <ng-container *ngIf="sessionData.user.user_metadata[UserDataKeys.PROFILE_PICTURE]">
+      <ng-container *ngIf="sessionData.user.user_metadata[UserMetaDataKeys.PROFILE_PICTURE]">
         <img
           class="avatar-profile-image"
-          [ngSrc]="sessionData.user.user_metadata[UserDataKeys.PROFILE_PICTURE]"
+          [ngSrc]="sessionData.user.user_metadata[UserMetaDataKeys.PROFILE_PICTURE]"
           alt="avatar-profile-picture"
           width="40"
           height="40"
         />
       </ng-container>
 
-      <ng-container *ngIf="sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME]">
-        {{ sessionData.user.user_metadata[UserDataKeys.DISPLAY_NAME] | formatName }}
+      <ng-container *ngIf="sessionData.user.user_metadata[UserMetaDataKeys.DISPLAY_NAME]">
+        {{ sessionData.user.user_metadata[UserMetaDataKeys.DISPLAY_NAME] | formatName }}
       </ng-container>
     </button>
 

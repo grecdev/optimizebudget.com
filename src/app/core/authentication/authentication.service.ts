@@ -7,13 +7,14 @@ import {
   type SignUpWithPasswordCredentials,
   type UserResponse,
   type UserAttributes,
-  type Session,
   type SignOut,
   type AuthError,
 } from '@supabase/supabase-js';
 
 import { environment } from '@environments/environment';
 import { allRoutes } from '@script/globalData';
+
+import { UserMetaDataKeys } from '@shared/models/enums';
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
@@ -176,5 +177,27 @@ export class AuthenticationService {
     const CURRENT_TIME = new Date().getTime();
 
     return CURRENT_TIME > EXPIRES_AT;
+  }
+
+  /**
+   * @summary - Completes the account confirmation procedure.
+   *
+   * And I want the `confirm-email` page to be accessed one-time only.
+   *
+   * @public
+   * @returns {Promise<UserResponse | void>}
+   */
+  public async completeConfirmation(): Promise<UserResponse | void> {
+    const RESPONSE = await this._supabase.auth.updateUser({
+      data: {
+        [UserMetaDataKeys.CONFIRMATION_DONE]: true,
+      },
+    });
+
+    if (RESPONSE.error) {
+      throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
+    }
+
+    return RESPONSE;
   }
 }

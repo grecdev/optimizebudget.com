@@ -12,9 +12,10 @@ enum ExpenseStatus {
 }
 
 // Match supabase's format
-enum UserDataKeys {
+enum UserMetaDataKeys {
   DISPLAY_NAME = 'display_name',
   PROFILE_PICTURE = 'profile_picture',
+  CONFIRMATION_DONE = 'confirmation_done',
 }
 
-export { CategoryType, ExpenseStatus, UserDataKeys };
+export { CategoryType, ExpenseStatus, UserMetaDataKeys };

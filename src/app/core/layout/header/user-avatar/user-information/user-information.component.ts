@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { from, type Observable } from 'rxjs';
 
-import { UserDataKeys } from '@shared/models/enums';
+import { UserMetaDataKeys } from '@shared/models/enums';
 
 import { AuthenticationService } from '@core/authentication/authentication.service';
 import type { GetSessionResult } from '@core/authentication/authentication.model';
@@ -22,7 +22,7 @@ export class UserInformationComponent {
    */
   public getSessionRequest$: Observable<GetSessionResult> | null = null;
 
-  public readonly UserDataKeys = UserDataKeys;
+  public readonly UserMetaDataKeys = UserMetaDataKeys;
 
   public readonly authenticationService: AuthenticationService;
 
