@@ -6,4 +6,4 @@ coverage
 **/.svn
 **/.hg
 **/node_modules
-*d.ts
+**/.d.ts

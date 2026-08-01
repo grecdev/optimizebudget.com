@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 
-import { InfoTextComponent } from '@shared/components/info-text/info-text.component';
+import { AppInfoTextModule } from '@shared/components/info-text/info-text.module';
 
 import { AppInputLabel } from './directives/label';
 import { AppFormField } from './form-field.component';
 
 @NgModule({
-  declarations: [AppFormField, AppInputLabel, InfoTextComponent],
+  declarations: [AppFormField, AppInputLabel],
+  imports: [AppInfoTextModule],
   exports: [AppFormField, AppInputLabel],
 })
 export class AppFormFieldModule {}

@@ -133,9 +133,7 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
     Object.values(this.icons).forEach(item => {
       this._iconRegistryService.addSvgIconConfig({
         name: item,
-        url: this._domSanitizer.bypassSecurityTrustResourceUrl(
-          `assets/icons/${item}.svg`
-        ),
+        url: this._domSanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${item}.svg`),
       });
     });
   }
@@ -147,7 +145,7 @@ export class AppDialogComponent implements AppDialogOptions, AppOverlayContentIn
    * @returns {void}
    */
   private _triggerOverlayClose(): void {
-    if (!this.overlayReference) {
+    if (!this.overlayReference || this.overlayReference.id === -1) {
       throw Error('Overlay reference not found!');
     }
 

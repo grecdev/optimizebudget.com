@@ -163,8 +163,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
         event.stopPropagation();
 
         const TOOLTIP_ALREADY_VISIBLE =
-          this._tooltipComponentReference &&
-          this._tooltipComponentReference.instance.isVisible;
+          this._tooltipComponentReference && this._tooltipComponentReference.instance.isVisible;
 
         const NO_TOOLTIP_MESSAGE = this._appTooltipTextContent.length === 0;
 
@@ -221,8 +220,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
         const RELATED_TARGET = event.relatedTarget as Node | null;
 
         const HOVER_OUTSIDE_TOOLTIP =
-          !RELATED_TARGET ||
-          !this._overlayReference.overlayElement.contains(RELATED_TARGET);
+          !RELATED_TARGET || !this._overlayReference.overlayElement.contains(RELATED_TARGET);
 
         if (HOVER_OUTSIDE_TOOLTIP) {
           this._tooltipComponentReference.instance.onHidden$.next();
@@ -283,7 +281,8 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
     this._overlayReference = this._appOverlayService.appendOverlay({
       contentReferences: [this._tooltipComponentReference],
       projectableNodes: [HOST_VIEW.rootNodes],
-      instanceOptions: {
+      disableEscapeEvent: true,
+      overlayInstanceOptions: {
         noBackground: true,
       },
     });

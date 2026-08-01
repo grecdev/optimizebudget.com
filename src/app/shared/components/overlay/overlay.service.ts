@@ -16,13 +16,13 @@ import { DOCUMENT } from '@angular/common';
 import { filter, fromEvent, takeUntil } from 'rxjs';
 
 import {
-  type ComponentReferencesState,
   type ComponentReference,
   type OverlayReferenceMapKey,
   type SetReferenceInstancesOptions,
   type AppendOverlayOptions,
   type SaveOverlayReferenceOptions,
   type AppendToDOMOptions,
+  type OverlayReferenceDataSource,
 } from './overlay.model';
 
 import { AppOverlayComponent } from './overlay.component';
@@ -69,16 +69,11 @@ export class AppOverlayService {
   /**
    * @summary - This store it's used in order to render multiple overlay at the same time.
    *
-   * LIFO.
-   *
-   * @type {Map<typeof this._currentID, ComponentReferencesState>}
+   * @type {OverlayReferenceDataSource}
    *
    * @private
    */
-  private _overlayReferenceStack: Map<typeof this._currentID, ComponentReferencesState> = new Map<
-    typeof this._currentID,
-    ComponentReferencesState
-  >();
+  private _overlayReferenceDataSource: OverlayReferenceDataSource = new Map();
 
   constructor(...args: Array<unknown>);
   constructor(
@@ -115,7 +110,13 @@ export class AppOverlayService {
   public appendOverlay<C>(
     options: AppendOverlayOptions<C>
   ): OverlayReferenceMapKey<AppOverlayComponent> {
-    const { projectableNodes, contentReferences, instanceOptions, targetDOM } = options;
+    const {
+      projectableNodes,
+      contentReferences,
+      overlayInstanceOptions,
+      targetDOM,
+      disableEscapeEvent,
+    } = options;
 
     const COMPONENT_REFERENCE = this._componentFactoryResolver
       .resolveComponentFactory(AppOverlayComponent)
@@ -128,18 +129,23 @@ export class AppOverlayService {
 
     const COMPONENT_ROOT_NODES: Array<HTMLElement> = COMPONENT_HOST_VIEW.rootNodes;
 
+    this._currentID++;
+
     this._lastOverlayReference = new OverlayReference<typeof COMPONENT_REFERENCE>({
       overlayElement: COMPONENT_ROOT_NODES[0] || null,
+      disableEscapeEvent: disableEscapeEvent ?? false,
+      id: this._currentID,
     });
 
     this._setReferenceInstances({
       overlayComponentReference: COMPONENT_REFERENCE,
       contentReferences: CONTENT_REFERENCES,
-      instanceOptions,
+      overlayInstanceOptions,
     });
 
     this._saveOverlayReference({
       contentReferences: CONTENT_REFERENCES,
+      overlayReference: this._lastOverlayReference,
     });
 
     this._appendToDOM({
@@ -169,7 +175,7 @@ export class AppOverlayService {
       throw Error('Overlay reference not found!');
     }
 
-    const { contentReferences, instanceOptions, overlayComponentReference } = options;
+    const { contentReferences, overlayInstanceOptions, overlayComponentReference } = options;
 
     contentReferences.forEach(item => {
       if (
@@ -182,11 +188,11 @@ export class AppOverlayService {
     });
 
     if (
-      instanceOptions &&
+      overlayInstanceOptions &&
       Object.hasOwn(overlayComponentReference, 'instance') &&
       Object.hasOwn(overlayComponentReference.instance, 'options')
     ) {
-      Object.assign(overlayComponentReference.instance.options, instanceOptions);
+      Object.assign(overlayComponentReference.instance.options, overlayInstanceOptions);
     }
   }
 
@@ -227,18 +233,19 @@ export class AppOverlayService {
    * @returns {void}
    */
   private _saveOverlayReference(options: SaveOverlayReferenceOptions): void {
-    const { contentReferences } = options;
-
-    this._currentID++;
+    const { contentReferences, overlayReference } = options;
 
     if (
       this._currentID === this._stackMinimumThreshold ||
-      this._overlayReferenceStack.has(this._currentID)
+      this._overlayReferenceDataSource.has(this._currentID)
     ) {
       return;
     }
 
-    this._overlayReferenceStack.set(this._currentID, contentReferences);
+    this._overlayReferenceDataSource.set(this._currentID, {
+      contentReferences,
+      overlayReference,
+    });
   }
 
   /**
@@ -282,26 +289,26 @@ export class AppOverlayService {
     this._lastOverlayReference.closingOverlay$
       .pipe(takeUntil(this._lastOverlayReference.completeObservable$))
       .subscribe({
-        next: () => {
-          const COMPONENT_REFERENCES =
-            this._overlayReferenceStack.has(this._overlayReferenceStack.size) &&
-            this._overlayReferenceStack.get(this._overlayReferenceStack.size);
+        next: data => {
+          const OVERLAY_REFERENCE =
+            this._overlayReferenceDataSource.has(data) &&
+            this._overlayReferenceDataSource.get(data);
 
-          if (!COMPONENT_REFERENCES) {
+          if (!OVERLAY_REFERENCE) {
             return;
           }
 
-          COMPONENT_REFERENCES.forEach(item => {
+          OVERLAY_REFERENCE.contentReferences.forEach(item => {
             this._removeComponent(item);
           });
 
-          this._overlayReferenceStack.delete(this._overlayReferenceStack.size);
+          this._overlayReferenceDataSource.delete(data);
 
           if (this._currentID > this._stackMinimumThreshold) {
             this._currentID--;
           }
 
-          if (this._overlayReferenceStack.size <= this._stackMinimumThreshold) {
+          if (this._overlayReferenceDataSource.size <= this._stackMinimumThreshold) {
             this._cleanup();
           }
         },
@@ -325,11 +332,19 @@ export class AppOverlayService {
       )
       .subscribe({
         next: () => {
-          if (!this._lastOverlayReference) {
-            throw Error('Overlay reference not found!');
+          const ALLOWED_ENTRIES = Array.from(this._overlayReferenceDataSource.values()).filter(
+            data => {
+              return data.overlayReference && !data.overlayReference.disableEscapeEvent;
+            }
+          );
+
+          const LAST_ENTRY = ALLOWED_ENTRIES[ALLOWED_ENTRIES.length - 1];
+
+          if (!LAST_ENTRY || !LAST_ENTRY.overlayReference) {
+            return;
           }
 
-          this._lastOverlayReference.close();
+          LAST_ENTRY.overlayReference.close(LAST_ENTRY.overlayReference.id);
         },
       });
   }

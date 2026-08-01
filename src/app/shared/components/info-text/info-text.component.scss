@@ -12,10 +12,9 @@ $infoTextType: (
 
 .info-text {
   font-size: 0.9rem;
-  margin-top: map.get($spacing, 'sm');
 
   @each $key, $value in $infoTextType {
-    &.infoType-#{$key} {
+    &.info-type-#{$key} {
       color: $value;
     }
   }

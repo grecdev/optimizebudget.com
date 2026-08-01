@@ -10,17 +10,36 @@ import { type OverlayReferenceConstructorOptions } from './overlay.model';
  * @public
  */
 export class OverlayReference<C = unknown, CloseResult = unknown> {
-  private readonly _closingOverlay = new Subject<void>();
+  /**
+   * @summary Disable global escape event for certain overlays.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public disableEscapeEvent: boolean = false;
+
+  /**
+   * @summary - To remove the exact overlay reference from our overlay data source.
+   *
+   * @type {number}
+   *
+   * @public
+   */
+  public id: number = -1;
+
+  private readonly _closingOverlay = new Subject<number>();
   private readonly _completeObservable = new Subject<void>();
 
   // So we don't leak our main Subject stream (observer)
   public readonly closingOverlay$ = this._closingOverlay.asObservable();
   public readonly completeObservable$ = this._completeObservable.asObservable();
-  public readonly overlayElement: OverlayReferenceConstructorOptions['overlayElement'] =
-    null;
+  public readonly overlayElement: OverlayReferenceConstructorOptions['overlayElement'] = null;
 
   constructor(options: OverlayReferenceConstructorOptions) {
     this.overlayElement = options.overlayElement;
+    this.disableEscapeEvent = options.disableEscapeEvent;
+    this.id = options.id;
   }
 
   /**
@@ -29,8 +48,8 @@ export class OverlayReference<C = unknown, CloseResult = unknown> {
    * @public
    * @returns {void}
    */
-  public close(): void {
-    this._closingOverlay.next();
+  public close(id: number = this.id): void {
+    this._closingOverlay.next(id);
   }
 
   /**

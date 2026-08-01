@@ -1,7 +1,5 @@
-import { environment } from '@environments/environment';
-
-import { type ApiEndpoints, type RoutesName } from '@shared/models/types';
-import { type Route } from '@shared/models/interfaces';
+import { type RoutesName } from '@shared/models/types';
+import { type RegexPatterns, type Route } from '@shared/models/interfaces';
 
 const allRoutes: Record<RoutesName, Route> = {
   overview: {
@@ -20,10 +18,10 @@ const allRoutes: Record<RoutesName, Route> = {
     path: 'register',
     ariaLabel: 'Register page path',
   },
-  forgotPassword: {
+  resetPassword: {
     id: 3,
-    path: 'forgot-password',
-    ariaLabel: 'Forgot password page path',
+    path: 'reset-password',
+    ariaLabel: 'Reset password page path',
   },
   expenses: {
     id: 4,
@@ -43,14 +41,41 @@ const allRoutes: Record<RoutesName, Route> = {
     textContent: 'Goals',
     ariaLabel: 'Goals path',
   },
+  resetPasswordUser: {
+    id: 7,
+    path: 'reset-password-user',
+    textContent: 'Reset Password',
+    ariaLabel: 'Reset password for user path',
+  },
+  confirmEmail: {
+    id: 7,
+    path: 'confirm-email',
+    textContent: 'Confirm Email',
+    ariaLabel: 'Confirm email for user',
+  },
 };
 
 const adminData = {
   email: 'some-email',
 };
 
-const apiEndpoints: Record<ApiEndpoints, string> = {
-  someApi: `${environment.SOME_VARIABLE}/api/someApi`,
+/**
+ * @summary - Used to validate the form UI.
+ *
+ * @type {RegexPatterns}
+ */
+const regexPatterns: RegexPatterns = {
+  specialCharacters: /[$%&_@!]/,
+  numbers: /\d/,
+  lowercase: /[a-z]/,
+  uppercase: /[A-Z]/,
+  lengthLimit: /^.{5,15}$/,
+  password: /^(?=.*[$%&_@!])(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d$%&_@!]{5,15}$/,
+  fullName: /^[aA-zZ\-\ ]{1,}$/,
 };
 
-export { allRoutes, adminData, apiEndpoints };
+// const apiEndpoints: Record<ApiEndpoints, string> = {
+//   someApi: `${environment.SOME_VARIABLE}/api/someApi`,
+// };
+
+export { allRoutes, adminData, regexPatterns };

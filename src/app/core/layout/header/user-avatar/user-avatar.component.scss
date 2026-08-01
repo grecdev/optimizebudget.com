@@ -8,15 +8,20 @@
 .user-avatar-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: spacing.$sm;
 
-  & .avatar-profile-image {
-    $image-size: 40px;
+  $image-size: 40px;
 
-    width: $image-size;
-    height: $image-size;
-    border-radius: shape.$rounded;
-  }
+  width: $image-size;
+  height: $image-size;
+  border-radius: shape.$rounded;
+
+  font-weight: 500;
+  color: map.get(color-palette.$common, 'white');
+  background: map.get(color-palette.$gray, 'variant-3');
+
+  overflow: hidden;
 
   & .user-info-container {
     text-align: left;
@@ -25,7 +30,7 @@
   }
 }
 
-.user-info-wrapper-mobile {
+.user-info-wrapper {
   position: fixed;
   top: 0;
   right: 0;
@@ -39,5 +44,8 @@
     padding: spacing.$sm;
     background: map.get(color-palette.$common, 'white');
     box-shadow: map.get(variables.$box-shadow, 'variant-3');
+
+    display: grid;
+    gap: spacing.$default;
   }
 }

@@ -1,0 +1,197 @@
+import {
+  type EmbeddedViewRef,
+  ApplicationRef,
+  createNgModule,
+  Injectable,
+  Injector,
+} from '@angular/core';
+
+import { AppOverlayService } from '@shared/components/overlay/overlay.service';
+import { type OverlayReferenceMapKey } from '@shared/components/overlay/overlay.model';
+import { type AppOverlayComponent } from '@shared/components/overlay/overlay.component';
+
+import {
+  type ComponentReferencesState,
+  type CreateSnackbarModuleOptions,
+  type OpenSnackbarOptions,
+  SnackbarPosition,
+  GetOverlayStylesOptions,
+} from './snackbar.model';
+
+import { APP_SNACKBAR_COMPONENT_REFERENCE, AppSnackbarModule } from './snackbar.module';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class SnackbarService {
+  private readonly _injector: Injector;
+  private readonly _appOverlayService: AppOverlayService;
+  private readonly _applicationReference: ApplicationRef;
+
+  /**
+   * @summary - Component references used for different embedding.
+   *
+   * @type {ComponentReferencesState}
+   *
+   * @private
+   */
+  private readonly _componentReference: ComponentReferencesState = {
+    snackbarModuleRef: null,
+    snackbarComponentRef: null,
+  };
+
+  private readonly _timeoutDelayMS: number = 3500;
+
+  /**
+   * @summary - Add styling based on input.
+   *
+   * @type {Record<SnackbarPosition, string>}
+   *
+   * @private
+   * @readonly
+   */
+  private readonly _stylePosition: Record<SnackbarPosition, string> = {
+    [SnackbarPosition.START]: 'flex-start',
+    [SnackbarPosition.MIDDLE]: 'center',
+    [SnackbarPosition.END]: 'flex-end',
+  };
+
+  private readonly _overlayStyleArray: Array<string> = ['display: flex', 'flexDirection: column'];
+
+  /**
+   * @summary - So we can keep only one snackbar at a time.
+   *
+   * @type {OverlayReferenceMapKey<AppOverlayComponent> | null}
+   *
+   * @private
+   */
+  private _lastOverlayReference: OverlayReferenceMapKey<AppOverlayComponent> | null = null;
+  private _lastOverlayReferenceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  constructor(
+    injector: Injector,
+    overlayService: AppOverlayService,
+    applicationReference: ApplicationRef
+  ) {
+    this._injector = injector;
+    this._appOverlayService = overlayService;
+    this._applicationReference = applicationReference;
+  }
+
+  /**
+   * @summary - Open a snackbar component.
+   *
+   * @param {OpenSnackbarOptions} options - Maybe our component needs dynamic data, we can change its properties with this parameter.
+   *
+   * @public
+   * @returns {OverlayReferenceMapKey<typeof APP_SNACKBAR_COMPONENT_REFERENCE>}
+   */
+  public open(
+    options: OpenSnackbarOptions
+  ): OverlayReferenceMapKey<typeof APP_SNACKBAR_COMPONENT_REFERENCE> {
+    const SNACKBAR_ROOT_NODES = this._createSnackbarModule(options);
+
+    const OVERLAY_STYLES = this._getOverlayStyles({
+      position: options.position,
+    });
+
+    this._closeExtraSnackbar();
+
+    const OVERLAY_REFERENCE = this._appOverlayService.appendOverlay({
+      contentReferences: [],
+      projectableNodes: SNACKBAR_ROOT_NODES,
+      disableEscapeEvent: true,
+      overlayInstanceOptions: {
+        noBackground: true,
+        style: OVERLAY_STYLES,
+      },
+    });
+
+    this._lastOverlayReference = OVERLAY_REFERENCE;
+
+    this._lastOverlayReferenceTimeout = setTimeout(() => {
+      this._closeExtraSnackbar();
+    }, this._timeoutDelayMS);
+
+    return OVERLAY_REFERENCE;
+  }
+
+  /**
+   * @summary - Create the module reference.
+   *
+   * @param {CreateSnackbarModuleOptions} options - Various options.
+   *
+   * @private
+   * @returns {EmbeddedViewRef<typeof APP_SNACKBAR_COMPONENT_REFERENCE>['rootNodes']}
+   */
+  private _createSnackbarModule(
+    options: CreateSnackbarModuleOptions
+  ): EmbeddedViewRef<typeof APP_SNACKBAR_COMPONENT_REFERENCE>['rootNodes'] {
+    const moduleReference = createNgModule(AppSnackbarModule, this._injector);
+
+    const COMPONENT_TYPE = moduleReference.injector.get(APP_SNACKBAR_COMPONENT_REFERENCE);
+
+    // I already know the module's entry here. No need for `injector.get(entry)`.
+    const COMPONENT_REFERENCE = moduleReference.componentFactoryResolver
+      .resolveComponentFactory(COMPONENT_TYPE)
+      .create(moduleReference.injector);
+
+    const HOST_VIEW = COMPONENT_REFERENCE.hostView as EmbeddedViewRef<typeof COMPONENT_TYPE>;
+
+    const ROOT_NODES = HOST_VIEW.rootNodes;
+
+    if (ROOT_NODES.length === 0) {
+      throw Error('Root nodes empty!');
+    }
+
+    if (Object.hasOwn(COMPONENT_REFERENCE, 'instance')) {
+      Object.assign(COMPONENT_REFERENCE.instance, options);
+    }
+
+    this._componentReference.snackbarModuleRef = moduleReference;
+    this._componentReference.snackbarComponentRef = COMPONENT_REFERENCE;
+
+    this._applicationReference.attachView(HOST_VIEW);
+
+    return ROOT_NODES;
+  }
+
+  /**
+   * @summary - I need to keep only one snackbar at a time.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _closeExtraSnackbar(): void {
+    if (!this._lastOverlayReference || !this._lastOverlayReferenceTimeout) {
+      return;
+    }
+
+    this._lastOverlayReference.close();
+
+    clearTimeout(this._lastOverlayReferenceTimeout);
+  }
+
+  /**
+   * @summary - Add whatever styles you need for overlay.
+   *
+   * @params {GetOverlayStylesOptions} options - Add styles conditionally.
+   *
+   * @private
+   * @returns {string}
+   */
+  private _getOverlayStyles(options: GetOverlayStylesOptions): string {
+    const { position } = options;
+
+    if (!position) {
+      return '';
+    }
+
+    this._overlayStyleArray.push(`justifyContent: ${this._stylePosition[position.vertical]}`);
+    this._overlayStyleArray.push(`alignItems: ${this._stylePosition[position.horizontal]}`);
+
+    const STYLE_STRING = this._overlayStyleArray.join(';');
+
+    return STYLE_STRING;
+  }
+}

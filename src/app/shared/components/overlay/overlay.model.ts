@@ -5,13 +5,14 @@ import { type AppOverlayComponent } from './overlay.component';
 
 interface AppOverlayComponentOptions {
   noBackground: boolean;
+  style: Partial<CSSStyleDeclaration>;
 }
 
 /**
  * @summary - Whatever instances we need to declare for the overlay component itself.
  */
 interface AppOverlayComponentInstances {
-  options: AppOverlayComponentOptions;
+  options: Partial<AppOverlayComponentOptions>;
 }
 
 /**
@@ -25,17 +26,19 @@ interface AppOverlayContentInstances {
 interface AppendOverlayOptions<C> extends Pick<AppendToDOMOptions, 'targetDOM'> {
   projectableNodes: EmbeddedViewRef<C>['rootNodes'];
   contentReferences: ComponentReferencesState;
-  instanceOptions: AppOverlayComponentInstances['options'];
+  overlayInstanceOptions: AppOverlayComponentInstances['options'];
+  disableEscapeEvent?: boolean;
 }
 
 interface SetReferenceInstancesOptions {
   overlayComponentReference: ComponentRef<AppOverlayComponent>;
   contentReferences: ComponentReferencesState;
-  instanceOptions?: AppOverlayComponentInstances['options'];
+  overlayInstanceOptions?: AppOverlayComponentInstances['options'];
 }
 
 interface SaveOverlayReferenceOptions {
   contentReferences: ComponentReferencesState;
+  overlayReference: OverlayReference;
 }
 
 interface AppendToDOMOptions {
@@ -45,7 +48,17 @@ interface AppendToDOMOptions {
 
 interface OverlayReferenceConstructorOptions {
   overlayElement: HTMLElement | null;
+  disableEscapeEvent: boolean;
+  id: number;
 }
+
+type OverlayReferenceDataSource = Map<
+  number,
+  {
+    contentReferences: ComponentReferencesState;
+    overlayReference: OverlayReference | null;
+  }
+>;
 
 type ComponentReference =
   | ComponentRef<unknown & AppOverlayContentInstances>
@@ -57,7 +70,6 @@ type ComponentReferencesState = Array<ComponentReference>;
 type OverlayReferenceMapKey<C> = OverlayReference<ComponentRef<C>>;
 
 export type {
-  ComponentReferencesState,
   AppOverlayComponentInstances,
   ComponentReference,
   OverlayReferenceMapKey,
@@ -67,4 +79,5 @@ export type {
   SaveOverlayReferenceOptions,
   AppendToDOMOptions,
   OverlayReferenceConstructorOptions,
+  OverlayReferenceDataSource,
 };

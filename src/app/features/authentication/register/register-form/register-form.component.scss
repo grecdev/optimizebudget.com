@@ -1,0 +1,13 @@
+@use 'breakpoints' as breakpoints;
+@use 'spacing' as spacing;
+
+@use '../../authentication-common' as authentication-common;
+
+.password-container {
+  display: grid;
+  gap: spacing.$sm;
+}
+
+#register-button {
+  @include authentication-common.submit-button;
+}

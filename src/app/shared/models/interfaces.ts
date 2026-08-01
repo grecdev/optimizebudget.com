@@ -1,3 +1,7 @@
+import { type UserMetadata } from '@supabase/supabase-js';
+
+import { UserMetaDataKeys } from '@shared/models/enums';
+
 interface Route {
   id: number;
   path: string;
@@ -11,4 +15,22 @@ interface ClearTimeoutOptions {
   timeout: ReturnType<typeof setTimeout> | null;
 }
 
-export type { Route, ClearTimeoutOptions };
+interface RouteSnapshotData {
+  authenticationPage: boolean;
+}
+
+interface RegexPatterns {
+  specialCharacters: RegExp;
+  numbers: RegExp;
+  lowercase: RegExp;
+  uppercase: RegExp;
+  lengthLimit: RegExp;
+  fullName: RegExp;
+  password: RegExp;
+}
+
+interface UserData extends UserMetadata {
+  [UserMetaDataKeys.CONFIRMATION_DONE]: boolean;
+}
+
+export type { Route, ClearTimeoutOptions, RouteSnapshotData, RegexPatterns, UserData };

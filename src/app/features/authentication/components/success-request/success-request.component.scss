@@ -1,0 +1,15 @@
+@use 'sass:map';
+
+@use 'color-palette' as color-palette;
+
+:host.form-container {
+  align-items: center;
+}
+
+app-icon {
+  $size: 80px;
+  //
+  width: $size;
+  height: $size;
+  fill: map.get(color-palette.$green, 'default');
+}

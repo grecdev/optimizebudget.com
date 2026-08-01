@@ -1,1 +1,7 @@
-<ng-content></ng-content>
+<ng-container *ngIf="!loading; else buttonLoader">
+  <ng-content></ng-content>
+</ng-container>
+
+<ng-template #buttonLoader>
+  <app-loader />
+</ng-template>

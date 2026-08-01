@@ -47,6 +47,7 @@ export class AppOverlayComponent
    */
   public options: AppOverlayComponentInstances['options'] = {
     noBackground: false,
+    style: {},
   };
 
   constructor(elementRef: ElementRef<AppOverlayComponent>) {
@@ -80,8 +81,13 @@ export class AppOverlayComponent
     this._triggerOverlayClose();
   }
 
-  @HostBinding('class.no-background') get hostNoBackground(): boolean {
-    return this.options.noBackground;
+  @HostBinding('class.no-background')
+  get hostNoBackground(): AppOverlayComponentInstances['options']['noBackground'] {
+    return this.options.noBackground ?? false;
+  }
+
+  @HostBinding('style') get style(): AppOverlayComponentInstances['options']['style'] {
+    return this.options.style ?? '';
   }
 
   /**

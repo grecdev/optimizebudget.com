@@ -1,0 +1,7 @@
+enum InputTypes {
+  CURRENT_PASSWORD = 'CURRENT_PASSWORD',
+  PASSWORD = 'PASSWORD',
+  CONFIRM_PASSWORD = 'CONFIRM_PASSWORD',
+}
+
+export { InputTypes };

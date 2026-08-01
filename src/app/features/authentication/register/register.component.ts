@@ -1,19 +1,26 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { allRoutes } from '@script/globalData';
-import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['../authentication-common.scss', './register.component.scss'],
+  styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
-  paths: Pick<typeof allRoutes, 'login'> = {
-    login: allRoutes.login,
-  };
+  /**
+   * @summary - Linked to an event emitter.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public registerSuccess: boolean = false;
 
-  handleRegister(form: NgForm) {
-    console.log(form);
+  public readonly allRoutes = allRoutes;
+
+  public setRegisterSuccess(data: boolean): void {
+    this.registerSuccess = data;
   }
 }

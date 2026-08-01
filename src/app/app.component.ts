@@ -1,14 +1,19 @@
 import {
-  type AfterViewInit,
+  type OnInit,
   ElementRef,
   ChangeDetectionStrategy,
   Component,
   ViewChild,
+  ChangeDetectorRef,
 } from '@angular/core';
 
-import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
-import { AuthenticationService } from '@core/authentication/authentication.service';
+import { filter } from 'rxjs';
+
+import { RouteUtil } from '@shared/utility/route';
+
+import { type SidebarComponent } from '@core/layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
@@ -16,16 +21,24 @@ import { AuthenticationService } from '@core/authentication/authentication.servi
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.data-logged-in]': 'userIsLoggedIn',
+    '[attr.data-logged-in]': '!authenticationPage',
   },
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
   /**
-   * @summary - For testing purposes.
+   * @summary - The main "app shell" state render.
+   *
+   * @type {boolean}
+   *
+   * @public
    */
-  userIsLoggedIn: boolean = true;
+  public authenticationPage: boolean = true;
 
-  private readonly _sidebarService: AuthenticationService;
+  private readonly _router: Router;
+  private readonly _activatedRoute: ActivatedRoute;
+  private readonly _routeUtil = new RouteUtil();
+
+  private readonly _changeDetectorRef: ChangeDetectorRef;
 
   @ViewChild('appHeader', {
     read: ElementRef<HTMLElement>,
@@ -35,8 +48,22 @@ export class AppComponent implements AfterViewInit {
   @ViewChild('appSidebar')
   private readonly _appSidebar: SidebarComponent | null = null;
 
-  constructor(sidebarService: AuthenticationService) {
-    this._sidebarService = sidebarService;
+  @ViewChild('mainContainer') private set _mainContainer(element: ElementRef<HTMLElement> | null) {
+    if (!element) {
+      return;
+    }
+
+    this._setHeaderHeight();
+  }
+
+  constructor(
+    router: Router,
+    activatedRoute: ActivatedRoute,
+    changeDetectorRef: ChangeDetectorRef
+  ) {
+    this._router = router;
+    this._activatedRoute = activatedRoute;
+    this._changeDetectorRef = changeDetectorRef;
   }
 
   /**
@@ -48,6 +75,10 @@ export class AppComponent implements AfterViewInit {
    * @returns {void}
    */
   private _setHeaderHeight(): void {
+    if (this.authenticationPage) {
+      return;
+    }
+
     const NATIVE_ELEMENT_HEADER = this._appHeader && this._appHeader.nativeElement;
 
     if (!NATIVE_ELEMENT_HEADER || !this._appSidebar) {
@@ -59,29 +90,28 @@ export class AppComponent implements AfterViewInit {
     this._appSidebar.headerHeight = HEIGHT;
   }
 
-  async loadTodos(): Promise<void> {
-    try {
-      const response = await this._sidebarService.getTodos();
+  /**
+   * @summary - Change state on route change.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initRouterEvents(): void {
+    this._router.events.pipe(filter(data => data instanceof NavigationEnd)).subscribe({
+      next: () => {
+        const ACTIVATED_ROUTE_DATA = this._routeUtil.getDeepestRouteData(
+          this._activatedRoute.firstChild
+        );
 
-      if (response.error) {
-        console.error(response.error.message);
-      }
+        this.authenticationPage =
+          (ACTIVATED_ROUTE_DATA && ACTIVATED_ROUTE_DATA.authenticationPage) ?? false;
 
-      if (response.data) {
-        console.log(response.data);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
+        this._changeDetectorRef.markForCheck();
+      },
+    });
   }
 
-  ngAfterViewInit(): void {
-    this._setHeaderHeight();
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.loadTodos();
+  public ngOnInit(): void {
+    this._initRouterEvents();
   }
 }

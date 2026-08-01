@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { AppIconModule } from '@shared/components/icon/icon.module';
 
-import { DesktopHeaderModule } from './desktop-header/desktop-header.module';
-import { MobileHeaderModule } from './mobile-header/mobile-header.module';
 import { SidebarToggleModule } from './sidebar-toggle/sidebar-toggle.module';
+import { RightSideModule } from './right-side/right-side.module';
 
 import { HeaderComponent } from './header.component';
 
@@ -16,8 +15,7 @@ import { HeaderComponent } from './header.component';
     CommonModule,
     // App specific
     AppIconModule,
-    DesktopHeaderModule,
-    MobileHeaderModule,
+    RightSideModule,
     SidebarToggleModule,
   ],
   exports: [HeaderComponent],

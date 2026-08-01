@@ -1,20 +1,27 @@
 import {
   type TemplateRef,
   type EmbeddedViewRef,
+  type OnDestroy,
   ChangeDetectorRef,
   Component,
   ViewChild,
   ChangeDetectionStrategy,
+  ApplicationRef,
 } from '@angular/core';
 
-import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+import { type Observable, from } from 'rxjs';
+
+import { UserMetaDataKeys } from '@shared/models/enums';
+
+// import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+
 import { AppOverlayService } from '@shared/components/overlay/overlay.service';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
-import {
-  type SetOptionsContainerStyleOptions,
-  type UserInfoWrapperMobileContext,
-} from './user-avatar.model';
+import { AuthenticationService } from '@core/authentication/authentication.service';
+import { type GetSessionResult } from '@core/authentication/authentication.model';
+
+import { type SetOptionsContainerStyleOptions } from './user-avatar.model';
 
 @Component({
   selector: 'app-user-avatar',
@@ -22,10 +29,7 @@ import {
   styleUrls: ['./user-avatar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserAvatarComponent {
-  fullName: string = 'Grecu Alexandru';
-  email: string = 'mail@example.com';
-
+export class UserAvatarComponent implements OnDestroy {
   /**
    * @summary - Based on this member, render our components, inside the template.
    *
@@ -35,9 +39,16 @@ export class UserAvatarComponent {
    */
   public isMobile: boolean = false;
 
+  public getSessionRequest$: Observable<GetSessionResult> | null = null;
+
+  public readonly UserMetaDataKeys = UserMetaDataKeys;
+
   private readonly _changeDetectorRef: ChangeDetectorRef;
-  private readonly _mediaQueryService: MediaQueryService;
+  // private readonly _mediaQueryService: MediaQueryService;
+  private readonly _applicationReference: ApplicationRef;
+
   private readonly _appOverlayService: AppOverlayService;
+  private readonly _authenticationService: AuthenticationService;
 
   /**
    * @summary - Check if the menu is open.
@@ -57,17 +68,26 @@ export class UserAvatarComponent {
    */
   private _overlayReference: AppOverlayContentInstances['overlayReference'] = null;
 
-  @ViewChild('userInfoWrapperMobile')
-  private readonly _userInfoWrapperMobile: TemplateRef<UserInfoWrapperMobileContext> | null = null;
+  private _userInfoWrapperEmbeddedViewRef: EmbeddedViewRef<void> | null = null;
+
+  @ViewChild('userInfoWrapper')
+  private readonly _userInfoWrapper: TemplateRef<void> | null = null;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
-    mediaQueryService: MediaQueryService,
-    appOverlayService: AppOverlayService
+    // mediaQueryService: MediaQueryService,
+    appOverlayService: AppOverlayService,
+    applicationReference: ApplicationRef,
+    authenticationService: AuthenticationService
   ) {
-    this._mediaQueryService = mediaQueryService;
+    // this._mediaQueryService = mediaQueryService;
     this._changeDetectorRef = changeDetectorRef;
+    this._applicationReference = applicationReference;
+
     this._appOverlayService = appOverlayService;
+    this._authenticationService = authenticationService;
+
+    this._setGetSessionRequest();
   }
 
   /**
@@ -81,14 +101,9 @@ export class UserAvatarComponent {
   public handleOpenUserAvatarMenu(event: MouseEvent): void {
     event.stopPropagation();
 
-    if (!this.isMobile) {
-      event.preventDefault();
-      return;
-    }
-
     const CURRENT_TARGET = event.currentTarget as HTMLElement;
 
-    if (!this._userInfoWrapperMobile || !CURRENT_TARGET) {
+    if (!this._userInfoWrapper || !CURRENT_TARGET) {
       throw Error('Elements not found!');
     }
 
@@ -99,17 +114,21 @@ export class UserAvatarComponent {
 
     this._menuOpen = true;
 
-    const USER_INFO_WRAPPER_EMBEDDED_VIEW = this._initUserInfoWrapperMobileEmbedded();
+    this._initUserInfoWrapperEmbedded();
+
+    if (!this._userInfoWrapperEmbeddedViewRef) {
+      return;
+    }
 
     this._setOptionsContainerStyle({
-      wrapper: USER_INFO_WRAPPER_EMBEDDED_VIEW,
+      wrapper: this._userInfoWrapperEmbeddedViewRef,
       currentTarget: CURRENT_TARGET,
     });
 
     this._overlayReference = this._appOverlayService.appendOverlay({
-      contentReferences: [USER_INFO_WRAPPER_EMBEDDED_VIEW],
-      projectableNodes: [USER_INFO_WRAPPER_EMBEDDED_VIEW.rootNodes],
-      instanceOptions: {
+      contentReferences: [this._userInfoWrapperEmbeddedViewRef],
+      projectableNodes: [this._userInfoWrapperEmbeddedViewRef.rootNodes],
+      overlayInstanceOptions: {
         noBackground: true,
       },
     });
@@ -144,43 +163,36 @@ export class UserAvatarComponent {
    * @private
    * @returns {void}
    */
-  private _initMediaQuerySubscription(): void {
-    this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
-      next: value => {
-        this.isMobile = value;
-
-        this._changeDetectorRef.markForCheck();
-      },
-    });
-  }
+  // private _initMediaQuerySubscription(): void {
+  //   this._mediaQueryService.mediaQuery('max', 'xl').subscribe({
+  //     next: value => {
+  //       this.isMobile = value;
+  //
+  //       this._changeDetectorRef.markForCheck();
+  //     },
+  //   });
+  // }
 
   /**
    * @summary - Instantiate the overlay container options embedded view.
    *
    * @private
-   * @returns {EmbeddedViewRef<void>}
+   * @returns {void}
    */
-  private _initUserInfoWrapperMobileEmbedded(): EmbeddedViewRef<UserInfoWrapperMobileContext> {
-    if (!this._userInfoWrapperMobile) {
+  private _initUserInfoWrapperEmbedded(): void {
+    if (!this._userInfoWrapper) {
       throw Error('Wrapper not found!');
     }
 
-    const CONTEXT_DATA = {
-      fullName: this.fullName,
-      email: this.email,
-    };
+    this._userInfoWrapperEmbeddedViewRef = this._userInfoWrapper.createEmbeddedView();
 
-    const VIEW = this._userInfoWrapperMobile.createEmbeddedView(CONTEXT_DATA);
+    this._applicationReference.attachView(this._userInfoWrapperEmbeddedViewRef);
 
-    VIEW.detectChanges();
-
-    const ROOT_NODES = VIEW.rootNodes;
+    const ROOT_NODES = this._userInfoWrapperEmbeddedViewRef.rootNodes;
 
     if (!ROOT_NODES || ROOT_NODES.length === 0) {
       throw Error('Root nodes not found in select!');
     }
-
-    return VIEW;
   }
 
   /**
@@ -190,11 +202,9 @@ export class UserAvatarComponent {
    * @returns {void}
    */
   private _triggerClose(): void {
-    if (!this._overlayReference) {
-      throw Error('Overlay reference not found!');
+    if (this._overlayReference) {
+      this._overlayReference.close();
     }
-
-    this._overlayReference.close();
   }
 
   /**
@@ -215,6 +225,12 @@ export class UserAvatarComponent {
         this._changeDetectorRef.markForCheck();
 
         this._overlayReference = null;
+
+        if (this._userInfoWrapperEmbeddedViewRef) {
+          this._applicationReference.detachView(this._userInfoWrapperEmbeddedViewRef);
+
+          this._userInfoWrapperEmbeddedViewRef = null;
+        }
       },
     });
   }
@@ -231,7 +247,7 @@ export class UserAvatarComponent {
   private _setOptionsContainerStyle(options: SetOptionsContainerStyleOptions): void {
     const { wrapper, currentTarget } = options;
 
-    const { top, left, height } = currentTarget.getBoundingClientRect();
+    const { top, height } = currentTarget.getBoundingClientRect();
 
     const WRAPPER_ELEMENT = wrapper.rootNodes[0] as HTMLElement;
     const CONTAINER = WRAPPER_ELEMENT.querySelector<HTMLElement>('.user-info-container');
@@ -242,12 +258,26 @@ export class UserAvatarComponent {
     }
 
     Object.assign(CONTAINER.style, {
-      top: `${top + height}px`,
+      top: `${top + height + SPACING_PX / 2}px`,
       right: `${SPACING_PX}px`,
     });
   }
 
+  /**
+   * @summary - Set an observable for session data, to be used inside template with pipe.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setGetSessionRequest(): void {
+    this.getSessionRequest$ = from(this._authenticationService.getSession());
+  }
+
   ngOnInit(): void {
-    this._initMediaQuerySubscription();
+    // this._initMediaQuerySubscription();
+  }
+
+  public ngOnDestroy(): void {
+    this._triggerClose();
   }
 }

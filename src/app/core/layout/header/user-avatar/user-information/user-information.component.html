@@ -1,0 +1,17 @@
+<ng-container *ngIf="getSessionRequest$ | async as getSessionRequest; else loaderPlaceholder">
+  <ng-container *ngIf="getSessionRequest.data.session as sessionData">
+    <p *ngIf="sessionData.user.user_metadata[UserMetaDataKeys.DISPLAY_NAME]">
+      <strong>{{ sessionData.user.user_metadata[UserMetaDataKeys.DISPLAY_NAME] }}</strong>
+    </p>
+
+    <p *ngIf="sessionData.user.email">{{ sessionData.user.email }}</p>
+  </ng-container>
+
+  <ng-container *ngIf="getSessionRequest.error as error">
+    <p appInfoText type="error">{{ error.name }} {{ error.status }}: {{ error.message }}</p>
+  </ng-container>
+</ng-container>
+
+<ng-template #loaderPlaceholder>
+  <app-loader />
+</ng-template>
