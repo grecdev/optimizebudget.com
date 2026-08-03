@@ -45,6 +45,17 @@ export class AuthenticationService {
       throw Error(`${RESPONSE.error.name} ${RESPONSE.error.status}: ${RESPONSE.error.message}`);
     }
 
+    const EMAIL_EXIST =
+      RESPONSE &&
+      RESPONSE.data &&
+      RESPONSE.data.user &&
+      RESPONSE.data.user.identities &&
+      RESPONSE.data.user.identities.length === 0;
+
+    if (EMAIL_EXIST) {
+      throw Error('Email already registered!');
+    }
+
     return RESPONSE;
   }
 
