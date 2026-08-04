@@ -67,16 +67,16 @@ export class RegisterFormComponent {
 
   public readonly registerForm: FormGroup = new FormGroup(
     {
-      [InputTypes.DISPLAY_NAME]: new FormControl('Grecu Alexandru-Constantin', {
+      [InputTypes.DISPLAY_NAME]: new FormControl('', {
         validators: [Validators.required, Validators.pattern(regexPatterns.fullName)],
       }),
-      [InputTypes.EMAIL]: new FormControl('grecualexandru001@gmail.com', {
+      [InputTypes.EMAIL]: new FormControl('', {
         validators: [Validators.required, Validators.email],
       }),
-      [InputTypes.PASSWORD]: new FormControl('Test123!', {
+      [InputTypes.PASSWORD]: new FormControl('', {
         validators: [Validators.required, Validators.pattern(regexPatterns.password)],
       }),
-      [InputTypes.CONFIRM_PASSWORD]: new FormControl('Test123!', {
+      [InputTypes.CONFIRM_PASSWORD]: new FormControl('', {
         validators: [Validators.required],
       }),
     },
