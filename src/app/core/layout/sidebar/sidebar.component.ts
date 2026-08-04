@@ -355,9 +355,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this._destroySubject$.next();
     this._destroySubject$.complete();
 
+    this._closeSidebar();
+
     this._clearTimeout({
       timeout: this._clickTimeout,
     });
+
+    this._handleOverlayClickSubject$.next();
 
     this._initDestroyOverlayClick();
   }
