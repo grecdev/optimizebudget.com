@@ -10,4 +10,4 @@
   </main>
 </ng-container>
 
-<router-outlet name="authentication"></router-outlet>
+<router-outlet *ngIf="authenticationPage" name="authentication"></router-outlet>
