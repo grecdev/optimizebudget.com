@@ -1,4 +1,6 @@
 @use 'breakpoints' as breakpoints;
+@use 'spacing' as spacing;
+@use 'typography' as typography;
 
 @use '../authentication-common' as authentication-common;
 
@@ -10,6 +12,25 @@
 
 #login-button {
   @include authentication-common.submit-button;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: spacing.$sm;
+
+  margin-bottom: spacing.$default;
+
+  & #logo {
+    width: 60px;
+  }
+
+  & h1 {
+    font-family: 'Roboto-serif', sans-serif;
+    font-weight: 500;
+    font-size: typography.$h2;
+  }
 }
 
 @media screen and (max-width: breakpoints.$xl) {

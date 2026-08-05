@@ -16,8 +16,8 @@
 
 .link {
   &.active {
-    background: map.get(color-palette.$secondary, 'variant-2');
-    color: map.get(color-palette.$secondary, 'default');
+    background: map.get(color-palette.$primary, 'variant-2');
+    color: map.get(color-palette.$primary, 'default');
     font-weight: 500;
   }
 }
