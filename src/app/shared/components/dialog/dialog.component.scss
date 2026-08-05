@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'spacing' as *;
 @use 'shape' as *;
 @use 'breakpoints' as *;
@@ -24,7 +24,7 @@
 
   @include max-size-dialog(80%);
 
-  background: map.get($color-palette, 'common', 'white');
+  background: map.get(color-palette.$common, 'white');
   padding: map.get($spacing, 'default');
   border-radius: map.get($border-radius, 'default');
   overflow: hidden;

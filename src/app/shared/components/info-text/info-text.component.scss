@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @use 'variables' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'spacing' as *;
 
 // Make sure this map matches the type of the error from `InfoType`.

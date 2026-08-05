@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @use 'variables' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'spacing' as *;
 
 .delimiter {
@@ -19,13 +19,13 @@
     transform: translateY(-50%);
 
     width: 100%;
-    border-top: 1px solid map.get($color-palette, 'gray', 'variant-3');
+    border-top: 1px solid map.get(color-palette.$gray, 'variant-3');
   }
 
   & > span {
     position: relative;
     z-index: 1;
-    background: map.get($color-palette, 'common', 'white');
+    background: map.get(color-palette.$common, 'white');
     padding: map.get($spacing, 'sm');
   }
 }

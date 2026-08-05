@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use 'variables' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 .app-overlay {
   position: fixed;

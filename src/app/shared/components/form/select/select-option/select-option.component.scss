@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @use 'spacing' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 .app-select-option {
   display: flex;
@@ -12,12 +12,12 @@
   width: 100%;
 
   &.disabled {
-    color: map.get($color-palette, 'gray', 'variant-3');
+    color: map.get(color-palette.$gray, 'variant-3');
     cursor: auto;
   }
 
   &.selected {
-    background: map.get($color-palette, 'gray', 'default');
+    background: map.get(color-palette.$gray, 'default');
   }
 
   & .text-content {
@@ -30,6 +30,6 @@
   }
 
   &:not(.disabled):not(.selected):hover {
-    background: map.get($color-palette, 'gray', 'variant-5');
+    background: map.get(color-palette.$gray, 'variant-5');
   }
 }

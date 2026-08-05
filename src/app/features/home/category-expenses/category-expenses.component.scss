@@ -2,7 +2,7 @@
 
 @use 'shape' as *;
 @use 'spacing' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 app-widget-box {
   height: 100%;

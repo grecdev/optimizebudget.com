@@ -1,6 +1,6 @@
 @use 'sass:map';
 
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 // Layout
 $container-width: (
@@ -10,7 +10,7 @@ $container-width: (
   'lg': 1400px,
 );
 
-$layout-border: 2px solid map.get($color-palette, 'gray', 'default');
+$layout-border: 2px solid map.get(color-palette.$gray, 'default');
 
 $grid: (
   'direction': (

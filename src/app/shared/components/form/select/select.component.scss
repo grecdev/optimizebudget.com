@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use 'sass:math';
 
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'typography' as *;
 @use 'variables' as *;
 @use 'spacing' as *;
@@ -45,7 +45,7 @@ $icon-size: 15px;
         transform-origin: left center;
         transform: translateY($translate-y) scale(1);
 
-        color: map.get($color-palette, 'gray', 'variant-4');
+        color: map.get(color-palette.$gray, 'variant-4');
       }
 
       & app-icon {
@@ -69,7 +69,7 @@ $icon-size: 15px;
       display: flex;
       flex-direction: column;
 
-      background: map.get($color-palette, 'common', 'white');
+      background: map.get(color-palette.$common, 'white');
       box-shadow: map.get($box-shadow, 'variant-3');
 
       width: $input-maximum-size;
@@ -99,7 +99,7 @@ $icon-size: 15px;
       @include form-field-component.focus-state;
 
       & .label {
-        color: map.get($color-palette, 'body-text-color', 'default');
+        color: map.get(color-palette.$body-text-color, 'default');
       }
     }
   }
@@ -119,7 +119,7 @@ $icon-size: 15px;
 
   &-variant-outlined:has(.app-select) {
     & .app-select .select-value-container .label {
-      background: map.get($color-palette, 'common', 'white');
+      background: map.get(color-palette.$common, 'white');
     }
   }
 }
