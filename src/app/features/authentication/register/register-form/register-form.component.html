@@ -70,7 +70,10 @@
       />
     </app-form-field>
 
-    <app-password-requirement-container [password]="registerForm.value[InputTypes.PASSWORD]" />
+    <app-password-requirement-container
+      [password]="registerForm.value[InputTypes.PASSWORD]"
+      [confirmPassword]="registerForm.value[InputTypes.CONFIRM_PASSWORD]"
+    />
   </div>
 
   <app-form-field

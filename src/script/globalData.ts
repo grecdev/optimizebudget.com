@@ -65,7 +65,7 @@ const adminData = {
  * @type {RegexPatterns}
  */
 const regexPatterns: RegexPatterns = {
-  specialCharacters: /[$%&_@!]/,
+  specialCharacters: /^[a-zA-Z0-9$%&_@!]+$/,
   numbers: /\d/,
   lowercase: /[a-z]/,
   uppercase: /[A-Z]/,
