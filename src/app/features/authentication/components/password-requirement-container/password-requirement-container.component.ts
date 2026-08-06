@@ -22,7 +22,7 @@ export class PasswordRequirementContainerComponent {
   public readonly regexPatterns: RegexPatterns = regexPatterns;
 
   /**
-   * @summary - Value to check for regex.
+   * @summary - Current password value to check for regex.
    *
    * @type {string}
    *
@@ -37,4 +37,21 @@ export class PasswordRequirementContainerComponent {
   }
 
   private _password: string = '';
+
+  /**
+   * @summary - Confirm password value to check for regex.
+   *
+   * @type {string}
+   *
+   * @publics
+   */
+  @Input({ required: true }) public get confirmPassword(): string {
+    return this._confirmPassword;
+  }
+
+  public set confirmPassword(value: string) {
+    this._confirmPassword = value;
+  }
+
+  private _confirmPassword: string = '';
 }

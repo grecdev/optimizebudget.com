@@ -64,13 +64,16 @@
       <input
         appInput
         id="password"
-        type="password"
+        type="text"
         placeholder="******"
         [formControlName]="InputTypes.PASSWORD"
       />
     </app-form-field>
 
-    <app-password-requirement-container [password]="registerForm.value[InputTypes.PASSWORD]" />
+    <app-password-requirement-container
+      [password]="registerForm.value[InputTypes.PASSWORD]"
+      [confirmPassword]="registerForm.value[InputTypes.CONFIRM_PASSWORD]"
+    />
   </div>
 
   <app-form-field
@@ -87,7 +90,7 @@
     <input
       appInput
       id="confirm-password"
-      type="password"
+      type="text"
       placeholder="******"
       [formControlName]="InputTypes.CONFIRM_PASSWORD"
     />
