@@ -1,6 +1,11 @@
 @use 'breakpoints' as breakpoints;
+@use 'spacing' as spacing;
 
 @use '../authentication-common' as authentication-common;
+
+:host {
+  padding: spacing.$default 0;
+}
 
 @media screen and (max-width: breakpoints.$xl) {
   :host {
