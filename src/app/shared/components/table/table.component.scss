@@ -2,7 +2,7 @@
 
 @use 'variables';
 @use 'spacing' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 .app-table {
   overflow: hidden;
@@ -10,7 +10,7 @@
 
   & thead {
     border-bottom: variables.$layout-border;
-    background-color: map.get($color-palette, 'gray', 'default');
+    background-color: map.get(color-palette.$gray, 'default');
 
     & tr th {
       font-weight: 500;
@@ -33,7 +33,7 @@
     }
 
     &:hover {
-      background-color: map.get($color-palette, 'gray', 'variant-5');
+      background-color: map.get(color-palette.$gray, 'variant-5');
     }
   }
 }

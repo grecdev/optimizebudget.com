@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @use 'variables' as variables;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'typography' as *;
 
 body {
@@ -10,7 +10,7 @@ body {
   font-size: map.get($font-size, 'body');
   line-height: $line-height;
 
-  color: map.get($color-palette, 'body-text-color', 'default');
+  color: map.get(color-palette.$body-text-color, 'default');
 }
 
 h1,

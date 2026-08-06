@@ -1,6 +1,6 @@
 @use 'sass:map';
 
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'variables' as *;
 @use 'shape' as *;
 @use 'spacing' as *;
@@ -22,8 +22,8 @@
   }
 
   &.success {
-    $color: map.get($color-palette, 'green', 'variant-3');
-    background: map.get($color-palette, 'green', 'variant-2');
+    $color: map.get(color-palette.$green, 'variant-3');
+    background: map.get(color-palette.$green, 'variant-2');
 
     color: $color;
 
@@ -33,8 +33,9 @@
   }
 
   &.warning {
-    $color: map.get($color-palette, 'yellow', 'default');
-    background: map.get($color-palette, 'yellow', 'variant-2');
+    $color: map.get(color-palette.$orange, 'default');
+    background: map.get(color-palette.$yellow, 'variant-2');
+
     color: $color;
 
     & .app-icon svg {
@@ -43,8 +44,8 @@
   }
 
   &.error {
-    $color: map.get($color-palette, 'red', 'default');
-    background: map.get($color-palette, 'red', 'variant-3');
+    $color: map.get(color-palette.$red, 'default');
+    background: map.get(color-palette.$red, 'variant-3');
     color: $color;
 
     & .app-icon svg {

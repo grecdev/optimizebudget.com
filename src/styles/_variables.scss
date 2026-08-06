@@ -1,8 +1,7 @@
 @use 'sass:map';
 
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
-// Layout
 $container-width: (
   'sm': 1100px,
   'default': 1200px,
@@ -10,7 +9,7 @@ $container-width: (
   'lg': 1400px,
 );
 
-$layout-border: 2px solid map.get($color-palette, 'gray', 'default');
+$layout-border: 2px solid map.get(color-palette.$gray, 'default');
 
 $grid: (
   'direction': (
@@ -51,3 +50,5 @@ $buttons-icon-size: (
 
 // <input />, <select> etc.
 $input-maximum-size: 250px;
+
+$user-avatar-size: 40px;

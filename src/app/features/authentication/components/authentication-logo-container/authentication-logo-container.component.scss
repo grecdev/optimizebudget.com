@@ -1,4 +1,10 @@
-.logo-container {
-  display: flex;
-  align-items: center;
+@use 'spacing' as spacing;
+@use 'typography' as typography;
+
+:host {
+  margin-bottom: spacing.$default;
+
+  & #logo {
+    width: 200px;
+  }
 }

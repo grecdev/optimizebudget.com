@@ -1,12 +1,10 @@
-<app-authentication-logo-container />
+<div class="logo-container">
+  <img id="logo" src="/logo-icon.svg" alt="logo image" />
+
+  <h1>Login to Optimize Budget</h1>
+</div>
 
 <div class="form-container">
-  <div class="header">
-    <h4 class="mb-sm">Welcome back</h4>
-
-    <!--    <p class="light-text">Login with your Google account</p>-->
-  </div>
-
   <!--  <div class="buttons-socials">{{ "{{ WIP }}" }}</div>-->
 
   <!--  <app-form-delimiter textContent="Or continue with" />-->
@@ -74,7 +72,7 @@
       type="submit"
       appButton
       variant="contained"
-      color="primary"
+      color="secondary"
       [disabled]="ngFormLogin.invalid"
       [loading]="loginLoading"
     >

@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @use 'variables' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 @use 'shape' as *;
 
 .app-icon-button {
@@ -18,6 +18,6 @@
   transition: background 100ms ease-in-out;
 
   &:hover {
-    background: map.get($color-palette, 'gray', 'default');
+    background: map.get(color-palette.$gray, 'default');
   }
 }

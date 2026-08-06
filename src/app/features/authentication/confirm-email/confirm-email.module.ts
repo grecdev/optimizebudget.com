@@ -5,9 +5,16 @@ import { ConfirmEmailRoutingModule } from './confirm-email-routing.module';
 import { ConfirmEmailComponent } from './confirm-email.component';
 import { AppIconModule } from '@shared/components/icon/icon.module';
 import { SuccessRequestModule } from '@features/authentication/components/success-request/success-request.module';
+import { AuthenticationCommonModule } from '@features/authentication/authentication-common.module';
 
 @NgModule({
   declarations: [ConfirmEmailComponent],
-  imports: [CommonModule, ConfirmEmailRoutingModule, AppIconModule, SuccessRequestModule],
+  imports: [
+    CommonModule,
+    ConfirmEmailRoutingModule,
+    AppIconModule,
+    SuccessRequestModule,
+    AuthenticationCommonModule,
+  ],
 })
 export class ConfirmEmailModule {}

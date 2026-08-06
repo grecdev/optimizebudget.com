@@ -4,13 +4,13 @@
 @use 'variables' as *;
 @use 'spacing' as *;
 @use 'typography' as *;
-@use 'color-palette' as *;
+@use 'color-palette' as color-palette;
 
 $input-spacing-default: map.get($spacing, 'sm');
 
 @mixin focus-state {
-  box-shadow: 0px 0px 0px 2px map.get($color-palette, 'gray', 'variant-5');
-  border-color: map.get($color-palette, 'gray', 'variant-4');
+  box-shadow: 0px 0px 0px 2px map.get(color-palette.$gray, 'variant-5');
+  border-color: map.get(color-palette.$gray, 'variant-4');
 }
 
 .app-form-field {
@@ -57,8 +57,8 @@ $input-spacing-default: map.get($spacing, 'sm');
   &-variant-outlined {
     & .app-input,
     & .app-select .select-value-container {
-      background: map.get($color-palette, 'common', 'white');
-      border: 1px solid map.get($color-palette, 'gray', 'variant-3');
+      background: map.get(color-palette.$common, 'white');
+      border: 1px solid map.get(color-palette.$gray, 'variant-3');
     }
   }
 

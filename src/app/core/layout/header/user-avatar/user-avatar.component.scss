@@ -11,10 +11,8 @@
   justify-content: center;
   gap: spacing.$sm;
 
-  $image-size: 40px;
-
-  width: $image-size;
-  height: $image-size;
+  width: variables.$user-avatar-size;
+  height: variables.$user-avatar-size;
   border-radius: shape.$rounded;
 
   font-weight: 500;

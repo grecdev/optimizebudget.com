@@ -1,7 +1,6 @@
 @use 'sass:map';
 
-@use 'variables' as *;
-@use 'breakpoints' as *;
+@use 'breakpoints' as breakpoints;
 
 :host {
   display: grid;
@@ -25,7 +24,7 @@
 }
 
 // Will me moved into its own directory
-@media screen and (max-width: map.get($breakpoints, 'xl')) {
+@media screen and (max-width: breakpoints.$xl) {
   :host {
     &[data-logged-in='true'] {
       grid-template-columns: 1fr;
