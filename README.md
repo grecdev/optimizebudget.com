@@ -4,9 +4,9 @@
 
 #
 
-The idea of this project came from the frustration of always having to edit a google sheet file to manage my expenses.
+The idea of this project came from the frustration of always having to edit a Google Sheets file to manage my expenses.
 
-So I needed a place where I can easily track everything I spend my money on, in a efficient manner of course.
+So I needed a place where I could easily track everything I spend money on, in an efficient manner, of course.
 
 ### Functionalities implemented so far:
 
