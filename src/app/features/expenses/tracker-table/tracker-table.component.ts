@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 
-import { CategoryType, ExpenseStatus } from '@shared/models/enums';
+import { SupabaseService } from '@core/supabase/supabase.service';
+
+import { ExpenseStatus } from '@shared/models/enums';
 import { StatusType } from '@shared/components/pill-status/pill-status.model';
 
 import { type ExpenseItem, ExpenseItemKey } from './tracker-table.model';
 import { MediaQueryService } from '@shared/services/media-query/media-query.service';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 @Component({
   selector: 'app-tracker-table',
@@ -18,94 +21,13 @@ export class TrackerTableComponent {
   public readonly ExpenseStatus = ExpenseStatus;
 
   public readonly displayedColumns: Array<ExpenseItemKey> = [
-    ExpenseItemKey.TIMESTAMP,
+    ExpenseItemKey.DATE_CREATED,
     ExpenseItemKey.STATUS,
-    ExpenseItemKey.DESCRIPTION,
+    ExpenseItemKey.NAME,
     ExpenseItemKey.TOTAL,
   ];
 
-  public dataSource: Array<ExpenseItem> = [
-    {
-      [ExpenseItemKey.ID]: 0,
-      [ExpenseItemKey.TIMESTAMP]: 1706102400000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
-      [ExpenseItemKey.DESCRIPTION]: 'Weekly grocery shopping',
-      [ExpenseItemKey.TOTAL]: 82.37,
-    },
-    {
-      [ExpenseItemKey.ID]: 1,
-      [ExpenseItemKey.TIMESTAMP]: 1706188800000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
-      [ExpenseItemKey.DESCRIPTION]: 'Bluetooth headphones',
-      [ExpenseItemKey.TOTAL]: 59.99,
-    },
-    {
-      [ExpenseItemKey.ID]: 2,
-      [ExpenseItemKey.TIMESTAMP]: 1706275200000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PENDING,
-      [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
-      [ExpenseItemKey.DESCRIPTION]: 'Bathroom cleaning supplies',
-      [ExpenseItemKey.TOTAL]: 27.45,
-    },
-    {
-      [ExpenseItemKey.ID]: 3,
-      [ExpenseItemKey.TIMESTAMP]: 1706361600000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
-      [ExpenseItemKey.DESCRIPTION]: 'Lunch with coworkers',
-      [ExpenseItemKey.TOTAL]: 18.9,
-    },
-    {
-      [ExpenseItemKey.ID]: 4,
-      [ExpenseItemKey.TIMESTAMP]: 1706448000000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.GADGETS,
-      [ExpenseItemKey.DESCRIPTION]: 'Phone case replacement',
-      [ExpenseItemKey.TOTAL]: 22.99,
-    },
-    {
-      [ExpenseItemKey.ID]: 5,
-      [ExpenseItemKey.TIMESTAMP]: 1706534400000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.CANCELLED,
-      [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
-      [ExpenseItemKey.DESCRIPTION]: 'Desk lamp order',
-      [ExpenseItemKey.TOTAL]: 34.5,
-    },
-    {
-      [ExpenseItemKey.ID]: 6,
-      [ExpenseItemKey.TIMESTAMP]: 1706620800000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
-      [ExpenseItemKey.DESCRIPTION]: 'Coffee and pastry',
-      [ExpenseItemKey.TOTAL]: 7.85,
-    },
-    {
-      [ExpenseItemKey.ID]: 7,
-      [ExpenseItemKey.TIMESTAMP]: 1706707200000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PENDING,
-      [ExpenseItemKey.CATEGORY]: CategoryType.CLOTHING,
-      [ExpenseItemKey.DESCRIPTION]: 'Winter gloves',
-      [ExpenseItemKey.TOTAL]: 25.0,
-    },
-    {
-      [ExpenseItemKey.ID]: 8,
-      [ExpenseItemKey.TIMESTAMP]: 1706793600000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.HOME,
-      [ExpenseItemKey.DESCRIPTION]: 'Replacement light bulbs',
-      [ExpenseItemKey.TOTAL]: 16.78,
-    },
-    {
-      [ExpenseItemKey.ID]: 9,
-      [ExpenseItemKey.TIMESTAMP]: 1706880000000,
-      [ExpenseItemKey.STATUS]: ExpenseStatus.PAID,
-      [ExpenseItemKey.CATEGORY]: CategoryType.FOOD,
-      [ExpenseItemKey.DESCRIPTION]: 'Takeout dinner',
-      [ExpenseItemKey.TOTAL]: 24.6,
-    },
-  ];
+  public dataSource: Array<ExpenseItem> = [];
 
   /**
    * @summary - Render mobile components based on this state.
@@ -116,11 +38,21 @@ export class TrackerTableComponent {
    */
   public isMobile: boolean = false;
 
+  public loading: boolean = true;
+
   private readonly _mediaQueryService: MediaQueryService;
+  private readonly _supabaseService: SupabaseService;
+
   private readonly _changeDetectorRef: ChangeDetectorRef;
 
-  constructor(mediaQueryService: MediaQueryService, changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    mediaQueryService: MediaQueryService,
+    changeDetectorRef: ChangeDetectorRef,
+    supabaseService: SupabaseService
+  ) {
     this._mediaQueryService = mediaQueryService;
+    this._supabaseService = supabaseService;
+
     this._changeDetectorRef = changeDetectorRef;
   }
 
@@ -152,7 +84,42 @@ export class TrackerTableComponent {
     return item[ExpenseItemKey.ID];
   }
 
+  /**
+   * @summary - Get all expenses.
+   *
+   * @private
+   * @returns {Promise<void>}
+   */
+  private async _initGetAllExpenses(): Promise<void> {
+    const CURRENT_PAGE = 0;
+    const PAGE_SIZE = 10;
+
+    const FROM = CURRENT_PAGE * PAGE_SIZE;
+    const TO = FROM + PAGE_SIZE - 1;
+
+    try {
+      const { data, error } = (await this._supabaseService
+        .from('expenses')
+        .select()
+        .range(FROM, TO)) as PostgrestSingleResponse<Array<ExpenseItem>>;
+
+      if (!data) {
+        return;
+      }
+
+      this.dataSource = data;
+      this.loading = false;
+      this._changeDetectorRef.markForCheck();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error);
+      }
+    }
+  }
+
   ngOnInit(): void {
     this._initMediaQuerySubscription();
+
+    this._initGetAllExpenses();
   }
 }

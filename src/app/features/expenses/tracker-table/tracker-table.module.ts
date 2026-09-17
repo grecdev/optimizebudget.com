@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AppTableModule } from '@shared/components/table/table.module';
 import { PillStatusModule } from '@shared/components/pill-status/pill-status.module';
 import { WidgetBoxModule } from '@core/layout/widget-box/widget-box.module';
+import { AppLoaderModule } from '@shared/components/loader/loader.module';
 
 import { TrackerTableComponent } from './tracker-table.component';
 import { AddExpenseDialogModule } from '../add-expense-dialog/add-expense-dialog.module';
@@ -13,11 +14,13 @@ import { AppCardModule } from '@shared/components/card/card.module';
   declarations: [TrackerTableComponent],
   imports: [
     CommonModule,
+    //
     AppTableModule,
     WidgetBoxModule,
     PillStatusModule,
     AddExpenseDialogModule,
     AppCardModule,
+    AppLoaderModule,
   ],
   exports: [TrackerTableComponent],
 })

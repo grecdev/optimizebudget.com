@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { type SupabaseClient, createClient } from '@supabase/supabase-js';
+import {
+  type SupabaseClient,
+  type PostgrestQueryBuilder,
+  createClient,
+} from '@supabase/supabase-js';
 
 import { environment } from '@environments/environment';
 
@@ -32,5 +36,17 @@ export class SupabaseService {
     this._supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.auth = this._supabase.auth;
+  }
+
+  /**
+   * @summary - Expose the query method only.
+   *
+   * @param {string} relation - Table name to query.
+   *
+   * @public
+   * @returns {PostgrestQueryBuilder<any, any, any, string, unknown>}
+   */
+  public from(relation: string): PostgrestQueryBuilder<any, any, any, string, unknown> {
+    return this._supabase.from(relation);
   }
 }

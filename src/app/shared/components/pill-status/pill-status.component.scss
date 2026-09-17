@@ -32,7 +32,8 @@
     }
   }
 
-  &.warning {
+  &.warning,
+  &.cancelled {
     $color: map.get(color-palette.$orange, 'default');
     background: map.get(color-palette.$yellow, 'variant-2');
 

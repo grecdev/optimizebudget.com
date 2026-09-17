@@ -1,20 +1,20 @@
 import { CategoryType, ExpenseStatus } from '@shared/models/enums';
 
 enum ExpenseItemKey {
-  ID = 'ID',
-  TIMESTAMP = 'TIMESTAMP',
-  STATUS = 'STATUS',
-  CATEGORY = 'CATEGORY',
-  DESCRIPTION = 'DESCRIPTION',
-  TOTAL = 'TOTAL',
+  ID = 'id',
+  DATE_CREATED = 'date_created',
+  STATUS = 'status',
+  CATEGORY = 'category',
+  NAME = 'name',
+  TOTAL = 'total',
 }
 
 interface ExpenseItem {
   [ExpenseItemKey.ID]: number;
-  [ExpenseItemKey.TIMESTAMP]: number;
+  [ExpenseItemKey.DATE_CREATED]: string;
   [ExpenseItemKey.STATUS]: ExpenseStatus;
   [ExpenseItemKey.CATEGORY]: CategoryType;
-  [ExpenseItemKey.DESCRIPTION]: string;
+  [ExpenseItemKey.NAME]: string;
   [ExpenseItemKey.TOTAL]: number;
 }
 

@@ -6,9 +6,9 @@ enum CategoryType {
 }
 
 enum ExpenseStatus {
-  PAID = 'PAID',
-  CANCELLED = 'CANCELLED',
-  PENDING = 'PENDING',
+  PAID = 'Paid',
+  CANCELLED = 'Cancelled',
+  PENDING = 'Pending',
 }
 
 // Match supabase's format
