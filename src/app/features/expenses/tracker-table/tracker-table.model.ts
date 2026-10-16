@@ -6,6 +6,7 @@ enum ExpenseItemKey {
   STATUS = 'status',
   CATEGORY = 'category',
   NAME = 'name',
+  VENDOR_NAME = 'vendor_name',
   TOTAL = 'total',
 }
 
@@ -15,6 +16,7 @@ interface ExpenseItem {
   [ExpenseItemKey.STATUS]: ExpenseStatus;
   [ExpenseItemKey.CATEGORY]: CategoryType;
   [ExpenseItemKey.NAME]: string;
+  [ExpenseItemKey.VENDOR_NAME]: string;
   [ExpenseItemKey.TOTAL]: number;
 }
 

@@ -5,7 +5,9 @@
     <app-add-expense-dialog />
   </app-widget-box-header>
 
-  <p *ngIf="loading; else tableContainer"><app-loader /></p>
+  <p *ngIf="loading; else tableContainer">
+    <app-loader />
+  </p>
 
   <ng-template #tableContainer>
     <table app-table [dataSource]="dataSource" *ngIf="!isMobile; else mobileCardsContainer">
@@ -37,6 +39,12 @@
             {{ item[ExpenseItemKey.STATUS] }}
           </app-pill-status>
         </td>
+      </ng-container>
+
+      <ng-container [appColumnDef]="ExpenseItemKey.VENDOR_NAME">
+        <th app-header-cell *appHeaderCellDef>Vendor</th>
+
+        <td app-cell *appCellDef="let item">{{ item[ExpenseItemKey.VENDOR_NAME] }}</td>
       </ng-container>
 
       <ng-container [appColumnDef]="ExpenseItemKey.NAME">

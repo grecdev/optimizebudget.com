@@ -23,6 +23,7 @@ export class TrackerTableComponent {
   public readonly displayedColumns: Array<ExpenseItemKey> = [
     ExpenseItemKey.DATE_CREATED,
     ExpenseItemKey.STATUS,
+    ExpenseItemKey.VENDOR_NAME,
     ExpenseItemKey.NAME,
     ExpenseItemKey.TOTAL,
   ];

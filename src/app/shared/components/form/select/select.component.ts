@@ -16,7 +16,7 @@ import {
   ContentChildren,
 } from '@angular/core';
 
-import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { ControlValueAccessor, FormControlName, NgControl } from '@angular/forms';
 
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -491,6 +491,50 @@ export class AppSelectComponent
     this._triggerClose();
   }
 
+  /**
+   * @summary - Emit value if form module attributes are used.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _setFormModuleValue(): void {
+    const HAS_FORM_CONTROL_NAME = this._ngControl instanceof FormControlName;
+    const HAS_FORM_CONTROL_VALUE = HAS_FORM_CONTROL_NAME && this._ngControl.value;
+
+    if (!this._childrenOptions || !this._currentValue || !HAS_FORM_CONTROL_VALUE) {
+      return;
+    }
+
+    const CORRESPONDING_OPTION = this._childrenOptions.find(item => {
+      return (
+        item &&
+        item.value.length > 0 &&
+        item.value === this._currentValue &&
+        item.elementRef &&
+        item.elementRef.nativeElement
+      );
+    });
+
+    if (!CORRESPONDING_OPTION) {
+      return;
+    }
+
+    const TEXT_CONTENT = CORRESPONDING_OPTION.elementRef.nativeElement.textContent;
+
+    this.handleOptionChange({
+      value: this._currentValue,
+      textContent: TEXT_CONTENT,
+    });
+  }
+
+  /**
+   * @summary - Event triggered when you click on the app-select element.
+   *
+   * @param {MouseEvent} event - The event object
+   *
+   * @public
+   * @returns {void}
+   */
   @HostListener('click', ['$event']) handleClick(event: MouseEvent): void {
     event.stopPropagation();
 
@@ -529,5 +573,6 @@ export class AppSelectComponent
 
   ngAfterContentInit() {
     this._checkDuplicatedValues();
+    this._setFormModuleValue();
   }
 }

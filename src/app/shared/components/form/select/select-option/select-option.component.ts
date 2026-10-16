@@ -3,12 +3,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Host,
   HostListener,
   Inject,
   Input,
   OnInit,
+  Optional,
   ViewEncapsulation,
 } from '@angular/core';
+
+import { FormControlName, NgControl } from '@angular/forms';
 
 import { APP_SELECT_COMPONENT_REFERENCE } from '../select.tokens';
 
@@ -38,6 +42,8 @@ export class AppSelectOptionComponent implements OnInit {
    * @readonly
    */
   private readonly _selectRoot: AppSelectComponent;
+
+  private readonly _ngControl: NgControl;
 
   /**
    * @summary - Option's current value
@@ -110,9 +116,11 @@ export class AppSelectOptionComponent implements OnInit {
 
   constructor(
     @Inject(APP_SELECT_COMPONENT_REFERENCE) selectRoot: AppSelectComponent,
+    @Optional() @Host() ngControl: NgControl,
     elementRef: ElementRef
   ) {
     this._selectRoot = selectRoot;
+    this._ngControl = ngControl;
     this.elementRef = elementRef;
   }
 
@@ -162,13 +170,16 @@ export class AppSelectOptionComponent implements OnInit {
   }
 
   /**
-   * @summary - Emit value if selected via template.
+   * @summary - Emit value if selected attribute is present.
    *
    * @private
    * @returns {void}
    */
   private _handleSelectedValue(): void {
-    if (!this._selected) {
+    const HAS_FORM_CONTROL_NAME = this._ngControl instanceof FormControlName;
+    const HAS_FORM_CONTROL_VALUE = HAS_FORM_CONTROL_NAME && this._ngControl.value;
+
+    if (!this._selected || HAS_FORM_CONTROL_VALUE) {
       return;
     }
 

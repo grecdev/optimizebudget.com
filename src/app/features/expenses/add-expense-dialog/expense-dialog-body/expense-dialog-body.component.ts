@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
 import { CategoryType } from '@shared/models/enums';
 
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
+
+import { ExpenseItemKey } from '../../tracker-table/tracker-table.model';
 
 import {
   type ExpenseCategoriesFormatted,
@@ -16,6 +20,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
+  public ExpenseItemKey = ExpenseItemKey;
+
   /**
    * @summary - Assigned from the OverlayService.
    *
@@ -34,8 +40,36 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
    */
   public expenseCategories: ExpenseCategoriesFormatted = [];
 
+  public addExpenseForm = new FormGroup({
+    [ExpenseItemKey.NAME]: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(3)],
+    }),
+    [ExpenseItemKey.VENDOR_NAME]: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(3)],
+    }),
+    [ExpenseItemKey.CATEGORY]: new FormControl('', {
+      validators: [Validators.required],
+    }),
+    [ExpenseItemKey.TOTAL]: new FormControl(0, {
+      validators: [Validators.required, Validators.min(1)],
+    }),
+  });
+
   constructor() {
     this._formatCategoriesObject();
+  }
+
+  /**
+   * @summary - Create an array with key-value pair objects.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _formatCategoriesObject(): void {
+    this.expenseCategories = Object.values(CategoryType).map(item => ({
+      textContent: item,
+      value: item.toLowerCase(),
+    }));
   }
 
   /**
@@ -57,19 +91,6 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   }
 
   /**
-   * @summary - Create an array with key-value pair objects.
-   *
-   * @private
-   * @returns {void}
-   */
-  private _formatCategoriesObject(): void {
-    this.expenseCategories = Object.values(CategoryType).map(item => ({
-      textContent: item,
-      value: item.toLowerCase(),
-    }));
-  }
-
-  /**
    * @summary - Track by function used for expense categories for loop.
    *
    * @param {number} _index - Not used.
@@ -81,4 +102,12 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   public expenseCategoriesTrackByFn(_index: number, item: ExpenseCategoryItem): string {
     return item.value;
   }
+
+  /**
+   * @summary - Submit request functionality.
+   *
+   * @public
+   * @returns {void}
+   */
+  public handleSubmit(): void {}
 }

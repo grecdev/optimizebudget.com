@@ -1,5 +1,6 @@
 import { InjectionToken, NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppFormFieldModule } from '@shared/components/form/form-field/form-field.module';
 import { AppInputModule } from '@shared/components/form/input/input.module';
@@ -16,6 +17,8 @@ export const ADD_EXPENSE_DIALOG_BODY_REFERENCE = new InjectionToken<
   declarations: [ExpenseDialogBodyComponent],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    //
     AppFormFieldModule,
     AppInputModule,
     AppButtonModule,

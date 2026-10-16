@@ -1,4 +1,4 @@
-<form>
+<form id="add-expense-form" [formGroup]="addExpenseForm" (ngSubmit)="handleSubmit()">
   <div class="form-inputs-container">
     <app-form-field
       variant="outlined"
@@ -15,6 +15,7 @@
         type="text"
         name="expense-name"
         placeholder="Expense name"
+        [formControlName]="ExpenseItemKey.NAME"
       />
     </app-form-field>
 
@@ -27,7 +28,14 @@
     >
       <app-input-label>Vendor name</app-input-label>
 
-      <input appInput id="vendor-name" type="text" name="vendor-name" placeholder="Vendor name" />
+      <input
+        appInput
+        id="vendor-name"
+        type="text"
+        name="vendor-name"
+        placeholder="Vendor name"
+        [formControlName]="ExpenseItemKey.VENDOR_NAME"
+      />
     </app-form-field>
 
     <app-form-field
@@ -37,11 +45,19 @@
         position: 'top',
       }"
     >
-      <app-select id="category-select" label="Pick a category">
-        <app-select-option value="" selected>None</app-select-option>
+      <app-select
+        id="category-select"
+        label="Pick a category"
+        [formControlName]="ExpenseItemKey.CATEGORY"
+      >
+        <app-select-option value="">None</app-select-option>
 
         <app-select-option
-          *ngFor="let item of expenseCategories; trackBy: expenseCategoriesTrackByFn"
+          *ngFor="
+            let item of expenseCategories;
+            index as index;
+            trackBy: expenseCategoriesTrackByFn
+          "
           [value]="item.value"
         >
           {{ item.textContent }}
@@ -66,6 +82,7 @@
       name="expense-total"
       placeholder="Total"
       min="0"
+      [formControlName]="ExpenseItemKey.TOTAL"
     />
   </app-form-field>
 </form>
@@ -81,5 +98,13 @@
     Cancel
   </button>
 
-  <button type="button" appButton variant="contained" color="success">Add</button>
+  <button
+    type="button"
+    appButton
+    variant="contained"
+    color="success"
+    [disabled]="addExpenseForm.invalid"
+  >
+    Add
+  </button>
 </div>
