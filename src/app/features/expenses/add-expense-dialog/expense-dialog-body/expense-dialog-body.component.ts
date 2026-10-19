@@ -42,10 +42,18 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
 
   public addExpenseForm = new FormGroup({
     [ExpenseItemKey.NAME]: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(3)],
+      validators: [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.pattern(/^([\w\d ])+$/g),
+      ],
     }),
     [ExpenseItemKey.VENDOR_NAME]: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(3)],
+      validators: [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.pattern(/^([\w\d ])+$/g),
+      ],
     }),
     [ExpenseItemKey.CATEGORY]: new FormControl('', {
       validators: [Validators.required],
