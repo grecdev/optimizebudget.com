@@ -3,17 +3,18 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
-import { CategoryType, TableNames } from '@shared/models/enums';
+import { CategoryType, TableNames, ExpenseStatus } from '@shared/models/enums';
 
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { SnackbarPosition, SnackbarType } from '@shared/components/snackbar/snackbar.model';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
+import { StatusType } from '@shared/components/pill-status/pill-status.model';
 
 import { ExpenseItemKey } from '../../tracker-table/tracker-table.model';
 
 import {
-  type ExpenseCategoriesFormatted,
-  type ExpenseCategoryItem,
+  type ExpenseSelectOptionsFormatted,
+  type ExpenseSelectOptionItem,
 } from './expense-dialog-body.model';
 
 @Component({
@@ -24,6 +25,7 @@ import {
 })
 export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   public ExpenseItemKey = ExpenseItemKey;
+  public ExpenseStatus = ExpenseStatus;
 
   /**
    * @summary - Loading state for async requests.
@@ -46,11 +48,20 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   /**
    * @summary - Category to set
    *
-   * @type {ExpenseCategoriesFormatted}
+   * @type {ExpenseSelectOptionsFormatted}
    *
    * @public
    */
-  public expenseCategories: ExpenseCategoriesFormatted = [];
+  public expenseCategories: ExpenseSelectOptionsFormatted = [];
+
+  /**
+   * @summary - Expense status to set
+   *
+   * @type {ExpenseSelectOptionsFormatted}
+   *
+   * @public
+   */
+  public expenseStatus: ExpenseSelectOptionsFormatted = [];
 
   public addExpenseForm = new FormGroup({
     [ExpenseItemKey.NAME]: new FormControl('', {
@@ -68,6 +79,9 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
       ],
     }),
     [ExpenseItemKey.CATEGORY]: new FormControl('', {
+      validators: [Validators.required],
+    }),
+    [ExpenseItemKey.STATUS]: new FormControl('', {
       validators: [Validators.required],
     }),
     [ExpenseItemKey.TOTAL]: new FormControl(0, {
@@ -91,6 +105,7 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
     this._supabaseService = supabaseService;
 
     this._formatCategoriesObject();
+    this._formatStatusObject();
   }
 
   /**
@@ -101,6 +116,19 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
    */
   private _formatCategoriesObject(): void {
     this.expenseCategories = Object.values(CategoryType).map(item => ({
+      textContent: item,
+      value: item,
+    }));
+  }
+
+  /**
+   * @summary - Create an array with key-value pair objects.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _formatStatusObject(): void {
+    this.expenseStatus = Object.values(ExpenseStatus).map(item => ({
       textContent: item,
       value: item,
     }));
@@ -128,12 +156,12 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
    * @summary - Track by function used for expense categories for loop.
    *
    * @param {number} _index - Not used.
-   * @param {ExpenseCategoryItem} item - Array's item.
+   * @param {ExpenseSelectOptionItem} item - Array's item.
    *
    * @returns {string}
    * @public
    */
-  public expenseCategoriesTrackByFn(_index: number, item: ExpenseCategoryItem): string {
+  public expenseSelectOptionTrackByFn(_index: number, item: ExpenseSelectOptionItem): string {
     return item.value;
   }
 
@@ -211,4 +239,6 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
       },
     });
   }
+
+  protected readonly StatusType = StatusType;
 }

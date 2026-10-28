@@ -10,4 +10,4 @@ import { PillStatusComponent } from './pill-status.component';
   imports: [CommonModule, AppIconModule],
   exports: [PillStatusComponent],
 })
-export class PillStatusModule {}
+export class AppPillStatusModule {}

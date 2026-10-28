@@ -1,8 +1,8 @@
-interface ExpenseCategoryItem {
+interface ExpenseSelectOptionItem {
   textContent: string;
   value: string;
 }
 
-type ExpenseCategoriesFormatted = Array<ExpenseCategoryItem>;
+type ExpenseSelectOptionsFormatted = Array<ExpenseSelectOptionItem>;
 
-export type { ExpenseCategoriesFormatted, ExpenseCategoryItem };
+export type { ExpenseSelectOptionsFormatted, ExpenseSelectOptionItem };

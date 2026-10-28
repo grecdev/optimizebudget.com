@@ -6,6 +6,7 @@ import { AppFormFieldModule } from '@shared/components/form/form-field/form-fiel
 import { AppInputModule } from '@shared/components/form/input/input.module';
 import { AppButtonModule } from '@shared/components/button/button.module';
 import { AppSelectModule } from '@shared/components/form/select/select.module';
+import { AppPillStatusModule } from '@shared/components/pill-status/pill-status.module';
 
 import { ExpenseDialogBodyComponent } from './expense-dialog-body.component';
 
@@ -23,6 +24,7 @@ export const ADD_EXPENSE_DIALOG_BODY_REFERENCE = new InjectionToken<
     AppInputModule,
     AppButtonModule,
     AppSelectModule,
+    AppPillStatusModule,
   ],
   providers: [
     {

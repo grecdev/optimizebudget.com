@@ -56,11 +56,49 @@
           *ngFor="
             let item of expenseCategories;
             index as index;
-            trackBy: expenseCategoriesTrackByFn
+            trackBy: expenseSelectOptionTrackByFn
           "
           [value]="item.value"
         >
           {{ item.textContent }}
+        </app-select-option>
+      </app-select>
+    </app-form-field>
+
+    <app-form-field
+      variant="outlined"
+      color="primary-default"
+      [labelOptions]="{
+        position: 'top',
+      }"
+    >
+      <app-select
+        id="category-select"
+        label="Expense status"
+        [formControlName]="ExpenseItemKey.STATUS"
+      >
+        <app-select-option selected value="">None</app-select-option>
+
+        <app-select-option
+          *ngFor="let item of expenseStatus; index as index; trackBy: expenseSelectOptionTrackByFn"
+          [value]="item.value"
+          [ngSwitch]="item.value"
+        >
+          <app-pill-status *ngSwitchCase="ExpenseStatus.PAID" [type]="StatusType.SUCCESS">
+            Paid
+          </app-pill-status>
+
+          <app-pill-status *ngSwitchCase="ExpenseStatus.PENDING" [type]="StatusType.WARNING">
+            Pending
+          </app-pill-status>
+
+          <app-pill-status *ngSwitchCase="ExpenseStatus.CANCELLED" [type]="StatusType.ERROR">
+            Cancelled
+          </app-pill-status>
+
+          <app-pill-status *ngSwitchDefault [type]="StatusType.DEFAULT">
+            {{ item.value }}
+          </app-pill-status>
         </app-select-option>
       </app-select>
     </app-form-field>
