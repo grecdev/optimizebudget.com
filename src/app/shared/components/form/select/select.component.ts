@@ -55,6 +55,7 @@ import { iconAnimation } from './select-animations.component';
   ],
   host: {
     class: 'app-select',
+    tabIndex: '0',
   },
   animations: [iconAnimation],
 })

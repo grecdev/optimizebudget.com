@@ -85,26 +85,27 @@
       [formControlName]="ExpenseItemKey.TOTAL"
     />
   </app-form-field>
+
+  <div id="footer">
+    <button
+      type="button"
+      appButton
+      variant="outlined"
+      color="danger"
+      (click)="closeExpenseDialog($event)"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      appButton
+      variant="contained"
+      color="success"
+      [disabled]="addExpenseForm.invalid"
+      [loading]="loading"
+    >
+      Add
+    </button>
+  </div>
 </form>
-
-<div id="footer">
-  <button
-    type="button"
-    appButton
-    variant="outlined"
-    color="danger"
-    (click)="closeExpenseDialog($event)"
-  >
-    Cancel
-  </button>
-
-  <button
-    type="button"
-    appButton
-    variant="contained"
-    color="success"
-    [disabled]="addExpenseForm.invalid"
-  >
-    Add
-  </button>
-</div>

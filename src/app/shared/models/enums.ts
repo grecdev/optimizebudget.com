@@ -18,4 +18,8 @@ enum UserMetaDataKeys {
   CONFIRMATION_DONE = 'confirmation_done',
 }
 
-export { CategoryType, ExpenseStatus, UserMetaDataKeys };
+enum TableNames {
+  EXPENSES = 'expenses',
+}
+
+export { CategoryType, ExpenseStatus, UserMetaDataKeys, TableNames };

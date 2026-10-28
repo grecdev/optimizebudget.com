@@ -20,6 +20,23 @@ import {
 
 import { APP_SNACKBAR_COMPONENT_REFERENCE, AppSnackbarModule } from './snackbar.module';
 
+/**
+ * @summary - Snackbar component, used for alert purposes.
+ *
+ * Make sure you listen to the overlay subscription on close.
+ *
+ * @implements
+ * ```
+ * this.overlayReference = this._snackbarService.open({
+ *  type: SnackbarType.ERROR,
+ *  message: 'Invalid form!',
+ *  position: {
+ *    horizontal: SnackbarPosition.MIDDLE,
+ *    vertical: SnackbarPosition.END,
+ *    },
+ *  });
+ * ```
+ */
 @Injectable({
   providedIn: 'root',
 })

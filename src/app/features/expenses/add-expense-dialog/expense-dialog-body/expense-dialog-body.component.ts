@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { CategoryType } from '@shared/models/enums';
+import { SupabaseService } from '@core/supabase/supabase.service';
 
+import { CategoryType, TableNames } from '@shared/models/enums';
+
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { SnackbarPosition, SnackbarType } from '@shared/components/snackbar/snackbar.model';
 import { type AppOverlayContentInstances } from '@shared/components/overlay/overlay.model';
 
 import { ExpenseItemKey } from '../../tracker-table/tracker-table.model';
@@ -21,6 +24,15 @@ import {
 })
 export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   public ExpenseItemKey = ExpenseItemKey;
+
+  /**
+   * @summary - Loading state for async requests.
+   *
+   * @type {boolean}
+   *
+   * @public
+   */
+  public loading: boolean = false;
 
   /**
    * @summary - Assigned from the OverlayService.
@@ -63,7 +75,21 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
     }),
   });
 
-  constructor() {
+  private readonly _changeDetectorRef: ChangeDetectorRef;
+
+  private readonly _snackbarService: SnackbarService;
+  private readonly _supabaseService: SupabaseService;
+
+  constructor(
+    changeDetectorRef: ChangeDetectorRef,
+    snackbarService: SnackbarService,
+    supabaseService: SupabaseService
+  ) {
+    this._changeDetectorRef = changeDetectorRef;
+
+    this._snackbarService = snackbarService;
+    this._supabaseService = supabaseService;
+
     this._formatCategoriesObject();
   }
 
@@ -76,7 +102,7 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
   private _formatCategoriesObject(): void {
     this.expenseCategories = Object.values(CategoryType).map(item => ({
       textContent: item,
-      value: item.toLowerCase(),
+      value: item,
     }));
   }
 
@@ -117,5 +143,72 @@ export class ExpenseDialogBodyComponent implements AppOverlayContentInstances {
    * @public
    * @returns {void}
    */
-  public handleSubmit(): void {}
+  public async handleSubmit(): Promise<void> {
+    if (!this.addExpenseForm.valid) {
+      this.overlayReference = this._snackbarService.open({
+        type: SnackbarType.ERROR,
+        message: 'Invalid form!',
+        position: {
+          horizontal: SnackbarPosition.MIDDLE,
+          vertical: SnackbarPosition.END,
+        },
+      });
+
+      this._initCloseSubscription();
+
+      return;
+    }
+
+    this.loading = true;
+
+    const VALUES = this.addExpenseForm.value;
+
+    try {
+      const { status, error } = await this._supabaseService.insert({
+        relation: TableNames.EXPENSES,
+        data: VALUES,
+      });
+
+      if (error) {
+        throw Error(`Error ${status}: ${error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error);
+
+        this.overlayReference = this._snackbarService.open({
+          type: SnackbarType.ERROR,
+          message: error.message,
+          position: {
+            horizontal: SnackbarPosition.MIDDLE,
+            vertical: SnackbarPosition.END,
+          },
+        });
+
+        this._initCloseSubscription();
+      }
+    } finally {
+      this.loading = false;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+
+  /**
+   * @summary - Proper unsubscribe.
+   *
+   * @private
+   * @returns {void}
+   */
+  private _initCloseSubscription(): void {
+    if (!this.overlayReference) {
+      throw Error('Overlay reference not found!');
+    }
+
+    this.overlayReference.closingOverlay$.subscribe({
+      next: () => {
+        this._changeDetectorRef.markForCheck();
+        this.overlayReference = null;
+      },
+    });
+  }
 }

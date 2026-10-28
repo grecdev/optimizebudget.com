@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/
 
 import { SupabaseService } from '@core/supabase/supabase.service';
 
-import { ExpenseStatus } from '@shared/models/enums';
+import { ExpenseStatus, TableNames } from '@shared/models/enums';
 import { StatusType } from '@shared/components/pill-status/pill-status.model';
 
 import { type ExpenseItem, ExpenseItemKey } from './tracker-table.model';
@@ -100,7 +100,7 @@ export class TrackerTableComponent {
 
     try {
       const { data, error } = (await this._supabaseService
-        .from('expenses')
+        .from(TableNames.EXPENSES)
         .select()
         .range(FROM, TO)) as PostgrestSingleResponse<Array<ExpenseItem>>;
 
@@ -113,7 +113,7 @@ export class TrackerTableComponent {
       this._changeDetectorRef.markForCheck();
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error);
+        console.error(error);
       }
     }
   }

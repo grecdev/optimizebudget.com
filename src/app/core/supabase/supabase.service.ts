@@ -3,10 +3,14 @@ import { Injectable } from '@angular/core';
 import {
   type SupabaseClient,
   type PostgrestQueryBuilder,
+  type PostgrestFilterBuilder,
   createClient,
 } from '@supabase/supabase-js';
 
 import { environment } from '@environments/environment';
+import { TableNames } from '@shared/models/enums';
+
+import { type InsertOptions } from './supabase.model';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +50,24 @@ export class SupabaseService {
    * @public
    * @returns {PostgrestQueryBuilder<any, any, any, string, unknown>}
    */
-  public from(relation: string): PostgrestQueryBuilder<any, any, any, string, unknown> {
+  public from(relation: TableNames): PostgrestQueryBuilder<any, any, any, string, unknown> {
     return this._supabase.from(relation);
+  }
+
+  /**
+   * @summary - Expose the insert method only.
+   *
+   * @param {InsertOptions['relation']} options.relation - Table name to query.
+   * @param {InsertOptions['data']} options.data - Whatever data you want to insert.
+   *
+   * @public
+   * @returns {PostgrestFilterBuilder<any, any, any, null, TableNames, unknown, 'POST', false>}
+   */
+  public insert(
+    options: InsertOptions
+  ): PostgrestFilterBuilder<any, any, any, null, TableNames, unknown, 'POST', false> {
+    const { relation, data } = options;
+
+    return this._supabase.from(relation).insert(data);
   }
 }
